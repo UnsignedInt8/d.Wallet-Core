@@ -45,6 +45,12 @@ class SocketEx() {
     }
 
     fun connectAsync(host: String, port: Int, timeout: Int = 10 * 1000) = async(CommonPool) {
-          connect(host, port, timeout)
+        connect(host, port, timeout)
+    }
+}
+
+class SocketEx2() : Socket() {
+    fun connectAsync(host: String, port: Int, timeout: Int = 10 * 1000) {
+        super.connect(InetSocketAddress(host, port), timeout)
     }
 }
