@@ -35,14 +35,17 @@ class SocketTests {
         async(CommonPool) {
             val server = ServerSocket(9999)
             val client = server.accept()
-            val msg = client.getInputStream().bufferedReader().readLine()
+            var msg = client.getInputStream().bufferedReader().readLine()
             assertEquals("hello\n", msg)
+            msg = client.getInputStream().bufferedReader().readLine()
+            assertEquals("world\n", msg)
         }
 
         delay(1000)
         val c1 = SocketEx()
         assert(c1.connectAsync("localhost", 9999).await())
         assertEquals(6, c1.writeAsync("hello\n".toByteArray()).await())
+        assertEquals(6, c1.writeAsync("world\n".toByteArray()).await())
         delay(1000)
     }
 }

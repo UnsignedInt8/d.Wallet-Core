@@ -21,4 +21,12 @@ class ExampleUnitTest {
         val ex = SocketEx()
         assert(ex.connect("baidu.com", 80))
     }
+
+    @Test
+    fun testKeyPair(){
+        val pair = generateKeyPair()
+        println(pair)
+        println(pair?.private ?: "")
+        println(pair?.public ?: "")
+    }
 }
