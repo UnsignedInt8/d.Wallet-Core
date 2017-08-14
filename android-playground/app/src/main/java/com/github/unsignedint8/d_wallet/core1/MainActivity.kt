@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.github.dunsignedint8.core1.SocketEx
+import com.github.dunsignedint8.core1.generateKeyPair
 
 import kotlinx.coroutines.experimental.*
 
@@ -14,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         launch(CommonPool) {
-            repeat(1000) { i ->
+            repeat(100) { i ->
                 Log.d("repeat", "$i ")
                 delay(100)
             }
@@ -23,12 +24,14 @@ class MainActivity : AppCompatActivity() {
         runBlocking {
             val e2 = SocketEx()
             Log.d("blocking", "${e2.connectAsync("baidu.com", 80).await()} connected")
-            delay(10*1000)
         }
+
         val ex = SocketEx()
         async(CommonPool) {
             val result = ex.connect("baidu.com", 80)
             Log.d("async",  "$result connected")
         }
+
+        println(generateKeyPair())
     }
 }

@@ -15,11 +15,14 @@ import java.security.Security.insertProviderAt
 object abo {
     init {
         Security.insertProviderAt(org.spongycastle.jce.provider.BouncyCastleProvider(), 1)
+        println("abo init")
     }
 }
 
 
 fun generateKeyPair(): KeyPair? {
+    abo
+    abo
     abo
     val keyGen = KeyPairGenerator.getInstance("ECDsA", "SC")
     val ecSpec = ECGenParameterSpec("secp256k1")
