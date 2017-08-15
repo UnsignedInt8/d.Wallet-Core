@@ -1,7 +1,10 @@
 package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.Message
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.NetworkAddress
 import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
+import io.github.unsignedint8.dwallet_core.extensions.sliceArray
+import io.github.unsignedint8.dwallet_core.extensions.toHexString
 import org.junit.Test
 import org.junit.Assert.*
 
@@ -23,4 +26,16 @@ class MessageTests {
         assertArrayEquals("f9beb4d9".hexToByteArray(), msg.magic)
         assertArrayEquals("3b648d5a".hexToByteArray(), msg.checksum)
     }
+
+    @Test
+    fun testNetworkAddress() {
+        val addr = NetworkAddress("10.0.0.1", 8333, byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0)).toBytes().sliceArray(4)
+        assertArrayEquals("010000000000000000000000000000000000FFFF0A000001208D".hexToByteArray(), addr)
+
+        val addr2 = NetworkAddress.fromBytes("00000000010000000000000000000000000000000000FFFF0A000001208D".hexToByteArray())
+        assertEquals(0, addr2.time)
+        assertEquals("10.0.0.1", addr2.ip)
+        assertEquals(8333.toShort(), addr2.port)
+    }
+
 }

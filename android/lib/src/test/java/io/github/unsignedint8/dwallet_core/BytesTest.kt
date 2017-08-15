@@ -27,6 +27,6 @@ class BytesTest {
 
     @Test
     fun testInt16BE() {
-        assertArrayEquals("0400".hexToByteArray(), 1024.toShort().toInt16BEBytes())
+        assertArrayEquals("208D".hexToByteArray(), 8333.toShort().toInt16BEBytes())
     }
 }
