@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core.utils
+package io.github.unsignedint8.dwallet_core.crypto
 
 import java.security.MessageDigest
 

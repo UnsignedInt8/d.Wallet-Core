@@ -1,7 +1,7 @@
 package io.github.unsignedint8.dwallet_core
 
+import io.github.unsignedint8.dwallet_core.crypto.sha256
 import io.github.unsignedint8.dwallet_core.extensions.*
-import io.github.unsignedint8.dwallet_core.utils.*
 import org.junit.Test
 import org.junit.Assert.*
 

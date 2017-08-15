@@ -14,10 +14,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        launch(CommonPool) {
+        launch(Unconfined) {
             repeat(100) { i ->
+                println("      'Unconfined': I'm working in thread ${Thread.currentThread().name}")
                 Log.d("repeat", "$i ")
-                delay(100)
+                delay(1000)
             }
         }
 
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
             val result = ex.connect("baidu.com", 80)
             Log.d("async",  "$result connected")
         }
+
 
         println(generateKeyPair())
     }
