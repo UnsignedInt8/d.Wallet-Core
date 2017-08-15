@@ -7,6 +7,8 @@ import java.nio.ByteOrder
  * Created by unsignedint8 on 8/14/17.
  */
 
+fun ByteArray.sliceArray(start: Int, end: Int = this.size) = sliceArray(IntRange(start, end - 1))
+
 // https://gist.github.com/fabiomsr/845664a9c7e92bafb6fb0ca70d4e44fd
 
 val HEX_CHARS = "0123456789abcdef".toCharArray()
