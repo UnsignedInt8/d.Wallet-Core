@@ -1,6 +1,7 @@
 package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.*
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
@@ -33,6 +34,17 @@ class MessageTests {
         assertEquals(0, addr2.time)
         assertEquals("10.0.0.1", addr2.ip)
         assertEquals(8333.toShort(), addr2.port)
+
+    }
+
+    @Test
+    fun testVersion() {
+        val service = byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0)
+        val netaddr = NetworkAddress("::1", 8333, service)
+        netaddr.version = 60002
+
+        val ver = Version(60002, byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0), 1355854353, netaddr, netaddr, 7284544412836901000, "/Satoshi:0.7.2/", 212672)
+        println(ver.toBytes().toHexString())
     }
 
 }

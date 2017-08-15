@@ -25,7 +25,8 @@ class NetworkAddress(val ip: String, val port: Short, val services: ByteArray = 
         val inetAddr = InetAddress.getByName(ip)
         val addr = if (inetAddr.address.size == 4) "00000000000000000000FFFF".hexToByteArray() + inetAddr.address else inetAddr.address
 
-        return time.toInt32LEBytes() + services + addr + port.toInt16BEBytes()
+        return (if (version >= 70001) time.toInt32LEBytes() else ByteArray(0)) + services + addr + port.toInt16BEBytes()
     }
 
+    var version = 70001
 }
