@@ -1,11 +1,7 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol
 
-import io.github.unsignedint8.dwallet_core.crypto.hash256
-import io.github.unsignedint8.dwallet_core.crypto.sha256
-import io.github.unsignedint8.dwallet_core.extensions.readInt32LE
-import io.github.unsignedint8.dwallet_core.extensions.sliceArray
-import io.github.unsignedint8.dwallet_core.extensions.toHexString
-import java.nio.ByteBuffer
+import io.github.unsignedint8.dwallet_core.crypto.*
+import io.github.unsignedint8.dwallet_core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/15/17.
@@ -39,7 +35,7 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
 
     constructor(magic: ByteArray, command: String, length: Int, checksum: ByteArray, payload: ByteArray) : this(
             magic,
-            command.toByteArray().plus(kotlin.ByteArray(12 - command.length)),
+            command.toByteArray().plus(ByteArray(12 - command.length)),
             length,
             checksum,
             payload)

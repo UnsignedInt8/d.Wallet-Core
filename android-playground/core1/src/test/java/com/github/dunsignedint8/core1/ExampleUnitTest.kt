@@ -3,6 +3,8 @@ package com.github.dunsignedint8.core1
 import org.junit.Test
 
 import org.junit.Assert.*
+import java.net.Inet6Address
+import java.net.InetAddress
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -23,10 +25,24 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun testKeyPair(){
+    fun testKeyPair() {
         val pair = generateKeyPair()
         println(pair)
         println(pair?.private ?: "")
         println(pair?.public ?: "")
+    }
+
+
+    @Test
+    fun testInetAddr() {
+        val addr = InetAddress.getByName("::1")
+        println(addr.hostAddress)
+        println(addr.address.size)
+
+        val addr6 = Inet6Address.getByName("::ffff:a00:1")
+        println(addr6.hostAddress)
+        println(addr6.address.size)
+
+
     }
 }

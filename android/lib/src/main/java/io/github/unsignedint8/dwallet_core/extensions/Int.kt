@@ -31,3 +31,15 @@ fun Int.toVarIntBytes(): ByteArray {
     number.writeInt32LE(this, 4)
     return byteArrayOf(0xff.toByte()) + number
 }
+
+fun Int.toInt32LEBytes(): ByteArray {
+    val data = ByteArray(4)
+    data.writeInt32LE(this)
+    return data
+}
+
+fun Int.toInt32BEBytes(): ByteArray {
+    val data = ByteArray(4)
+    data.writeInt32BE(this)
+    return data
+}
