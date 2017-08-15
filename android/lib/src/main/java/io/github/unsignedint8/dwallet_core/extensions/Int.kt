@@ -7,7 +7,6 @@ package io.github.unsignedint8.dwallet_core.extensions
 fun Int.toVarIntBytes(): ByteArray {
 
     when {
-
         this < 0xfd -> {
             return byteArrayOf(this.toByte())
         }
@@ -23,12 +22,9 @@ fun Int.toVarIntBytes(): ByteArray {
             number.writeInt32LE(this)
             return byteArrayOf(0xfe.toByte()) + number
         }
-
     }
 
-    val number = ByteArray(8)
-    number.writeInt32LE((this / 0x100000000).toInt())
-    number.writeInt32LE(this, 4)
+    val number = this.toShort().toInt16LEBytes() + ByteArray(6)
     return byteArrayOf(0xff.toByte()) + number
 }
 
