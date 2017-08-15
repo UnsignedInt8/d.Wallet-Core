@@ -4,6 +4,8 @@ package io.github.unsignedint8.dwallet_core.extensions
  * Created by unsignedint8 on 8/14/17.
  */
 
+// https://gist.github.com/fabiomsr/845664a9c7e92bafb6fb0ca70d4e44fd
+
 private val HEX_CHARS = "0123456789abcdef".toCharArray()
 
 fun ByteArray.toHexString(): String {
@@ -18,4 +20,19 @@ fun ByteArray.toHexString(): String {
     }
 
     return result.toString()
+}
+
+fun String.hexToByteArray(): ByteArray {
+    val data = if (startsWith("0x", true)) this.substring(2) else this
+    val result = ByteArray(data.length / 2)
+
+    for (i in 0 until data.length step 2) {
+        val firstIndex = HEX_CHARS.indexOf(data[i])
+        val secondIndex = HEX_CHARS.indexOf(data[i + 1])
+
+        val octet = firstIndex.shl(4).or(secondIndex)
+        result[i.shr(1)] = octet.toByte()
+    }
+
+    return result
 }
