@@ -20,5 +20,6 @@ fun String.hexToByteArray(): ByteArray {
 }
 
 fun String.toVarBytes(charset: Charset = Charset.defaultCharset()) {
+
     this.toByteArray(charset)
 }

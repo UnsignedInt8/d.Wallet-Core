@@ -39,6 +39,8 @@ fun ByteArray.writeInt32BE(n: Int, offset: Int = 0) = ByteBuffer.wrap(this).orde
 
 fun ByteArray.readInt64LE(offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.LITTLE_ENDIAN).getLong(offset)
 fun ByteArray.readInt64BE(offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.BIG_ENDIAN).getLong(offset)
+fun ByteArray.writeInt64LE(n: Long, offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.LITTLE_ENDIAN).putLong(offset, n)
+fun ByteArray.writeInt64BE(n: Long, offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.BIG_ENDIAN).putLong(offset, n)
 
 fun ByteArray.toVarStringOffsetLength(): Pair<Int, Long> {
     val buffer = ByteBuffer.wrap(this)

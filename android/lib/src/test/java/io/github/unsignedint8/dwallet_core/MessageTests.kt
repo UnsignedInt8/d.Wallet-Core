@@ -1,10 +1,7 @@
 package io.github.unsignedint8.dwallet_core
 
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.Message
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.NetworkAddress
-import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
-import io.github.unsignedint8.dwallet_core.extensions.sliceArray
-import io.github.unsignedint8.dwallet_core.extensions.toHexString
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.*
+import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
 
