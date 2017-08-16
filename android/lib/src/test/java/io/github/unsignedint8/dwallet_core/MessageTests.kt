@@ -45,7 +45,7 @@ class MessageTests {
     @Test
     fun testVersion() {
         val service = byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0)
-        val netaddr = NetworkAddress("0.0.0.0", 0, service)
+        val netaddr = NetworkAddress("0.0.0.0", 0, service, addTimestamp = false)
 
         val ver = Version(60002, byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0), 1355854353, netaddr, netaddr, 7284544412836900411, "/Satoshi:0.7.2/", 212672)
         assertEquals(60002, ver.version)
@@ -59,6 +59,10 @@ class MessageTests {
 
         val verack = Message(Message.Magic.Bitcoin.main, "verack", ByteArray(0))
         assertEquals("5DF6E0E2", verack.checksum.toHexString().toUpperCase())
+
+
+        val ver2 = Version.fromBytes("62ea0000010000000000000011b2d0500000000098b29359010000000000000000000000000000000000ffff00000000000098b29359010000000000000000000000000000000000ffff0000000000003b2eb35d8ce617650f2f5361746f7368693a302e372e322fc03e0300".hexToByteArray())
+        println(ver2)
     }
 
     @Test

@@ -31,6 +31,8 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
 
             return Message(magic, command, length, checksum, payload)
         }
+
+        const val standardSize = 24
     }
 
     constructor(magic: ByteArray, command: String, length: Int, checksum: ByteArray, payload: ByteArray) : this(

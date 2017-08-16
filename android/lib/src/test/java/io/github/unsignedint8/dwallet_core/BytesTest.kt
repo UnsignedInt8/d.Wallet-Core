@@ -33,8 +33,8 @@ class BytesTest {
     @Test
     fun testVarString() {
         val varbytes = "/Satoshi:0.7.2/".toVarBytes()
-        println(varbytes.toHexString())
 
         assertArrayEquals("0F2F5361746F7368693A302E372E322F".hexToByteArray(), varbytes)
+        assertEquals("/Satoshi:0.7.2/", "0F2F5361746F7368693A302E372E322F".hexToByteArray().readVarString())
     }
 }

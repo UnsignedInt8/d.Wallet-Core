@@ -14,6 +14,8 @@ class Addr(val addrs: List<NetworkAddress>) {
             val addrs = bytes.readVarList { NetworkAddress.fromBytes2(it) }
             return Addr(addrs)
         }
+
+        val text = "addr"
     }
 
     val count = addrs.size

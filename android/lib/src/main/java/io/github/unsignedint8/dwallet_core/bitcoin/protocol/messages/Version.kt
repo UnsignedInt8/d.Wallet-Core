@@ -1,7 +1,6 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages
 
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.*
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.NetworkAddress
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 
 /**
@@ -9,6 +8,24 @@ import io.github.unsignedint8.dwallet_core.extensions.*
  */
 
 class Version(val version: Int = 70001, val services: ByteArray = ByteArray(8), val timestamp: Long = System.currentTimeMillis() / 1000, val toAddr: NetworkAddress, val fromAddr: NetworkAddress, val nonce: Long, val ua: String, val startHeight: Int, val relay: Boolean = false) {
+
+    companion object {
+        fun fromBytes(bytes: ByteArray): Version {
+            val version = bytes.readInt32LE(0)
+            val services = bytes.sliceArray(4, 12)
+            val timestamp = bytes.readInt64LE(12)
+            val toAddr = NetworkAddress.fromBytes(bytes.sliceArray(16, 16 + NetworkAddress.specifiedSize - 4), false)
+            val fromAddr = NetworkAddress.fromBytes(bytes.sliceArray(42, 46 + NetworkAddress.specifiedSize - 4), false)
+            val nonce = bytes.readInt64LE(72)
+            val uaSize = bytes.sliceArray(80).readVarStringOffsetLength()
+            val ua = bytes.sliceArray(80).readVarString()
+            val startHeight = bytes.readInt32LE((80 + uaSize.first + uaSize.second).toInt())
+
+            return Version(version, services, timestamp, toAddr, fromAddr, nonce, ua, startHeight)
+        }
+
+        val text = "version"
+    }
 
     fun toBytes() = version.toInt32LEBytes() +
             services +

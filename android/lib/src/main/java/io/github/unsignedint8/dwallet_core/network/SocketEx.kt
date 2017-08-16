@@ -24,24 +24,29 @@ class SocketEx : Socket() {
         return false
     }
 
-    suspend fun connectAsync(host: String, port: Int, timeout: Int = Int.MAX_VALUE): Deferred<Boolean> {
-        return async(CommonPool) { connect(host, port, timeout) }
-    }
+    suspend fun connectAsync(host: String, port: Int, timeout: Int = Int.MAX_VALUE) = async(CommonPool) { connect(host, port, timeout) }
 
     fun read(size: Int = DEFAULT_BUFFER_SIZE): ByteArray {
-        return this.inputStream.readBytes(size)
+        val data = ByteArray(size)
+        val readBytes = inputStream.read(data)
+
+        return data.take(readBytes).toByteArray()
     }
 
-    suspend fun readAsync(size: Int = DEFAULT_BUFFER_SIZE): Deferred<ByteArray> {
-        return async(CommonPool) { read(size) }
-    }
+    suspend fun readAsync(size: Int = DEFAULT_BUFFER_SIZE) = async(CommonPool) { read(size) }
 
     fun write(data: ByteArray): Int {
-        this.outputStream.write(data)
-        return data.size
+        lastException = null
+
+        return try {
+            this.outputStream.write(data)
+            this.outputStream.flush()
+            data.size
+        } catch (e: Exception) {
+            lastException = e
+            0
+        }
     }
 
-    fun writeAsync(data: ByteArray): Deferred<Int> {
-        return async(CommonPool) { write(data) }
-    }
+    fun writeAsync(data: ByteArray) = async(CommonPool) { write(data) }
 }
