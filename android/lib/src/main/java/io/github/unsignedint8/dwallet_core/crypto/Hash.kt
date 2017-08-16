@@ -16,12 +16,12 @@ fun hash256(data: ByteArray) = sha256(sha256(data))
  */
 fun murmurHash3(seed: Int, data: ByteArray): Int {
 
-    var c1 = 0xcc9e2d51.toInt()
-    var c2 = 0x1b873593
-    var r1 = 15
-    var r2 = 13
-    var m = 5
-    var n = 0x6b64e654
+    val c1 = 0xcc9e2d51.toInt()
+    val c2 = 0x1b873593
+    val r1 = 15
+    val r2 = 13
+    val m = 5
+    val n = 0x6b64e654
 
     var hash = seed
 
@@ -39,7 +39,8 @@ fun murmurHash3(seed: Int, data: ByteArray): Int {
 
     var k1 = 0
 
-    for (i in 0..data.size step 4) {
+    var i = 0
+    while (i + 4 <= data.size) {
         k1 = (data[i] or
                 (data[i + 1].toInt() shl 8).toByte() or
                 (data[i + 2].toInt() shl 16).toByte() or
@@ -53,22 +54,23 @@ fun murmurHash3(seed: Int, data: ByteArray): Int {
         hash = rotl32(hash, r2)
         hash = mul32(hash, m)
         hash = sum32(hash, n)
+
+        i += 4
     }
 
     k1 = 0
 
     val bit = data.size and 3
-    val i = data.size / 4 * 4
 
-    if (bit <= 3) {
+    if (bit in 1..3) {
         k1 = k1 xor (data[i + 2].toInt() shl 16)
     }
 
-    if (bit <= 2) {
+    if (bit in 1..2) {
         k1 = k1 xor (data[i + 1].toInt() shl 8)
     }
 
-    if (bit <= 1) {
+    if (bit == 1) {
         k1 = k1 xor data[i].toInt()
         k1 = mul32(k1, c1)
         k1 = rotl32(k1, r1)
