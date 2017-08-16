@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core.bitcoin.protocol
+package io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures
 
 import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
@@ -11,15 +11,15 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
 
     companion object Magic {
         object Bitcoin {
-            const val main = 0xD9B4BEF9
-            const val testnet = 0xDAB5BFFA
-            const val regtest = 0xDAB5BFFA
+            const val main = 0xD9B4BEF9.toInt()
+            const val testnet = 0xDAB5BFFA.toInt()
+            const val regtest = 0xDAB5BFFA.toInt()
             const val testnet3 = 0x0709110B
         }
 
         object Litecoin {
-            const val main = 0xFBC0B6DB
-            const val testnet = 0xFCC1B7DC
+            const val main = 0xFBC0B6DB.toInt()
+            const val testnet = 0xFCC1B7DC.toInt()
         }
 
         fun fromBytes(bytes: ByteArray): Message {
@@ -40,12 +40,14 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
             checksum,
             payload)
 
-    constructor(magic: String, command: String, payload: ByteArray) : this(
-            magic.toByteArray(),
+    constructor(magic: ByteArray, command: String, payload: ByteArray) : this(
+            magic,
             command.toByteArray().plus(ByteArray(12 - command.length)),
             payload.size,
             hash256(payload).take(4).toByteArray(),
             payload)
 
     val command: String = String(command.takeWhile { it != 0.toByte() }.toByteArray())
+
+    fun toBytes() = magic + command.toByteArray().plus(ByteArray(12 - command.length)) + length.toInt32LEBytes() + checksum + payload
 }

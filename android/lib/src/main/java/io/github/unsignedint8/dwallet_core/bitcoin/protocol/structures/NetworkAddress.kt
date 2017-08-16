@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core.bitcoin.protocol
+package io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures
 
 /**
  * Created by unsignedint8 on 8/15/17.

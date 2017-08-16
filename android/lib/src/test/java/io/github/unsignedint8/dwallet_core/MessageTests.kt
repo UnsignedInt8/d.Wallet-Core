@@ -2,6 +2,8 @@ package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.Message
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.NetworkAddress
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
@@ -13,7 +15,7 @@ import org.junit.Assert.*
 class MessageTests {
     @Test
     fun testMagics() {
-        assertEquals(0xD9B4BEF9, Message.Magic.Bitcoin.main)
+        assertArrayEquals(0xD9B4BEF9.toInt64LEBytes().take(4).toByteArray(), Message.Magic.Bitcoin.main.toInt32LEBytes())
     }
 
     @Test
@@ -23,6 +25,11 @@ class MessageTests {
         assertEquals("version", msg.command)
         assertArrayEquals("f9beb4d9".hexToByteArray(), msg.magic)
         assertArrayEquals("3b648d5a".hexToByteArray(), msg.checksum)
+
+        val mmm = Message(Message.Magic.Bitcoin.main.toInt32LEBytes(), "version", msg.payload)
+        assertEquals("3b648d5a", mmm.checksum.toHexString())
+        assertEquals(100, mmm.length)
+        assertArrayEquals(raw, mmm.toBytes())
     }
 
     @Test
@@ -40,11 +47,13 @@ class MessageTests {
     @Test
     fun testVersion() {
         val service = byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0)
-        val netaddr = NetworkAddress("::1", 8333, service)
+        val netaddr = NetworkAddress("0.0.0.0", 0, service)
         netaddr.version = 60002
 
-        val ver = Version(60002, byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0), 1355854353, netaddr, netaddr, 7284544412836901000, "/Satoshi:0.7.2/", 212672)
-        println(ver.toBytes().toHexString())
+        val ver = Version(60002, byteArrayOf(1, 0, 0, 0, 0, 0, 0, 0), 1355854353, netaddr, netaddr, 7284544412836900411, "/Satoshi:0.7.2/", 212672)
+        assertEquals(60002, ver.version)
+        assertEquals(true, ver.isFullNode)
+        assertArrayEquals("62EA0000010000000000000011B2D05000000000010000000000000000000000000000000000FFFF000000000000010000000000000000000000000000000000FFFF0000000000003B2EB35D8CE617650F2F5361746F7368693A302E372E322FC03E0300".hexToByteArray(), ver.toBytes())
     }
 
 }
