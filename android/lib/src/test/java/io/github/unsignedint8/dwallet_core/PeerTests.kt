@@ -32,7 +32,7 @@ class PeerTests {
         s.writeAsync(m3.toBytes()).await()
         val data = s.readAsync().await()
 
-        val m4 = Message.fromBytes(data)
+        val m4 = Message.fromBytes(data!!)
         val v4 = Version.fromBytes(m4.payload)
         assert(v4.ua.contains("satoshi", ignoreCase = true))
     }

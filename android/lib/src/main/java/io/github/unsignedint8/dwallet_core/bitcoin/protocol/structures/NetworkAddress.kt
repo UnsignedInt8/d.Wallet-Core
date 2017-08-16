@@ -28,10 +28,10 @@ class NetworkAddress(val ip: String, val port: Short, val services: ByteArray = 
         }
 
         fun fromBytes2(bytes: ByteArray): Pair<NetworkAddress, Int> {
-            return Pair(fromBytes(bytes), specifiedSize)
+            return Pair(fromBytes(bytes), standardSize)
         }
 
-        const val specifiedSize = 30
+        const val standardSize = 30
     }
 
     fun toBytes(): ByteArray {

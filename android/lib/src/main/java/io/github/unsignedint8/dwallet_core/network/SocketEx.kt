@@ -30,7 +30,7 @@ class SocketEx : Socket() {
 
     fun read(size: Int = DEFAULT_BUFFER_SIZE): ByteArray? {
         lastException = null
-        
+
         return try {
             val data = ByteArray(size)
             val readBytes = inputStream.read(data)

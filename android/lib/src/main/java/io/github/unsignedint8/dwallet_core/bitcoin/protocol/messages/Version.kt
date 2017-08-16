@@ -14,14 +14,15 @@ class Version(val version: Int = 70001, val services: ByteArray = ByteArray(8), 
             val version = bytes.readInt32LE(0)
             val services = bytes.sliceArray(4, 12)
             val timestamp = bytes.readInt64LE(12)
-            val toAddr = NetworkAddress.fromBytes(bytes.sliceArray(16, 16 + NetworkAddress.specifiedSize - 4), false)
-            val fromAddr = NetworkAddress.fromBytes(bytes.sliceArray(42, 46 + NetworkAddress.specifiedSize - 4), false)
+            val toAddr = NetworkAddress.fromBytes(bytes.sliceArray(16, 16 + NetworkAddress.standardSize - 4), false)
+            val fromAddr = NetworkAddress.fromBytes(bytes.sliceArray(42, 46 + NetworkAddress.standardSize - 4), false)
             val nonce = bytes.readInt64LE(72)
             val uaSize = bytes.sliceArray(80).readVarStringOffsetLength()
             val ua = bytes.sliceArray(80).readVarString()
             val startHeight = bytes.readInt32LE((80 + uaSize.first + uaSize.second).toInt())
+            val relay = if (version >= 70001) bytes[bytes.lastIndex] == 1.toByte() else false
 
-            return Version(version, services, timestamp, toAddr, fromAddr, nonce, ua, startHeight)
+            return Version(version, services, timestamp, toAddr, fromAddr, nonce, ua, startHeight, relay)
         }
 
         val text = "version"

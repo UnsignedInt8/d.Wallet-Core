@@ -60,9 +60,6 @@ class MessageTests {
         val verack = Message(Message.Magic.Bitcoin.main, "verack", ByteArray(0))
         assertEquals("5DF6E0E2", verack.checksum.toHexString().toUpperCase())
 
-
-        val ver2 = Version.fromBytes("62ea0000010000000000000011b2d0500000000098b29359010000000000000000000000000000000000ffff00000000000098b29359010000000000000000000000000000000000ffff0000000000003b2eb35d8ce617650f2f5361746f7368693a302e372e322fc03e0300".hexToByteArray())
-        println(ver2)
     }
 
     @Test
