@@ -13,6 +13,8 @@ class SocketEx : Socket() {
     var lastException: Exception? = null
 
     fun connect(host: String, port: Int, timeout: Int = Int.MAX_VALUE): Boolean {
+        lastException = null
+
         try {
             super.connect(InetSocketAddress(host, port), timeout)
             lastException = null
@@ -26,11 +28,17 @@ class SocketEx : Socket() {
 
     suspend fun connectAsync(host: String, port: Int, timeout: Int = Int.MAX_VALUE) = async(CommonPool) { connect(host, port, timeout) }
 
-    fun read(size: Int = DEFAULT_BUFFER_SIZE): ByteArray {
-        val data = ByteArray(size)
-        val readBytes = inputStream.read(data)
-
-        return data.take(readBytes).toByteArray()
+    fun read(size: Int = DEFAULT_BUFFER_SIZE): ByteArray? {
+        lastException = null
+        
+        return try {
+            val data = ByteArray(size)
+            val readBytes = inputStream.read(data)
+            data.take(readBytes).toByteArray()
+        }catch (e: Exception){
+            lastException = e
+            null
+        }
     }
 
     suspend fun readAsync(size: Int = DEFAULT_BUFFER_SIZE) = async(CommonPool) { read(size) }
