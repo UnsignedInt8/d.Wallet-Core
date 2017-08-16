@@ -47,6 +47,8 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
             hash256(payload).take(4).toByteArray(),
             payload)
 
+    constructor(magic: Int, command: String, payload: ByteArray): this(magic.toInt32LEBytes(), command, payload)
+
     val command: String = String(command.takeWhile { it != 0.toByte() }.toByteArray())
 
     fun toBytes() = magic + command.toByteArray().plus(ByteArray(12 - command.length)) + length.toInt32LEBytes() + checksum + payload

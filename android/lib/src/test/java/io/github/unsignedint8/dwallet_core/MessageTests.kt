@@ -1,9 +1,7 @@
 package io.github.unsignedint8.dwallet_core
 
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.Message
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.NetworkAddress
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
@@ -54,6 +52,14 @@ class MessageTests {
         assertEquals(60002, ver.version)
         assertEquals(true, ver.isFullNode)
         assertArrayEquals("62EA0000010000000000000011B2D05000000000010000000000000000000000000000000000FFFF000000000000010000000000000000000000000000000000FFFF0000000000003B2EB35D8CE617650F2F5361746F7368693A302E372E322FC03E0300".hexToByteArray(), ver.toBytes())
+
+        val msg = Message(Message.Magic.Bitcoin.main, "version", ver.toBytes())
+        assertEquals(100, msg.length)
+        assertEquals(124, msg.toBytes().size)
+        assertArrayEquals("3B648D5A".hexToByteArray(), msg.checksum)
+
+        val verack = Message(Message.Magic.Bitcoin.main, "verack", ByteArray(0))
+        assertEquals("5DF6E0E2", verack.checksum.toHexString().toUpperCase())
     }
 
 }
