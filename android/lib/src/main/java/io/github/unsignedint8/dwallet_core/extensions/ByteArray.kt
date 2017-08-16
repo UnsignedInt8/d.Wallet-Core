@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core.extensions
 
+import kotlin.*
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -42,10 +43,38 @@ fun ByteArray.readInt64BE(offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrd
 fun ByteArray.writeInt64LE(n: Long, offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.LITTLE_ENDIAN).putLong(offset, n)
 fun ByteArray.writeInt64BE(n: Long, offset: Int = 0) = ByteBuffer.wrap(this).order(ByteOrder.BIG_ENDIAN).putLong(offset, n)
 
-fun ByteArray.toVarStringOffsetLength(): Pair<Int, Long> {
-    val buffer = ByteBuffer.wrap(this)
-    buffer[0].toInt()
+/**
+ * read the real value and size of it + tag
+ */
+fun ByteArray.readVarIntValueSize(): Pair<Long, Long> {
+    val tag = this[0].toInt()
+    var value: Long = tag.toLong()
+    var size: Long = 1
 
+    when (tag) {
+        0xfd -> {
+            value = this.readInt16LE(1).toLong()
+            size += 2
+        }
+
+        0xfe -> {
+            value = this.readInt32LE(1).toLong()
+            size += 4
+        }
+
+        0xff -> {
+            value = this.readInt64LE(1)
+            size += 8
+        }
+    }
+
+    return Pair(value, size)
+}
+
+/**
+ * return the start offset of string, and length of it
+ */
+fun ByteArray.readVarStringOffsetLength(): Pair<Int, Long> {
     var offset = 1
     var length: Long = this[0].toLong()
     val tag = this[0].toInt()
@@ -74,7 +103,23 @@ fun ByteArray.toVarStringOffsetLength(): Pair<Int, Long> {
     return Pair(offset, length)
 }
 
-fun ByteArray.toVarString(): String {
-    val (offset, len) = toVarStringOffsetLength()
+fun ByteArray.readVarString(): String {
+    val (offset, len) = readVarStringOffsetLength()
     return String(this, offset, len.toInt())
+}
+
+fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>): List<T> {
+    var (value, offset) = readVarIntValueSize()
+    var data = this.sliceArray(offset.toInt())
+    val list = mutableListOf<T>()
+
+    kotlin.repeat(value.toInt()) {
+        val (obj, length) = deserializer(data)
+        offset += length
+        data = this.sliceArray(offset.toInt())
+
+        list.add(obj)
+    }
+
+    return list
 }
