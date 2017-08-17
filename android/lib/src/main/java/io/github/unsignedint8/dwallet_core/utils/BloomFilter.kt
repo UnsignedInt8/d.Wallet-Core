@@ -1,9 +1,7 @@
 package io.github.unsignedint8.dwallet_core.utils
 
-import io.github.unsignedint8.dwallet_core.crypto.murmurHash3
-import io.github.unsignedint8.dwallet_core.extensions.toHexString
-import io.github.unsignedint8.dwallet_core.extensions.toInt32BEBytes
-import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
+import io.github.unsignedint8.dwallet_core.crypto.*
+import io.github.unsignedint8.dwallet_core.extensions.*
 import java.math.BigInteger
 import kotlin.experimental.*
 
@@ -54,11 +52,9 @@ class BloomFilter private constructor(var data: ByteArray, val nHashFuncs: Int, 
         }
     }
 
-    fun hash(dataToHash: ByteArray, nHashFuncs: Int): Int {
+    private fun hash(dataToHash: ByteArray, nHashFuncs: Int): Int {
         val hash = murmurHash3((nHashFuncs * 0xFBA4C795.toInt() + nTweak) and 0xFFFFFFFF.toInt(), dataToHash)
-
         val result = hash.mod(BigInteger.valueOf((this.data.size * 8).toLong()))// hash % (this.data.size * 8)
-        println("${hash.toInt().toInt32LEBytes().toHexString()} ${result.toInt()}")
         return result.toInt()
     }
 

@@ -52,7 +52,7 @@ class HashTests {
         }
 
         val h = murmurHash3(0, "99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())
-        assertEquals(683397288, h)
+        assertEquals(683397288, h.toInt())
     }
 
     // test data from bitcoind

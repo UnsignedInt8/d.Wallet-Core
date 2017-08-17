@@ -7,7 +7,7 @@ import java.math.BigInteger
  */
 
 private fun Byte.toBigInteger(): BigInteger {
-    val unsigned = (if (this < 0) 256 + this.toInt() else this.toInt())
+    val unsigned = (if (this < 0) 256 + this.toInt() else this.toInt()) // why can't java have unsigned type!!!??? miaow miaow miaow???
     return BigInteger.valueOf(unsigned.toLong())
 }
 
@@ -46,7 +46,6 @@ fun murmurHash3(seed: Int, data: ByteArray): BigInteger {
     var i = 0
     while (i + 4 <= data.size) {
 
-//        k1 = BigInteger.valueOf((data[i].toInt() or (data[i + 1].toInt() shl 8) or (data[i + 2].toInt() shl 16) or (data[i + 3].toInt() shl 24)).toLong())
         k1 = BigInteger.valueOf(data[i].toBigInteger().or(data[i + 1].toBigInteger().shiftLeft(8)).or(data[i + 2].toBigInteger().shiftLeft(16)).or(data[i + 3].toBigInteger().shiftLeft(24)).toInt().toLong())
 
         k1 = mul32(k1, c1)
