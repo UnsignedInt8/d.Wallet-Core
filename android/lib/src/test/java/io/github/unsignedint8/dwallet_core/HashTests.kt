@@ -30,11 +30,11 @@ class HashTests {
     @Test
     fun testMurmurhash() {
         val cases = arrayOf(
-//                Triple(0x00000000.toInt(), 0x00000000.toInt(), byteArrayOf()),
-//                Triple(0x6a396f08.toInt(), 0xFBA4C795.toInt(), byteArrayOf()),
-//                Triple(0x81f16f39.toInt(), 0xffffffff.toInt(), byteArrayOf()),
-//                Triple(0x514e28b7.toInt(), 0x00000000.toInt(), byteArrayOf(0x00)),
-//                Triple(0xea3f0b17.toInt(), 0xFBA4C795.toInt(), byteArrayOf(0x00)),
+                Triple(0x00000000.toInt(), 0x00000000.toInt(), byteArrayOf()),
+                Triple(0x6a396f08.toInt(), 0xFBA4C795.toInt(), byteArrayOf()),
+                Triple(0x81f16f39.toInt(), 0xffffffff.toInt(), byteArrayOf()),
+                Triple(0x514e28b7.toInt(), 0x00000000.toInt(), byteArrayOf(0x00)),
+                Triple(0xea3f0b17.toInt(), 0xFBA4C795.toInt(), byteArrayOf(0x00)),
                 Triple(0xfd6cf10d.toInt(), 0x00000000.toInt(), byteArrayOf(0xff.toByte())),
                 Triple(0x16c6b7ab.toInt(), 0x00000000.toInt(), byteArrayOf(0x00, 0x11)),
                 Triple(0x8eb51c3d.toInt(), 0x00000000.toInt(), byteArrayOf(0x00, 0x11, 0x22)),
@@ -47,8 +47,9 @@ class HashTests {
         )
 
         cases.forEach {
-            println(it.first.toInt32LEBytes().toHexString())
-            println(murmurHash3(it.second, it.third).toInt().toInt32LEBytes().toHexString())
+//            println(it.first.toInt32LEBytes().toHexString())
+//            println(murmurHash3(it.second, it.third).toInt().toInt32LEBytes().toHexString())
+            assertEquals(it.first, murmurHash3(it.second, it.third).toInt())
         }
     }
 }
