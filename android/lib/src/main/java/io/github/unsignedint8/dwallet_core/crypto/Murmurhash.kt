@@ -18,7 +18,7 @@ private fun BigInteger.unShiftRight(n: Int): BigInteger {
 /**
  * source from https://github.com/bitpay/bloom-filter/blob/master/lib/murmurhash3.js
  */
-fun murmurHash3(seed: Int, data: ByteArray): Int {
+fun murmurHash3(seed: Int, data: ByteArray): BigInteger {
 
     val c1 = BigInteger.valueOf(0xcc9e2d51)
     val c2 = BigInteger.valueOf(0x1b873593)
@@ -46,7 +46,8 @@ fun murmurHash3(seed: Int, data: ByteArray): Int {
     var i = 0
     while (i + 4 <= data.size) {
 
-        k1 = BigInteger.valueOf((data[i].toInt() or (data[i + 1].toInt() shl 8) or (data[i + 2].toInt() shl 16) or (data[i + 3].toInt() shl 24)).toLong())
+//        k1 = BigInteger.valueOf((data[i].toInt() or (data[i + 1].toInt() shl 8) or (data[i + 2].toInt() shl 16) or (data[i + 3].toInt() shl 24)).toLong())
+        k1 = BigInteger.valueOf(data[i].toBigInteger().or(data[i + 1].toBigInteger().shiftLeft(8)).or(data[i + 2].toBigInteger().shiftLeft(16)).or(data[i + 3].toBigInteger().shiftLeft(24)).toInt().toLong())
 
         k1 = mul32(k1, c1)
         k1 = rotl32(k1.toInt(), r1.toInt())
@@ -87,5 +88,5 @@ fun murmurHash3(seed: Int, data: ByteArray): Int {
     hash = mul32(hash, BigInteger.valueOf(0xc2b2ae35))
     hash = hash.xor(hash.unShiftRight(16))
 
-    return (if (hash >= BigInteger.ZERO) hash else hash.add(BigInteger.valueOf(4294967296))).toInt()
+    return if (hash >= BigInteger.ZERO) hash else hash.add(BigInteger.valueOf(4294967296))
 }

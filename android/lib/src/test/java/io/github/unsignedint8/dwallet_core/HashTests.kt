@@ -48,10 +48,11 @@ class HashTests {
         )
 
         cases.forEach {
-            //            println(it.first.toInt32LEBytes().toHexString())
-//            println(murmurHash3(it.second, it.third).toInt().toInt32LEBytes().toHexString())
             assertEquals(it.first, murmurHash3(it.second, it.third).toInt())
         }
+
+        val h = murmurHash3(0, "99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())
+        assertEquals(683397288, h)
     }
 
     // test data from bitcoind
@@ -96,5 +97,23 @@ class HashTests {
         assert(f.contains(c))
         f.insert(d)
         assert(f.contains(d))
+    }
+
+    @Test
+    fun testBloomFilterSerializeObjects() {
+        val f = BloomFilter.create(3, 0.01, 0, BloomFilter.BLOOM_UPDATE_ALL)
+
+        f.insert("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())
+        assert(f.contains("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()))
+//
+        assert(!f.contains("19108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()))
+//
+        f.insert("b5a2c786d9ef4658287ced5914b37a1b4aa32eee".hexToByteArray())
+        assert(f.contains("b5a2c786d9ef4658287ced5914b37a1b4aa32eee".hexToByteArray()))
+//
+        f.insert("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray())
+        assert(f.contains("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray()))
+
+        assertArrayEquals(byteArrayOf(97, 78, 155.toByte()), f.data)
     }
 }

@@ -1,6 +1,10 @@
 package io.github.unsignedint8.dwallet_core.utils
 
 import io.github.unsignedint8.dwallet_core.crypto.murmurHash3
+import io.github.unsignedint8.dwallet_core.extensions.toHexString
+import io.github.unsignedint8.dwallet_core.extensions.toInt32BEBytes
+import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
+import java.math.BigInteger
 import kotlin.experimental.*
 
 
@@ -50,17 +54,20 @@ class BloomFilter private constructor(var data: ByteArray, val nHashFuncs: Int, 
         }
     }
 
-    fun hash(data: ByteArray, nHashFuncs: Int): Int {
-        val hash = murmurHash3((nHashFuncs * 0xFBA4C795.toInt() + nTweak) and 0xFFFFFFFF.toInt(), data)
-        return hash % (data.size / 8)
+    fun hash(dataToHash: ByteArray, nHashFuncs: Int): Int {
+        val hash = murmurHash3((nHashFuncs * 0xFBA4C795.toInt() + nTweak) and 0xFFFFFFFF.toInt(), dataToHash)
+
+        val result = hash.mod(BigInteger.valueOf((this.data.size * 8).toLong()))// hash % (this.data.size * 8)
+        println("${hash.toInt().toInt32LEBytes().toHexString()} ${result.toInt()}")
+        return result.toInt()
     }
 
     fun insert(data: ByteArray) {
         kotlin.repeat(nHashFuncs) {
             val index = hash(data, it)
             val position = 1 shl (7 and index)
-            if (index shr 3 !in 0..data.size) return@repeat
-            this.data[index shr 3] = this.data[index shr 3] or position.toByte()
+            if (index shr 3 !in 0 until data.size) return@repeat
+            this.data[index shr 3] = (this.data[index shr 3].toInt() or position).toByte()
         }
     }
 
