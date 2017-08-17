@@ -3,6 +3,7 @@ package io.github.unsignedint8.dwallet_core
 import io.github.unsignedint8.dwallet_core.crypto.murmurHash3
 import io.github.unsignedint8.dwallet_core.crypto.sha256
 import io.github.unsignedint8.dwallet_core.extensions.*
+import io.github.unsignedint8.dwallet_core.utils.BloomFilter
 import org.junit.Test
 import org.junit.Assert.*
 
@@ -47,9 +48,53 @@ class HashTests {
         )
 
         cases.forEach {
-//            println(it.first.toInt32LEBytes().toHexString())
+            //            println(it.first.toInt32LEBytes().toHexString())
 //            println(murmurHash3(it.second, it.third).toInt().toInt32LEBytes().toHexString())
             assertEquals(it.first, murmurHash3(it.second, it.third).toInt())
         }
+    }
+
+    // test data from bitcoind
+    // see: https://github.com/bitcoin/bitcoin/blob/master/src/test/bloom_tests.cpp
+    val a = "99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()
+    var b = "19108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()
+    var c = "b5a2c786d9ef4658287ced5914b37a1b4aa32eee".hexToByteArray()
+    var d = "b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray()
+
+    @Test
+    fun testCreateBloomFilter() {
+        val f = BloomFilter.create(100, 0.1)
+        assert(f.data.isNotEmpty())
+        assert(f.nHashFuncs > 0)
+    }
+
+    @Test
+    fun testBloomFilterSize() {
+        val cases = arrayOf(
+                Triple(Pair(2, 0.001), 3, 8),
+                Triple(Pair(3, 0.01), 3, 5),
+                Triple(Pair(10, 0.2), 4, 2),
+                Triple(Pair(100, 0.2), 41, 2),
+                Triple(Pair(10000, 0.3), 3132, 1)
+        )
+
+        cases.forEach {
+            val f = BloomFilter.create(it.first.first, it.first.second)
+
+            assertEquals(it.second, f.data.size)
+            assertEquals(it.third, f.nHashFuncs)
+        }
+    }
+
+    @Test
+    fun testInsertingBloomFilter() {
+        val f = BloomFilter.create(3, 0.01)
+        f.insert(a)
+        assert(f.contains(a))
+        assert(!f.contains(b))
+        f.insert(c)
+        assert(f.contains(c))
+        f.insert(d)
+        assert(f.contains(d))
     }
 }

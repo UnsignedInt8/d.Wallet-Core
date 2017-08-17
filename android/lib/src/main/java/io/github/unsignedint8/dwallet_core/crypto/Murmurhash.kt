@@ -18,7 +18,7 @@ private fun BigInteger.unShiftRight(n: Int): BigInteger {
 /**
  * source from https://github.com/bitpay/bloom-filter/blob/master/lib/murmurhash3.js
  */
-fun murmurHash3(seed: Int, data: ByteArray): BigInteger {
+fun murmurHash3(seed: Int, data: ByteArray): Int {
 
     val c1 = BigInteger.valueOf(0xcc9e2d51)
     val c2 = BigInteger.valueOf(0x1b873593)
@@ -87,5 +87,5 @@ fun murmurHash3(seed: Int, data: ByteArray): BigInteger {
     hash = mul32(hash, BigInteger.valueOf(0xc2b2ae35))
     hash = hash.xor(hash.unShiftRight(16))
 
-    return if (hash >= BigInteger.ZERO) hash else hash.add(BigInteger.valueOf(4294967296))
+    return (if (hash >= BigInteger.ZERO) hash else hash.add(BigInteger.valueOf(4294967296))).toInt()
 }
