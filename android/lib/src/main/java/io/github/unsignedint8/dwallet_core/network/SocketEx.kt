@@ -34,8 +34,9 @@ class SocketEx : Socket() {
         return try {
             val data = ByteArray(size)
             val readBytes = inputStream.read(data)
+            if (readBytes == -1) return null
             data.take(readBytes).toByteArray()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             lastException = e
             null
         }

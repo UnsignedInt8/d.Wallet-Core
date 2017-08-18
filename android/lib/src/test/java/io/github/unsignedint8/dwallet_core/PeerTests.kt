@@ -1,7 +1,9 @@
 package io.github.unsignedint8.dwallet_core
 
+import io.github.unsignedint8.dwallet_core.bitcoin.p2p.Node
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.Version
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
+import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
 import io.github.unsignedint8.dwallet_core.network.*
 import kotlinx.coroutines.experimental.*
 import org.junit.Assert.*
@@ -32,5 +34,17 @@ class PeerTests {
         val m4 = Message.fromBytes(data!!)
         val v4 = Version.fromBytes(m4.payload)
         assert(v4.ua.contains("satoshi", ignoreCase = true))
+    }
+
+    @Test
+    fun testNodeVersion() {
+        val node = Node()
+        node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
+        async(CommonPool) { node.connectAsync("localhost", 19000) }
+        runBlocking { delay(3*1000) }
+        assert(node.peerBlockHeight > 2000)
+        assert(node.peerVersion > 0)
+        println(node.peerBlockHeight)
+        println(node.peerVersion)
     }
 }

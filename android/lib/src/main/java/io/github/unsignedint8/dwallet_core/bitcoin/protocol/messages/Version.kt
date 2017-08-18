@@ -26,6 +26,7 @@ class Version(val version: Int = 70001, val services: ByteArray = ByteArray(8), 
         }
 
         val text = "version"
+        val verack = "verack"
     }
 
     fun toBytes() = version.toInt32LEBytes() +
