@@ -3,10 +3,10 @@ package io.github.unsignedint8.dwallet_core
 import io.github.unsignedint8.dwallet_core.bitcoin.p2p.Node
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.Version
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
+import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
 import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
 import io.github.unsignedint8.dwallet_core.network.*
 import kotlinx.coroutines.experimental.*
-import org.junit.Assert.*
 import org.junit.Test
 
 /**
@@ -40,11 +40,13 @@ class PeerTests {
     fun testNodeVersion() {
         val node = Node()
         node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
+        node.initBloomFilter(arrayOf("02cee8043452a0e2e9dc75526a6ed2ce2f53269bd5460b0694fb9619e073c819f3".hexToByteArray()), 0.01)
+
         async(CommonPool) { node.connectAsync("localhost", 19000) }
         runBlocking { delay(3 * 1000) }
-        assert(node.peerBlockHeight > 2000)
+        assert(node.peerBlockchainHeight > 2000)
         assert(node.peerVersion > 0)
-        println(node.peerBlockHeight)
+        println(node.peerBlockchainHeight)
         println(node.peerVersion)
     }
 }

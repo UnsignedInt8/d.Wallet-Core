@@ -11,5 +11,5 @@ class FilterLoad(val filter: ByteArray, val nHashFuncs: Int, val nTweak: Int, va
         const val text = "filterload"
     }
 
-    fun toBytes() = filter + nHashFuncs.toInt32LEBytes() + nTweak.toInt32LEBytes() + nFlags.toInt32LEBytes()
+    fun toBytes() = filter.size.toVarIntBytes() + filter + nHashFuncs.toInt32LEBytes() + nTweak.toInt32LEBytes() + nFlags.toByte()
 }

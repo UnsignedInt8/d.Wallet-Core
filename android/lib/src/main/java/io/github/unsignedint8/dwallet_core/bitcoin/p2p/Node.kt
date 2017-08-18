@@ -8,7 +8,6 @@ import io.github.unsignedint8.dwallet_core.infrastructure.Event
 import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import java.security.*
 
@@ -70,7 +69,7 @@ class Node() : Event() {
     var isBCHNode = false
         private set
 
-    var peerBlockHeight = 0
+    var peerBlockchainHeight = 0
         private set
 
     var peerVersion = 0
@@ -83,7 +82,6 @@ class Node() : Event() {
     var ua = "/d.Wallet:0.0.1/"
 
     var startHeight = 0
-
 
     private var filter: BloomFilter? = null
 
@@ -175,7 +173,7 @@ class Node() : Event() {
 
     private fun handleVersion(payload: ByteArray) {
         val v = Version.fromBytes(payload)
-        peerBlockHeight = v.startHeight
+        peerBlockchainHeight = v.startHeight
         peerVersion = v.version
         isFullNode = v.services[0] >= 1.toByte()
         sendVerack()
