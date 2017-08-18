@@ -8,6 +8,10 @@ import io.github.unsignedint8.dwallet_core.extensions.*
 
 class GetHeaders(val version: Int, val count: Int, val locatorHash: String, val stopHash: String) {
 
+    companion object {
+        const val text = "getheaders"
+    }
+
     constructor(count: Int, locatorHash: String = ByteArray(32).toHexString(), stopHash: String = ByteArray(32).toHexString()) : this(70001, count, locatorHash, stopHash)
 
     fun toBytes() {
