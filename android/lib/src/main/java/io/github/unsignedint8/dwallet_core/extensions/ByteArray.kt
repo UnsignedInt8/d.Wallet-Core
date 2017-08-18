@@ -123,3 +123,9 @@ fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>):
 
     return list
 }
+
+fun ByteArray.toHashString(): String {
+    val data = this.clone()
+    data.reverse()
+    return data.toHexString()
+}

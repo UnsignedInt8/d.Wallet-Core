@@ -22,3 +22,9 @@ fun String.hexToByteArray(): ByteArray {
 fun String.toVarBytes(charset: Charset = Charset.defaultCharset()): ByteArray {
     return this.length.toVarIntBytes() + this.toByteArray(charset)
 }
+
+fun String.hashToBytes(): ByteArray {
+    val data = this.hexToByteArray()
+    data.reverse()
+    return data
+}

@@ -37,4 +37,13 @@ class BytesTest {
         assertArrayEquals("0F2F5361746F7368693A302E372E322F".hexToByteArray(), varbytes)
         assertEquals("/Satoshi:0.7.2/", "0F2F5361746F7368693A302E372E322F".hexToByteArray().readVarString())
     }
+
+    @Test
+    fun testHashToBytes() {
+        val block = "000000000000000000973af6efc1f105fe2ca3bff3737afadbdb8c660634f572"
+        val reversedHash = "72f53406668cdbdbfa7a73f3bfa32cfe05f1c1eff63a97000000000000000000"
+
+        assertArrayEquals(reversedHash.hexToByteArray(), block.hashToBytes())
+        assertEquals(block, reversedHash.hexToByteArray().toHashString())
+    }
 }

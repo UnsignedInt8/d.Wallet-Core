@@ -1,12 +1,9 @@
 package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.Version
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.Message
-import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.NetworkAddress
-import io.github.unsignedint8.dwallet_core.extensions.toHexString
-import io.github.unsignedint8.dwallet_core.extensions.toInt64LEBytes
-import io.github.unsignedint8.dwallet_core.network.SocketEx
-import kotlinx.coroutines.experimental.runBlocking
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
+import io.github.unsignedint8.dwallet_core.network.*
+import kotlinx.coroutines.experimental.*
 import org.junit.Assert.*
 import org.junit.Test
 
