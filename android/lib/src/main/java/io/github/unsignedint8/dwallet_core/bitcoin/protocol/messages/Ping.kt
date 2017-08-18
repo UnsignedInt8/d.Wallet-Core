@@ -1,6 +1,7 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages
 
 import io.github.unsignedint8.dwallet_core.extensions.readInt64LE
+import io.github.unsignedint8.dwallet_core.extensions.toInt64LEBytes
 
 /**
  * Created by unsignedint8 on 8/16/17.
@@ -18,4 +19,6 @@ class Ping(val nonce: Long) {
         val text = "ping"
         val pong = "pong"
     }
+
+    fun toBytes() = nonce.toInt64LEBytes()
 }

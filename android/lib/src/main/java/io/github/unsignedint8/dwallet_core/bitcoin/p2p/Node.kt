@@ -37,7 +37,7 @@ class Node() : Event() {
         msgHandlers = mutableMapOf()
         msgHandlers[Version.text] = fun(payload: ByteArray) { handleVersion(payload) }
         msgHandlers[Version.verack] = fun(_: ByteArray) { handleVerack() }
-
+        msgHandlers[Ping.text] = fun(d: ByteArray) { handlePing(d) }
     }
 
 
@@ -148,6 +148,7 @@ class Node() : Event() {
 
         println(msg.command)
         handler(data)
+        runNext()
     }
 
     private fun sendMessage(command: String, payload: ByteArray = ByteArray(0)) {
@@ -163,9 +164,13 @@ class Node() : Event() {
         sendMessage(Version.verack)
     }
 
-    fun sendFilterLoad() {
+    private fun sendFilterLoad() {
         if (filter == null) return
         sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
+    }
+
+    fun sendPing() {
+        sendMessage(Ping.text, Ping(SecureRandom().nextLong()).toBytes())
     }
 
     private fun handleVersion(payload: ByteArray) {
@@ -178,5 +183,10 @@ class Node() : Event() {
 
     private fun handleVerack() {
         verackVerified = true
+        sendFilterLoad()
+    }
+
+    private fun handlePing(payload: ByteArray) {
+        sendMessage(Ping.pong, Ping.fromBytes(payload).toBytes())
     }
 }

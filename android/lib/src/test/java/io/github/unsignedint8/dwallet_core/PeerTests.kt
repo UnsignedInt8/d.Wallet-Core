@@ -41,7 +41,7 @@ class PeerTests {
         val node = Node()
         node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
         async(CommonPool) { node.connectAsync("localhost", 19000) }
-        runBlocking { delay(3*1000) }
+        runBlocking { delay(3 * 1000) }
         assert(node.peerBlockHeight > 2000)
         assert(node.peerVersion > 0)
         println(node.peerBlockHeight)
