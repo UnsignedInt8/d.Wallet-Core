@@ -37,6 +37,7 @@ class Node() : Event() {
         msgHandlers[Version.text] = fun(payload: ByteArray) { handleVersion(payload) }
         msgHandlers[Version.verack] = fun(_: ByteArray) { handleVerack() }
         msgHandlers[Ping.text] = fun(d: ByteArray) { handlePing(d) }
+        msgHandlers[Reject.text] = fun(d: ByteArray) { handleReject(d) }
     }
 
 
@@ -186,5 +187,10 @@ class Node() : Event() {
 
     private fun handlePing(payload: ByteArray) {
         sendMessage(Ping.pong, Ping.fromBytes(payload).toBytes())
+    }
+
+    private fun handleReject(data: ByteArray) {
+        val reject = Reject.fromBytes(data)
+        println(reject.toString())
     }
 }

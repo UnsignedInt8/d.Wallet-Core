@@ -108,6 +108,11 @@ fun ByteArray.readVarString(): String {
     return String(this, offset, len.toInt())
 }
 
+fun ByteArray.readVarStringComponents(): Triple<String, Int, Long> {
+    val (offset, len) = readVarStringOffsetLength()
+    return Triple(String(this, offset, len.toInt()), offset, len)
+}
+
 fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>): List<T> {
     var (value, offset) = readVarIntValueSize()
     var data = this.sliceArray(offset.toInt())
