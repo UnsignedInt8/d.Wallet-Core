@@ -20,7 +20,7 @@ class BlockHeader(val version: Int, val preBlockHash: String, val merkleRootHash
             return BlockHeader(ver, preBlockHash, merkleRoot, timestamp, bits, nonce)
         }
 
-        const val standardSize = 80
+        const val standardSize = 81
     }
 
     fun toBytes() = version.toInt32LEBytes() + preBlockHash.hashToBytes() + merkleRootHash.hashToBytes() + timestamp.toInt32LEBytes() + bits.toInt32LEBytes() + nonce.toInt32LEBytes()

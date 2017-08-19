@@ -2,20 +2,19 @@ package io.github.unsignedint8.dwallet_core.bitcoin.p2p
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
-import io.github.unsignedint8.dwallet_core.crypto.hash256
-import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
+import io.github.unsignedint8.dwallet_core.crypto.*
+import io.github.unsignedint8.dwallet_core.extensions.*
 import io.github.unsignedint8.dwallet_core.infrastructure.Event
 import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.*
 import java.security.*
 
 /**
  * Created by unsignedint8 on 8/18/17.
  */
 
-class Node() : Event() {
+class Node : Event() {
 
     companion object {
 
@@ -38,6 +37,7 @@ class Node() : Event() {
         msgHandlers[Version.verack] = fun(_: ByteArray) { handleVerack() }
         msgHandlers[Ping.text] = fun(d: ByteArray) { handlePing(d) }
         msgHandlers[Reject.text] = fun(d: ByteArray) { handleReject(d) }
+        msgHandlers[GetHeaders.headers] = fun(d: ByteArray) { handleHeaders(d) }
     }
 
 
@@ -109,45 +109,44 @@ class Node() : Event() {
 
     private suspend fun beginReceivingData() {
 
+        if (socket.isClosed) return
+
         fun runNext() = async(CommonPool) { beginReceivingData() }
 
-        var data = socket.readAsync(Message.standardSize).await()
+        try {
+            var data = socket.readAsync(Message.standardSize).await()
+            if (data == null || data.size != Message.standardSize) {
+                println("data size not equal")
+                return
+            }
 
-        if (data == null || data.size != Message.standardSize) {
+            val msg = Message.fromBytes(data)
+            println(msg.command)
+            if (!magic.contentEquals(msg.magic)) {
+                println("magic numbers are not equal")
+                return
+            }
+
+
+            data = socket.readAsync(msg.length).await()
+            if (data == null) return
+
+            while (data.size < msg.length) {
+                val part = socket.readAsync(msg.length - data.size).await() ?: return
+                data += part
+            }
+
+            if (!hash256(data).take(4).toByteArray().contentEquals(msg.checksum)) {
+                println("checksum data are not equal")
+                return
+            }
+
+            val handler = msgHandlers[msg.command] ?: return
+            handler(data)
+
+        } finally {
             runNext()
-            return
         }
-
-        val msg = Message.fromBytes(data)
-
-        if (!magic.contentEquals(msg.magic)) {
-            println("magic numbers are not equal")
-            runNext()
-            return
-        }
-
-        data = socket.readAsync(msg.length).await()
-
-        if (data == null || data.size != msg.length) {
-            runNext()
-            return
-        }
-
-        if (!hash256(data).take(4).toByteArray().contentEquals(msg.checksum)) {
-            println("checksum data are not equal")
-            runNext()
-            return
-        }
-
-        val handler = msgHandlers[msg.command]
-        if (handler == null) {
-            runNext()
-            return
-        }
-
-        println(msg.command)
-        handler(data)
-        runNext()
     }
 
     private fun sendMessage(command: String, payload: ByteArray = ByteArray(0)) {
@@ -166,6 +165,10 @@ class Node() : Event() {
     private fun sendFilterLoad() {
         if (filter == null) return
         sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
+    }
+
+    fun sendGetheaders(locatorHashes: List<String> = listOf(ByteArray(32).toHexString()), stopHash: String = ByteArray(32).toHexString()) {
+        sendMessage(GetHeaders.text, GetHeaders(locatorHashes, stopHash).toBytes())
     }
 
     fun sendPing() {
@@ -192,5 +195,10 @@ class Node() : Event() {
     private fun handleReject(data: ByteArray) {
         val reject = Reject.fromBytes(data)
         println(reject.toString())
+    }
+
+    private fun handleHeaders(payload: ByteArray) {
+        val headers = payload.readVarList { bytes -> Pair(BlockHeader.fromBytes(bytes), BlockHeader.standardSize) }
+        
     }
 }

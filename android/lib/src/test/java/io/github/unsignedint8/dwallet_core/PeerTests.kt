@@ -42,10 +42,12 @@ class PeerTests {
         node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
         node.initBloomFilter(arrayOf("02cee8043452a0e2e9dc75526a6ed2ce2f53269bd5460b0694fb9619e073c819f3".hexToByteArray()), 0.01)
 
-        async(CommonPool) { node.connectAsync("localhost", 19000) }
-        runBlocking { delay(3 * 1000) }
-        assert(node.peerBlockchainHeight > 2000)
-        assert(node.peerVersion > 0)
+        async(CommonPool) {
+            node.connectAsync("localhost", 19000)
+            node.sendGetheaders()
+        }
+
+        runBlocking { delay(1000 * 1000) }
         println(node.peerBlockchainHeight)
         println(node.peerVersion)
     }

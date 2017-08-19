@@ -1,15 +1,11 @@
 package io.github.unsignedint8.dwallet_core.crypto
 
+import io.github.unsignedint8.dwallet_core.extensions.*
 import java.math.BigInteger
 
 /**
  * Created by unsignedint8 on 8/17/17.
  */
-
-private fun Byte.toBigInteger(): BigInteger {
-    val unsigned = (if (this < 0) 256 + this.toInt() else this.toInt()) // why can't java have unsigned type!!!??? miaow miaow miaow???
-    return BigInteger.valueOf(unsigned.toLong())
-}
 
 private fun BigInteger.unShiftRight(n: Int): BigInteger {
     return BigInteger.valueOf((this.toInt() ushr n).toLong())

@@ -47,7 +47,7 @@ fun ByteArray.writeInt64BE(n: Long, offset: Int = 0) = ByteBuffer.wrap(this).ord
  * read the real value and size of it + tag
  */
 fun ByteArray.readVarIntValueSize(): Pair<Long, Long> {
-    val tag = this[0].toInt()
+    val tag = this[0].toBigInteger().toInt()
     var value: Long = tag.toLong()
     var size: Long = 1
 
