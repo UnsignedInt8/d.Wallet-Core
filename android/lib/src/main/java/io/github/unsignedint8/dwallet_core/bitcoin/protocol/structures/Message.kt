@@ -55,6 +55,6 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
 
     fun toBytes() = magic + command.toByteArray().plus(ByteArray(12 - command.length)) + length.toInt32LEBytes() + checksum + payload
 
-    fun verifyChecksum() = checksum.contentEquals(hash256(payload).take(4).toByteArray())
+    fun verifyChecksum(data: ByteArray) = checksum.contentEquals(hash256(data).take(4).toByteArray())
 }
 

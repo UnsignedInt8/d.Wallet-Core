@@ -123,7 +123,7 @@ class Node : Event() {
                 data += part
             }
 
-            if (!hash256(data).take(4).toByteArray().contentEquals(msg.checksum)) {
+            if (!msg.verifyChecksum(data)) {
                 println("checksum are not equal")
                 return
             }
@@ -214,8 +214,11 @@ class Node : Event() {
     }
 
     private fun handleInv(data: ByteArray) {
-        println("enter inv")
         val invs = data.readVarList { bytes -> Pair(InventoryVector.fromBytes(bytes), InventoryVector.standardSize) }
-        println("inv ${invs.size}")
+        super.trigger(InventoryVector.inv, this, invs)
+    }
+
+    fun onInv(callback: (sender: Node, invs: List<InventoryVector>) -> Unit) {
+        super.register(InventoryVector.inv, callback as Callback)
     }
 }
