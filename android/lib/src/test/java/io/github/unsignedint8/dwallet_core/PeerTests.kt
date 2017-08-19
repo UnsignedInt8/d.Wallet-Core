@@ -55,19 +55,23 @@ class PeerTests {
 
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
+            println(invs.first().hash)
             node.sendGetData(invs.take(2))
+            node.sendPing()
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
 
-        async(CommonPool) {
-            node.connectAsync("localhost", 19000)
+        node.onVerack { _, _ ->
             node.sendGetBlocks()
 //            node.sendGetHeaders()
         }
 
+        async(CommonPool) {
+            node.connectAsync("localhost", 19000)
+        }
+
         runBlocking { delay(1000 * 1000) }
-        println(node.peerBlockchainHeight)
-        println(node.peerVersion)
+
     }
 }

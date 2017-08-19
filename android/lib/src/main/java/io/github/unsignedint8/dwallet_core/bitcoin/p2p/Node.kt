@@ -114,6 +114,7 @@ class Node : Event() {
                 return
             }
 
+            println(msg.command)
             data = socket.readAsync(msg.length).await()
             if (data == null) return
 
@@ -132,7 +133,6 @@ class Node : Event() {
                 return
             }
 
-            println(msg.command)
 
             val handler = msgHandlers[msg.command] ?: return
             handler(data)
@@ -167,6 +167,11 @@ class Node : Event() {
 
     private fun handleVerack() {
         sendFilterLoad()
+        super.trigger(Version.verack, this, this.peerVersion)
+    }
+
+    fun onVerack(callback: (sender: Node, version: Int) -> Unit) {
+        super.register(Version.verack, callback as Callback)
     }
 
     private fun sendFilterLoad() {
@@ -213,8 +218,8 @@ class Node : Event() {
     }
 
     private fun handleInv(data: ByteArray) {
-        val invs = data.readVarList { bytes -> Pair(InventoryVector.fromBytes(bytes), InventoryVector.standardSize) }
-        super.trigger(InventoryVector.inv, this, invs)
+        val items = data.readVarList { bytes -> Pair(InventoryVector.fromBytes(bytes), InventoryVector.standardSize) }
+        super.trigger(InventoryVector.inv, this, items)
     }
 
     fun onInv(callback: (sender: Node, items: List<InventoryVector>) -> Unit) {
@@ -222,6 +227,7 @@ class Node : Event() {
     }
 
     fun sendGetData(items: List<InventoryVector>) {
+        println("send getdata")
         sendMessage(GetData.text, GetData(items).toBytes())
     }
 }

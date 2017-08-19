@@ -11,7 +11,7 @@ class InventoryVector(val type: InvTypes, val hash: String) {
     companion object {
         fun fromBytes(bytes: ByteArray): InventoryVector {
             val type = InvTypes.values().firstOrNull { it.value == bytes.readInt32LE() } ?: InvTypes.ERROR
-            val hash = String(bytes.sliceArray(4, standardSize))
+            val hash = bytes.sliceArray(4, standardSize).toHashString()
             return InventoryVector(type, hash)
         }
 
