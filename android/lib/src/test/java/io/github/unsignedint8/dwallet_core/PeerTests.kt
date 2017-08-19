@@ -53,6 +53,10 @@ class PeerTests {
             node.sendGetHeaders(listOf(headers.last().preBlockHash))
         }
 
+        node.onInv { _, invs ->
+            println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
+        }
+
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
 
         async(CommonPool) {

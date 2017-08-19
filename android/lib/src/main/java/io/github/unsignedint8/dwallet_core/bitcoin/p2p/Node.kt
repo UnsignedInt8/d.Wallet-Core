@@ -2,7 +2,6 @@ package io.github.unsignedint8.dwallet_core.bitcoin.p2p
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
-import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import io.github.unsignedint8.dwallet_core.infrastructure.Callback
 import io.github.unsignedint8.dwallet_core.infrastructure.Event
@@ -218,7 +217,11 @@ class Node : Event() {
         super.trigger(InventoryVector.inv, this, invs)
     }
 
-    fun onInv(callback: (sender: Node, invs: List<InventoryVector>) -> Unit) {
+    fun onInv(callback: (sender: Node, items: List<InventoryVector>) -> Unit) {
         super.register(InventoryVector.inv, callback as Callback)
+    }
+
+    fun sendGetData(items: List<InventoryVector>) {
+        sendMessage(GetData.text, GetData(items).toBytes())
     }
 }
