@@ -24,7 +24,7 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
 
         fun fromBytes(bytes: ByteArray): Message {
             val magic = bytes.take(4).toByteArray()
-            val command = String(bytes.sliceArray(4, 16).takeWhile { it != 0.toByte() }.toByteArray())
+            val command = String(bytes.sliceArray(4, 16).takeWhile { it != Byte.ZERO }.toByteArray())
             val length = bytes.readInt32LE(16)
             val checksum = bytes.sliceArray(20, 24)
             val payload = bytes.sliceArray(24)
@@ -49,11 +49,12 @@ class Message(val magic: ByteArray, command: ByteArray, val length: Int, val che
             hash256(payload).take(4).toByteArray(),
             payload)
 
-    constructor(magic: Int, command: String, payload: ByteArray): this(magic.toInt32LEBytes(), command, payload)
+    constructor(magic: Int, command: String, payload: ByteArray) : this(magic.toInt32LEBytes(), command, payload)
 
-    val command: String = String(command.takeWhile { it != 0.toByte() }.toByteArray())
+    val command: String = String(command.takeWhile { it != Byte.ZERO }.toByteArray())
 
     fun toBytes() = magic + command.toByteArray().plus(ByteArray(12 - command.length)) + length.toInt32LEBytes() + checksum + payload
 
     fun verifyChecksum() = checksum.contentEquals(hash256(payload).take(4).toByteArray())
 }
+
