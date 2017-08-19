@@ -7,7 +7,7 @@ import io.github.unsignedint8.dwallet_core.extensions.*
  * Created by unsignedint8 on 8/15/17.
  */
 
-class Version(val version: Int = 70001, val services: ByteArray = ByteArray(8), val timestamp: Long = System.currentTimeMillis() / 1000, val toAddr: NetworkAddress, val fromAddr: NetworkAddress, val nonce: Long, val ua: String, val startHeight: Int, val relay: Boolean = false) {
+class Version(val version: Int = number, val services: ByteArray = ByteArray(8), val timestamp: Long = System.currentTimeMillis() / 1000, val toAddr: NetworkAddress, val fromAddr: NetworkAddress, val nonce: Long, val ua: String, val startHeight: Int, val relay: Boolean = false) {
 
     companion object {
         fun fromBytes(bytes: ByteArray): Version {
@@ -27,6 +27,8 @@ class Version(val version: Int = 70001, val services: ByteArray = ByteArray(8), 
 
         val text = "version"
         val verack = "verack"
+
+        val number = 70001
     }
 
     fun toBytes() = version.toInt32LEBytes() +
