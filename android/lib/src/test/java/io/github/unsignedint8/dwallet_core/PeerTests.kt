@@ -44,7 +44,7 @@ class PeerTests {
 
         async(CommonPool) {
             node.connectAsync("localhost", 19000)
-            node.sendGetheaders()
+            node.sendGetHeaders()
         }
 
         runBlocking { delay(1000 * 1000) }

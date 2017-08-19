@@ -4,6 +4,7 @@ import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
+import io.github.unsignedint8.dwallet_core.infrastructure.Callback
 import io.github.unsignedint8.dwallet_core.infrastructure.Event
 import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
@@ -158,23 +159,6 @@ class Node : Event() {
         sendMessage(Version.text, Version(version, toAddr = emptyAddr, fromAddr = emptyAddr, nonce = nodeId, ua = ua, startHeight = startHeight).toBytes())
     }
 
-    private fun sendVerack() {
-        sendMessage(Version.verack)
-    }
-
-    private fun sendFilterLoad() {
-        if (filter == null) return
-        sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
-    }
-
-    fun sendGetheaders(locatorHashes: List<String> = listOf(ByteArray(32).toHexString()), stopHash: String = ByteArray(32).toHexString()) {
-        sendMessage(GetHeaders.text, GetHeaders(locatorHashes, stopHash).toBytes())
-    }
-
-    fun sendPing() {
-        sendMessage(Ping.text, Ping(SecureRandom().nextLong()).toBytes())
-    }
-
     private fun handleVersion(payload: ByteArray) {
         val v = Version.fromBytes(payload)
         peerBlockchainHeight = v.startHeight
@@ -183,9 +167,26 @@ class Node : Event() {
         sendVerack()
     }
 
+    private fun sendVerack() {
+        sendMessage(Version.verack)
+    }
+
     private fun handleVerack() {
         verackVerified = true
         sendFilterLoad()
+    }
+
+    private fun sendFilterLoad() {
+        if (filter == null) return
+        sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
+    }
+
+    fun sendGetHeaders(locatorHashes: List<String> = listOf(ByteArray(32).toHexString()), stopHash: String = ByteArray(32).toHexString()) {
+        sendMessage(GetHeaders.text, GetHeaders(locatorHashes, stopHash).toBytes())
+    }
+
+    fun sendPing() {
+        sendMessage(Ping.text, Ping(SecureRandom().nextLong()).toBytes())
     }
 
     private fun handlePing(payload: ByteArray) {
@@ -199,6 +200,10 @@ class Node : Event() {
 
     private fun handleHeaders(payload: ByteArray) {
         val headers = payload.readVarList { bytes -> Pair(BlockHeader.fromBytes(bytes), BlockHeader.standardSize) }
-        
+
+    }
+
+    fun onGetHeaders(callback: (sender: Node, headers: List<BlockHeader>) -> Unit) {
+        super.register(GetHeaders.headers, callback as Callback)
     }
 }
