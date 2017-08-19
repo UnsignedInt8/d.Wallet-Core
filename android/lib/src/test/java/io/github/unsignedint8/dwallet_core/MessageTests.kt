@@ -71,4 +71,8 @@ class MessageTests {
         assertEquals(2, addrs.count)
     }
 
+    @Test
+    fun testInv() {
+
+    }
 }

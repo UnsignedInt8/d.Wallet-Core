@@ -20,7 +20,7 @@ open class Event {
         list.add(callback)
     }
 
-    protected fun trigger(event: String, sender: Any, vararg params: Any) {
+    protected fun trigger(event: String, sender: Any, params: Any) {
         observers[event]?.forEach {
             it.invoke(sender, params)
         }

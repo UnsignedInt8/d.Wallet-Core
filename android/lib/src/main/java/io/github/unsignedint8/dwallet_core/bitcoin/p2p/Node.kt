@@ -17,18 +17,6 @@ import java.security.*
 
 class Node : Event() {
 
-    companion object {
-
-        val Events = object {
-            val version = Version.text
-            val ping = Ping.text
-            val pong = Ping.pong
-            val getheaders = GetHeaders.text
-            val addr = Addr.text
-        }
-
-    }
-
     private val msgHandlers: Map<String, (payload: ByteArray) -> Unit>
     private val socket = SocketEx()
 
@@ -39,6 +27,7 @@ class Node : Event() {
         msgHandlers[Ping.text] = fun(d: ByteArray) { handlePing(d) }
         msgHandlers[Reject.text] = fun(d: ByteArray) { handleReject(d) }
         msgHandlers[GetHeaders.headers] = fun(d: ByteArray) { handleHeaders(d) }
+        msgHandlers[InventoryVector.inv] = fun(d: ByteArray) { handleInv(d) }
     }
 
     val peerAddress: String
@@ -47,7 +36,7 @@ class Node : Event() {
     val peerPort: Int
         get() = socket.port
 
-    var verackVerified = false
+    var versionVerified = false
         private set
 
     var peerId: Long = 0
@@ -121,7 +110,6 @@ class Node : Event() {
             }
 
             val msg = Message.fromBytes(data)
-            println(msg.command)
             if (!magic.contentEquals(msg.magic)) {
                 println("magic numbers are not equal")
                 return
@@ -140,7 +128,12 @@ class Node : Event() {
                 return
             }
 
-            if (msg.command != Version.text && !verackVerified) return
+            if (msg.command != Version.text && !versionVerified) {
+                println("verack has not been received - ${msg.command}")
+                return
+            }
+
+            println(msg.command)
 
             val handler = msgHandlers[msg.command] ?: return
             handler(data)
@@ -160,6 +153,8 @@ class Node : Event() {
     }
 
     private fun handleVersion(payload: ByteArray) {
+        versionVerified = true
+
         val v = Version.fromBytes(payload)
         peerBlockchainHeight = v.startHeight
         peerVersion = v.version
@@ -172,7 +167,6 @@ class Node : Event() {
     }
 
     private fun handleVerack() {
-        verackVerified = true
         sendFilterLoad()
     }
 
@@ -220,6 +214,8 @@ class Node : Event() {
     }
 
     private fun handleInv(data: ByteArray) {
-
+        println("enter inv")
+        val invs = data.readVarList { bytes -> Pair(InventoryVector.fromBytes(bytes), InventoryVector.standardSize) }
+        println("inv ${invs.size}")
     }
 }
