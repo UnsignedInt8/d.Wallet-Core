@@ -28,3 +28,6 @@ fun String.hashToBytes(): ByteArray {
     data.reverse()
     return data
 }
+
+val String.Companion.ZEROHASH: String
+    get() = ByteArray(32).toHexString()

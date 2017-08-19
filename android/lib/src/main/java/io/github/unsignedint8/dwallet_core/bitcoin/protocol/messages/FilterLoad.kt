@@ -9,6 +9,7 @@ import io.github.unsignedint8.dwallet_core.extensions.*
 class FilterLoad(val filter: ByteArray, val nHashFuncs: Int, val nTweak: Int, val nFlags: Int) {
     companion object {
         const val text = "filterload"
+        const val filterclear = "filterclear"
     }
 
     fun toBytes() = filter.size.toVarIntBytes() + filter + nHashFuncs.toInt32LEBytes() + nTweak.toInt32LEBytes() + nFlags.toByte()

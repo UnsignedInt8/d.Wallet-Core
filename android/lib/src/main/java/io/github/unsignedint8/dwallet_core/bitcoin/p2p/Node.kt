@@ -41,7 +41,6 @@ class Node : Event() {
         msgHandlers[GetHeaders.headers] = fun(d: ByteArray) { handleHeaders(d) }
     }
 
-
     val peerAddress: String
         get() = socket.inetAddress.hostAddress
 
@@ -117,7 +116,7 @@ class Node : Event() {
         try {
             var data = socket.readAsync(Message.standardSize).await()
             if (data == null || data.size != Message.standardSize) {
-                println("data size not equal")
+                println("data size are not equal")
                 return
             }
 
@@ -128,7 +127,6 @@ class Node : Event() {
                 return
             }
 
-
             data = socket.readAsync(msg.length).await()
             if (data == null) return
 
@@ -138,9 +136,11 @@ class Node : Event() {
             }
 
             if (!hash256(data).take(4).toByteArray().contentEquals(msg.checksum)) {
-                println("checksum data are not equal")
+                println("checksum are not equal")
                 return
             }
+
+            if (msg.command != Version.text && !verackVerified) return
 
             val handler = msgHandlers[msg.command] ?: return
             handler(data)
@@ -181,8 +181,21 @@ class Node : Event() {
         sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
     }
 
-    fun sendGetHeaders(locatorHashes: List<String> = listOf(ByteArray(32).toHexString()), stopHash: String = ByteArray(32).toHexString()) {
+    fun sendFilterClear() {
+        sendMessage(FilterLoad.filterclear)
+    }
+
+    fun sendGetHeaders(locatorHashes: List<String> = listOf(String.ZEROHASH), stopHash: String = String.ZEROHASH) {
         sendMessage(GetHeaders.text, GetHeaders(locatorHashes, stopHash).toBytes())
+    }
+
+    private fun handleHeaders(payload: ByteArray) {
+        val headers = payload.readVarList { bytes -> Pair(BlockHeader.fromBytes(bytes), BlockHeader.standardSize) }
+        super.trigger(GetHeaders.headers, this, headers)
+    }
+
+    fun onHeaders(callback: (sender: Node, headers: List<BlockHeader>) -> Unit) {
+        super.register(GetHeaders.headers, callback as Callback)
     }
 
     fun sendPing() {
@@ -195,15 +208,18 @@ class Node : Event() {
 
     private fun handleReject(data: ByteArray) {
         val reject = Reject.fromBytes(data)
-        println(reject.toString())
+        super.trigger(Reject.text, this, reject)
     }
 
-    private fun handleHeaders(payload: ByteArray) {
-        val headers = payload.readVarList { bytes -> Pair(BlockHeader.fromBytes(bytes), BlockHeader.standardSize) }
-
+    fun onReject(callback: (sender: Node, reject: Reject) -> Unit) {
+        super.register(Reject.text, callback as Callback)
     }
 
-    fun onGetHeaders(callback: (sender: Node, headers: List<BlockHeader>) -> Unit) {
-        super.register(GetHeaders.headers, callback as Callback)
+    fun sendGetBlocks(locatorHashes: List<String> = listOf(String.ZEROHASH), stopHash: String = String.ZEROHASH) {
+        sendMessage(GetHeaders.getblocks, GetHeaders(locatorHashes, stopHash).toBytes())
+    }
+
+    private fun handleInv(data: ByteArray) {
+
     }
 }

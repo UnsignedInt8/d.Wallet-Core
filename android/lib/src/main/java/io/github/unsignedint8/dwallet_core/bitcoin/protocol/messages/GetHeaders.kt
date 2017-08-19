@@ -11,9 +11,10 @@ class GetHeaders(val version: Int, val locatorHashes: List<String>, val stopHash
     companion object {
         const val text = "getheaders"
         const val headers = "headers"
+        const val getblocks = "getblocks"
     }
 
-    constructor(locatorHashes: List<String> , stopHash: String = ByteArray(32).toHexString()) : this(Version.number, locatorHashes, stopHash)
+    constructor(locatorHashes: List<String>, stopHash: String = String.ZEROHASH) : this(Version.number, locatorHashes, stopHash)
 
     fun toBytes() = version.toInt32LEBytes() + locatorHashes.size.toVarIntBytes() + locatorHashes.reduce(ByteArray(0), { acc, seed -> seed + acc.hashToBytes() }) + stopHash.hashToBytes()
 }

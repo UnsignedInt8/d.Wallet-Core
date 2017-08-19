@@ -16,6 +16,7 @@ class InventoryVector(val type: InvTypes, val hash: String) {
         }
 
         const val standardSize = 36
+        const val inv = "inv"
     }
 
     fun toBytes() {

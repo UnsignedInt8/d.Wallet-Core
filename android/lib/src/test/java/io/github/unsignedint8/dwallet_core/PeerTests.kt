@@ -38,13 +38,26 @@ class PeerTests {
 
     @Test
     fun testNodeVersion() {
+        var gotcount = 0
+
         val node = Node()
         node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
-        node.initBloomFilter(arrayOf("02cee8043452a0e2e9dc75526a6ed2ce2f53269bd5460b0694fb9619e073c819f3".hexToByteArray()), 0.01)
+        node.initBloomFilter(arrayOf("03b0ae7a048df54388e1e02eee79c6d1def18799eec772bb7ad9aa47fc45df928a".hexToByteArray()), 0.01)
+
+        node.onHeaders { _, headers ->
+            println(headers.size)
+            println(headers.first().preBlockHash)
+
+            if (gotcount++ == 5) return@onHeaders
+
+            node.sendGetHeaders(listOf(headers.last().preBlockHash))
+        }
+
+        node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
 
         async(CommonPool) {
             node.connectAsync("localhost", 19000)
-            node.sendGetHeaders()
+            node.sendGetBlocks()
         }
 
         runBlocking { delay(1000 * 1000) }

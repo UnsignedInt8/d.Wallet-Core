@@ -8,7 +8,7 @@ typealias Callback = (sender: Any, params: Any) -> Unit
 
 open class Event {
 
-    protected val observers = mutableMapOf<String, MutableList<Callback>>()
+    private val observers = mutableMapOf<String, MutableList<Callback>>()
 
     protected fun register(event: String, callback: Callback) {
         var list = observers[event]
@@ -20,7 +20,7 @@ open class Event {
         list.add(callback)
     }
 
-    protected fun trigger(event: String, sender: Any, params: Any) {
+    protected fun trigger(event: String, sender: Any, vararg params: Any) {
         observers[event]?.forEach {
             it.invoke(sender, params)
         }
