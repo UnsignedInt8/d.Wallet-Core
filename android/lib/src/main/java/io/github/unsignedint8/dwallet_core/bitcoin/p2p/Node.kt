@@ -75,7 +75,7 @@ class Node : Event() {
     private var filter: BloomFilter? = null
 
     fun initBloomFilter(elements: Array<ByteArray>, falsePositiveRate: Double) {
-        filter = BloomFilter.create(elements.size, falsePositiveRate, 0, BloomFilter.BLOOM_UPDATE_ALL)
+        filter = BloomFilter.create(elements.size, falsePositiveRate, 0, BloomFilter.BLOOM_UPDATE_NONE)
         elements.forEach { filter?.insert(it) }
     }
 

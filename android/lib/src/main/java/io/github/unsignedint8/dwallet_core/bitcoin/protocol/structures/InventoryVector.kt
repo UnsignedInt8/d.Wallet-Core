@@ -19,5 +19,5 @@ class InventoryVector(val type: InvTypes, val hash: String) {
         const val inv = "inv"
     }
 
-    fun toBytes() = type.value.toVarIntBytes() + hash.hashToBytes()
+    fun toBytes() = type.value.toInt32LEBytes() + hash.hashToBytes()
 }

@@ -1,8 +1,7 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages
 
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.InventoryVector
-import io.github.unsignedint8.dwallet_core.extensions.reduce
-import io.github.unsignedint8.dwallet_core.extensions.toVarIntBytes
+import io.github.unsignedint8.dwallet_core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/19/17.
