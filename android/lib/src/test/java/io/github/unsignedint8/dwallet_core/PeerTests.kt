@@ -48,13 +48,14 @@ class PeerTests {
             println(headers.size)
             println(headers.first().preBlockHash)
 
-            if (gotcount++ == 5) return@onHeaders
+            if (gotcount++ == 2) return@onHeaders
 
             node.sendGetHeaders(listOf(headers.last().preBlockHash))
         }
 
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
+            node.sendGetData(invs.take(2))
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
