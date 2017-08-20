@@ -39,10 +39,13 @@ class PeerTests {
     @Test
     fun testNodeVersion() {
         var gotcount = 0
+        val host = "101.201.142.252"
+        val port = 8333
+        val magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
 
         val node = Node()
-        node.magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
-        node.initBloomFilter(arrayOf("03b0ae7a048df54388e1e02eee79c6d1def18799eec772bb7ad9aa47fc45df928a".hexToByteArray()), 0.01)
+        node.magic = magic
+        node.initBloomFilter(arrayOf("03b0ae7a048df54388e1e02eee79c6d1def18799eec772bb7ad9aa47fc45df928a".hexToByteArray()), 0.0001)
 
         node.onHeaders { _, headers ->
             println(headers.size)
@@ -56,7 +59,7 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-            node.sendGetData(invs.take(2))
+//            node.sendGetData(invs.take(2))
             node.sendPing()
         }
 
@@ -68,10 +71,10 @@ class PeerTests {
         }
 
         async(CommonPool) {
-            node.connectAsync("localhost", 19000)
+            node.connectAsync(host, port)
         }
 
-        runBlocking { delay(1000 * 1000) }
+        runBlocking { delay(160 * 1000) }
 
     }
 }

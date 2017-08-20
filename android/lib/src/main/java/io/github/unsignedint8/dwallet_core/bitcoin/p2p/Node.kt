@@ -3,8 +3,7 @@ package io.github.unsignedint8.dwallet_core.bitcoin.p2p
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.*
-import io.github.unsignedint8.dwallet_core.infrastructure.Callback
-import io.github.unsignedint8.dwallet_core.infrastructure.Event
+import io.github.unsignedint8.dwallet_core.infrastructure.*
 import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
 import kotlinx.coroutines.experimental.*
@@ -68,7 +67,7 @@ class Node : Event() {
 
     var version = 70001
 
-    var ua = "/d.Wallet:0.0.1/"
+    var ua = "/Wallet:0.0.1/"
 
     var startHeight = 0
 
@@ -100,11 +99,18 @@ class Node : Event() {
         if (socket.isClosed) return
 
         fun runNext() = async(CommonPool) { beginReceivingData() }
+        var shutdown = false
 
         try {
             var data = socket.readAsync(Message.standardSize).await()
-            if (data == null || data.size != Message.standardSize) {
-                println("data size are not equal")
+            if (data == null) {
+                println("data is null, socket connected: ${socket.isConnected}")
+                shutdown = true
+                return
+            }
+
+            if (data.size != Message.standardSize) {
+                println("data size are not equal, actual: ${data?.size} expected: ${Message.standardSize}")
                 return
             }
 
@@ -115,11 +121,16 @@ class Node : Event() {
             }
 
             println(msg.command)
-            data = socket.readAsync(msg.length).await()
-            if (data == null) return
 
+            data = ByteArray(0)
             while (data.size < msg.length) {
-                val part = socket.readAsync(msg.length - data.size).await() ?: return
+                val part = socket.readAsync(msg.length - data.size).await()
+
+                if (part == null) {
+                    shutdown = true
+                    return
+                }
+
                 data += part
             }
 
@@ -138,7 +149,7 @@ class Node : Event() {
             handler(data)
 
         } finally {
-            runNext()
+            if (!shutdown) runNext()
         }
     }
 
@@ -146,9 +157,9 @@ class Node : Event() {
         socket.writeAsync(Message(magic, command, payload).toBytes())
     }
 
-    private fun sendVersion() {
+    private fun sendVersion(relayTx: Boolean = false) {
         val emptyAddr = NetworkAddress("::0", 0, addTimestamp = false)
-        sendMessage(Version.text, Version(version, toAddr = emptyAddr, fromAddr = emptyAddr, nonce = nodeId, ua = ua, startHeight = startHeight).toBytes())
+        sendMessage(Version.text, Version(version, toAddr = emptyAddr, fromAddr = emptyAddr, nonce = nodeId, ua = ua, startHeight = startHeight, relay = relayTx).toBytes())
     }
 
     private fun handleVersion(payload: ByteArray) {
@@ -158,6 +169,8 @@ class Node : Event() {
         peerBlockchainHeight = v.startHeight
         peerVersion = v.version
         isFullNode = v.services[0] >= 1.toByte()
+        println("services: ${v.services.reduce("", { item, acc -> item.toString() + acc })}")
+
         sendVerack()
     }
 
