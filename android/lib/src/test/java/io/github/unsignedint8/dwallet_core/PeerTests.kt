@@ -71,6 +71,10 @@ class PeerTests {
 //            node.sendGetHeaders()
         }
 
+        node.onMerkleblocks { _, block ->
+            println(block.preBlockHash)
+        }
+
         async(CommonPool) {
             node.connectAsync(host, port)
             println("socket port: ${node.localPort}")
