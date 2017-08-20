@@ -6,6 +6,7 @@ import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
 import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
 import io.github.unsignedint8.dwallet_core.network.*
+import io.github.unsignedint8.dwallet_core.utils.BloomFilter
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
 
@@ -39,13 +40,14 @@ class PeerTests {
     @Test
     fun testNodeVersion() {
         var gotcount = 0
-        val host = "101.201.142.252"
-        val port = 8333
-        val magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
+        val host = "localhost"
+        val port = 19000
+        val magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
 
         val node = Node()
         node.magic = magic
-        node.initBloomFilter(arrayOf("03b0ae7a048df54388e1e02eee79c6d1def18799eec772bb7ad9aa47fc45df928a".hexToByteArray()), 0.0001)
+        node.initBloomFilter(arrayOf("024649bb5134dd87b1d02ef88ecc751ccf0b33669541c04ea6a2c34e9fdd6d9d05".hexToByteArray(), "02cee8043452a0e2e9dc75526a6ed2ce2f53269bd5460b0694fb9619e073c819f3".hexToByteArray()),
+                0.0001, nFlags = BloomFilter.BLOOM_UPDATE_ALL)
 
         node.onHeaders { _, headers ->
             println(headers.size)
@@ -59,8 +61,7 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-//            node.sendGetData(invs.take(2))
-            node.sendPing()
+//            node.sendGetData(invs)
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
@@ -72,9 +73,10 @@ class PeerTests {
 
         async(CommonPool) {
             node.connectAsync(host, port)
+            println("socket port: ${node.localPort}")
         }
 
-        runBlocking { delay(160 * 1000) }
+        runBlocking { delay(100 * 1000) }
 
     }
 }

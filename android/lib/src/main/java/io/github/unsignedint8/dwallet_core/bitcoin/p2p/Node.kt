@@ -34,6 +34,9 @@ class Node : Event() {
     val peerPort: Int
         get() = socket.port
 
+    val localPort: Int
+        get() = socket.localPort
+
     var versionVerified = false
         private set
 
@@ -73,8 +76,9 @@ class Node : Event() {
 
     private var filter: BloomFilter? = null
 
-    fun initBloomFilter(elements: Array<ByteArray>, falsePositiveRate: Double) {
-        filter = BloomFilter.create(elements.size, falsePositiveRate, 0, BloomFilter.BLOOM_UPDATE_NONE)
+    fun initBloomFilter(elements: Array<ByteArray>, falsePositiveRate: Double, nTweak: Int = 0, nFlags: Int = BloomFilter.BLOOM_UPDATE_NONE) {
+        filter = BloomFilter.create(elements.size, falsePositiveRate, nTweak, nFlags)
+        println("filter count: ${elements.size}")
         elements.forEach { filter?.insert(it) }
     }
 
@@ -120,7 +124,7 @@ class Node : Event() {
                 return
             }
 
-            println(msg.command)
+            println("cmd: ${msg.command}")
 
             data = ByteArray(0)
             while (data.size < msg.length) {
@@ -150,7 +154,12 @@ class Node : Event() {
 
         } finally {
             if (!shutdown) runNext()
+            if (shutdown) super.trigger("socket-shutdown", this, socket)
         }
+    }
+
+    fun onSocketClosed(callback: (sender: Node, socket: SocketEx) -> Unit) {
+        super.register("socket-shutdown", callback as Callback)
     }
 
     private fun sendMessage(command: String, payload: ByteArray = ByteArray(0)) {
