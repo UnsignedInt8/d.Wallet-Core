@@ -72,7 +72,12 @@ class MessageTests {
     }
 
     @Test
-    fun testInv() {
+    fun testMerkleBlock() {
+        val raw = "000000203110b9caef379f0131f8a7b490316625d7f53308fb47ac352e2e3803180000005dcad525acc0d9cc4fc483e999ddd0ff01b9d5c7583958b84524adcd670996750511fb58ffff7f2008f50eb901000000015dcad525acc0d9cc4fc483e999ddd0ff01b9d5c7583958b84524adcd670996750100".hexToByteArray()
+        val b = MerkleBlock.fromBytes(raw)
 
+        assertEquals("0000001803382e2e35ac47fb0833f5d725663190b4a7f831019f37efcab91031", b.preBlockHash)
+        assertEquals(1, b.totalTxs)
+        assertArrayEquals(arrayOf(0.toByte()), b.flags.toTypedArray())
     }
 }

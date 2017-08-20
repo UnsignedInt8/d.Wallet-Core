@@ -6,7 +6,7 @@ import io.github.unsignedint8.dwallet_core.extensions.*
  * Created by unsignedint8 on 8/18/17.
  */
 
-class BlockHeader(val version: Int, val preBlockHash: String, val merkleRootHash: String, val timestamp: Int, val bits: Int, val nonce: Int) {
+open class BlockHeader(val version: Int, val preBlockHash: String, val merkleRootHash: String, val timestamp: Int, val bits: Int, val nonce: Int) {
 
     companion object {
         fun fromBytes(data: ByteArray): BlockHeader {
@@ -20,6 +20,7 @@ class BlockHeader(val version: Int, val preBlockHash: String, val merkleRootHash
             return BlockHeader(ver, preBlockHash, merkleRoot, timestamp, bits, nonce)
         }
 
+        const val naturalSize = 80
         const val standardSize = 81
     }
 
