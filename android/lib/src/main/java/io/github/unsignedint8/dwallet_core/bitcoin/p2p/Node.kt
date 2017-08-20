@@ -106,19 +106,26 @@ class Node : Event() {
         var shutdown = false
 
         try {
-            var data = socket.readAsync(Message.standardSize).await()
-            if (data == null) {
-                println("data is null, socket connected: ${socket.isConnected}")
-                shutdown = true
-                return
+            var data = ByteArray(0)
+
+            while (data.size < Message.standardSize) {
+                val buf = socket.readAsync(Message.standardSize).await()
+                if (buf == null) {
+                    println("data is null, socket connected: ${socket.isConnected}")
+                    shutdown = true
+                    return
+                }
+
+                data += buf
             }
 
-            if (data.size != Message.standardSize) {
+
+            if (data.size < Message.standardSize) {
                 println("data size are not equal, actual: ${data?.size} expected: ${Message.standardSize}")
                 return
             }
 
-            val msg = Message.fromBytes(data)
+            val msg = Message.fromBytes(data.take(24).toByteArray())
             if (!magic.contentEquals(msg.magic)) {
                 println("magic numbers are not equal")
                 return
@@ -126,7 +133,7 @@ class Node : Event() {
 
             println("cmd: ${msg.command}")
 
-            data = ByteArray(0)
+            data = data.takeLast(data.size - 24).toByteArray()
             while (data.size < msg.length) {
                 val part = socket.readAsync(msg.length - data.size).await()
 
@@ -253,8 +260,16 @@ class Node : Event() {
         sendMessage(GetData.text, GetData(items).toBytes())
     }
 
-    fun sendGetMerkleBlocks(blocks: List<InventoryVector>) {
-        blocks.filter { it.type == InvTypes.MSG_BLOCK }.forEach { it.type = InvTypes.MSG_FILTERED_BLOCK }
-        sendMessage(GetData.text, GetData(blocks).toBytes())
+    fun sendGetMerkleblocks(hashes: List<String>) {
+        val blocks = hashes.map { InventoryVector(InvTypes.MSG_FILTERED_BLOCK, it) }
+        sendGetData(blocks)
+    }
+
+    fun handleMerkleblock(data: ByteArray) {
+
+    }
+
+    fun onMerkleblocks(callback: (sender: Node, merkleblocks: List<MerkleBlock>) -> Unit) {
+        super.register(MerkleBlock.text, callback as Callback)
     }
 }

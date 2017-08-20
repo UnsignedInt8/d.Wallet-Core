@@ -22,6 +22,8 @@ class MerkleBlock(version: Int, preBlockHash: String, merkleRootHash: String, ti
 
             return MerkleBlock(header.version, header.preBlockHash, header.merkleRootHash, header.timestamp, header.bits, header.nonce, totalTxs, hashes, flags)
         }
+
+        const val text = "merkleblock"
     }
 
     override fun toBytes() = super.toBytes() + totalTxs.toInt32LEBytes() + hashes.size.toVarIntBytes() + hashes.reduce(ByteArray(0), { item, acc -> acc + item.hashToBytes() }) + flags.size.toVarIntBytes() + flags.toByteArray()

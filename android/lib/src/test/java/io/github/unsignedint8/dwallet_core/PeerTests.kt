@@ -40,9 +40,9 @@ class PeerTests {
     @Test
     fun testNodeVersion() {
         var gotcount = 0
-        val host = "localhost"
-        val port = 19000
-        val magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
+        val host = "119.179.50.119"
+        val port = 8333
+        val magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
 
         val node = Node()
         node.magic = magic
@@ -61,7 +61,7 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-            node.sendGetMerkleBlocks(invs)
+            node.sendGetMerkleblocks(invs.map { it.hash })
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
@@ -76,7 +76,7 @@ class PeerTests {
             println("socket port: ${node.localPort}")
         }
 
-        runBlocking { delay(100 * 1000) }
+        runBlocking { delay(60 * 1000) }
 
     }
 }
