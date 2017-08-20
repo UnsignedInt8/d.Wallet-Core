@@ -79,5 +79,7 @@ class MessageTests {
         assertEquals("0000001803382e2e35ac47fb0833f5d725663190b4a7f831019f37efcab91031", b.preBlockHash)
         assertEquals(1, b.totalTxs)
         assertArrayEquals(arrayOf(0.toByte()), b.flags.toTypedArray())
+
+        assertEquals(raw.toHexString(), b.toBytes().toHexString())
     }
 }
