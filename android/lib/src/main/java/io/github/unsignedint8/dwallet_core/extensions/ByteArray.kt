@@ -129,6 +129,10 @@ fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>):
     return list
 }
 
+fun <T> ByteArray.readVarListAndSize(deserializer: (bytes: ByteArray) -> Pair<T, Int>) {
+
+}
+
 fun ByteArray.toHashString(): String {
     val data = this.clone()
     data.reverse()

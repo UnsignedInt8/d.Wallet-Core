@@ -12,7 +12,7 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
         fun fromBytes(data: ByteArray) {
             val version = data.readInt32LE()
-
+//data.readVarList {  }
         }
 
         const val message = "tx"
@@ -35,7 +35,7 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
         companion object {
 
-            fun fromBytes(data: ByteArray): TxIn {
+            fun fromBytes(data: ByteArray): Pair<TxIn, Int> {
                 val outPoint = OutputPoint.fromBytes(data)
 
                 val (scriptLength, varIntSize) = data.readVarIntValueSize(36)
@@ -43,7 +43,9 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
                 val seq = data.readInt32LE((36 + varIntSize + scriptLength).toInt())
 
-                return TxIn(outPoint, signatureScript, seq)
+                val length = (36 + varIntSize + scriptLength + 4).toInt()
+
+                return Pair(TxIn(outPoint, signatureScript, seq), length)
             }
         }
 
