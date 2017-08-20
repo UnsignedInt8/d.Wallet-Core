@@ -252,4 +252,9 @@ class Node : Event() {
         println("send getdata")
         sendMessage(GetData.text, GetData(items).toBytes())
     }
+
+    fun sendGetMerkleBlocks(blocks: List<InventoryVector>) {
+        blocks.filter { it.type == InvTypes.MSG_BLOCK }.forEach { it.type = InvTypes.MSG_FILTERED_BLOCK }
+        sendMessage(GetData.text, GetData(blocks).toBytes())
+    }
 }

@@ -46,7 +46,7 @@ class PeerTests {
 
         val node = Node()
         node.magic = magic
-        node.initBloomFilter(arrayOf("024649bb5134dd87b1d02ef88ecc751ccf0b33669541c04ea6a2c34e9fdd6d9d05".hexToByteArray(), "02cee8043452a0e2e9dc75526a6ed2ce2f53269bd5460b0694fb9619e073c819f3".hexToByteArray()),
+        node.initBloomFilter(arrayOf("955fdc03645db4fc7d60146416e6db31386c392d".hexToByteArray(), "f0dac0a82914efb6de792e92423089c1b625ef9f".hexToByteArray()),
                 0.0001, nFlags = BloomFilter.BLOOM_UPDATE_ALL)
 
         node.onHeaders { _, headers ->
@@ -61,7 +61,7 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-//            node.sendGetData(invs)
+            node.sendGetMerkleBlocks(invs)
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }

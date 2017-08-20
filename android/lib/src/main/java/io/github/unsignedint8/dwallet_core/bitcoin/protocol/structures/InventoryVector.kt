@@ -6,7 +6,7 @@ import io.github.unsignedint8.dwallet_core.extensions.*
  * Created by unsignedint8 on 8/16/17.
  */
 
-class InventoryVector(val type: InvTypes, val hash: String) {
+class InventoryVector(var type: InvTypes, val hash: String) {
 
     companion object {
         fun fromBytes(bytes: ByteArray): InventoryVector {
