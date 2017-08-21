@@ -40,6 +40,8 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
         const val message = "tx"
     }
 
+    fun toBytes() = version.toInt32LEBytes() + txIns.size.toVarIntBytes() + txIns.reduce(ByteArray(0), { item, acc -> acc + item.toBytes() }) + txOuts.size.toVarIntBytes() + txOuts.reduce(ByteArray(0), { item, acc -> acc + item.toBytes() }) + lockTime.toInt32LEBytes()
+
     class TxIn(val prevOutput: OutputPoint, val signatureScript: ByteArray, val sequence: Int) {
 
         class OutputPoint(val referencedTxHash: String, val index: Int) {

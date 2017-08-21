@@ -26,7 +26,7 @@ class Node : Event() {
         msgHandlers[Reject.text] = fun(d: ByteArray) { handleReject(d) }
         msgHandlers[GetHeaders.headers] = fun(d: ByteArray) { handleHeaders(d) }
         msgHandlers[InventoryVector.inv] = fun(d: ByteArray) { handleInv(d) }
-        msgHandlers[MerkleBlock.text] = fun(d: ByteArray) { handleMerkleblock(d) }
+        msgHandlers[MerkleBlock.message] = fun(d: ByteArray) { handleMerkleblock(d) }
     }
 
     val peerAddress: String
@@ -257,7 +257,6 @@ class Node : Event() {
     }
 
     fun sendGetData(items: List<InventoryVector>) {
-        println("send getdata")
         sendMessage(GetData.text, GetData(items).toBytes())
     }
 
@@ -268,10 +267,14 @@ class Node : Event() {
 
     private fun handleMerkleblock(data: ByteArray) {
         val block = MerkleBlock.fromBytes(data)
-        super.trigger(MerkleBlock.text, this, block)
+        super.trigger(MerkleBlock.message, this, block)
     }
 
     fun onMerkleblocks(callback: (sender: Node, merkleblock: MerkleBlock) -> Unit) {
-        super.register(MerkleBlock.text, callback as Callback)
+        super.register(MerkleBlock.message, callback as Callback)
+    }
+
+    fun sendMempool() {
+        sendMessage("mempool")
     }
 }

@@ -9,7 +9,7 @@ import io.github.unsignedint8.dwallet_core.extensions.*
 class MerkleBlock(version: Int, preBlockHash: String, merkleRootHash: String, timestamp: Int, bits: Int, nonce: Int, val totalTxs: Int, val hashes: List<String>, val flags: List<Byte>) :
         BlockHeader(version, preBlockHash, merkleRootHash, timestamp, bits, nonce) {
 
-    private constructor(version: Int, preBlockHash: String, merkleRootHash: String, timestamp: Int, bits: Int, nonce: Int, totalTxs: Int, hashes: List<String>, flags: List<Byte>, hash: String?) : this(version, preBlockHash, merkleRootHash, timestamp, bits, nonce, totalTxs, hashes, flags) {
+    private constructor(version: Int, preBlockHash: String, merkleRootHash: String, timestamp: Int, bits: Int, nonce: Int, totalTxs: Int, hashes: List<String>, flags: List<Byte>, hash: String) : this(version, preBlockHash, merkleRootHash, timestamp, bits, nonce, totalTxs, hashes, flags) {
         this.hash = hash
     }
 
@@ -27,10 +27,8 @@ class MerkleBlock(version: Int, preBlockHash: String, merkleRootHash: String, ti
             return MerkleBlock(header.version, header.preBlockHash, header.merkleRootHash, header.timestamp, header.bits, header.nonce, totalTxs, hashes, flags, header.hash)
         }
 
-        const val text = "merkleblock"
+        const val message = "merkleblock"
     }
 
     override fun toBytes() = super.toBytes() + totalTxs.toInt32LEBytes() + hashes.size.toVarIntBytes() + hashes.reduce(ByteArray(0), { item, acc -> acc + item.hashToBytes() }) + flags.size.toVarIntBytes() + flags.toByteArray()
-
-    override var hash: String? = null
 }

@@ -61,7 +61,8 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-            node.sendGetMerkleblocks(invs.map { it.hash })
+//            node.sendGetMerkleblocks(invs.map { it.hash })
+            node.sendGetData(invs.takeLast(5))
         }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
