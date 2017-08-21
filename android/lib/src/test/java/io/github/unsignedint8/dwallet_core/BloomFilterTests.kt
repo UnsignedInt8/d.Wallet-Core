@@ -11,7 +11,7 @@ import org.junit.Assert.*
  * Created by unsignedint8 on 8/14/17.
  */
 
-class HashTests {
+class BloomFilterTests {
     @Test
     fun testToHex() {
         assertEquals("616263", "abc".toByteArray().toHexString())

@@ -113,8 +113,14 @@ fun ByteArray.readVarStringComponents(): Triple<String, Int, Long> {
     return Triple(String(this, offset, len.toInt()), offset, len)
 }
 
-fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>): List<T> {
-    var (value, offset) = readVarIntValueSize()
+fun <T> ByteArray.readVarList(offset: Int = 0, deserializer: (bytes: ByteArray) -> Pair<T, Int>): List<T> {
+    return readVarListAndSize(offset, deserializer).first
+}
+
+fun <T> ByteArray.readVarListAndSize(begin: Int = 0, deserializer: (bytes: ByteArray) -> Pair<T, Int>): Pair<List<T>, Long> {
+    var (value, offset) = readVarIntValueSize(begin)
+    offset += begin
+
     var data = this.sliceArray(offset.toInt())
     val list = mutableListOf<T>()
 
@@ -126,11 +132,7 @@ fun <T> ByteArray.readVarList(deserializer: (bytes: ByteArray) -> Pair<T, Int>):
         list.add(obj)
     }
 
-    return list
-}
-
-fun <T> ByteArray.readVarListAndSize(deserializer: (bytes: ByteArray) -> Pair<T, Int>) {
-
+    return Pair(list, offset-begin)
 }
 
 fun ByteArray.toHashString(): String {

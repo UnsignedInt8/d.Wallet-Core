@@ -40,7 +40,7 @@ class PeerTests {
     @Test
     fun testNodeVersion() {
         var gotcount = 0
-        val host = "119.179.50.119"
+        val host = "120.77.42.241"
         val port = 8333
         val magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
 

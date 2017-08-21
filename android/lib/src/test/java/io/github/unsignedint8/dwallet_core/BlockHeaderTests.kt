@@ -9,7 +9,7 @@ import org.junit.Assert.*
  * Created by unsignedint8 on 8/18/17.
  */
 
-class StructureTests {
+class BlockHeaderTests {
     @Test
     fun testBlockHeader() {
         val raw = "000000207efc10a9a0e343ccd56cbff8a203361ec4d36e30561b3b00bab6414616a9046b24bc71d07b4a9b1cc3dbb7ef28587faf1dc3bfaf65eae3736d31841c0b5a681f24489659ffff7f200400000001020000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff0502ef090101ffffffff02052a01000000000023210316b2aa472599f676d74835f907035925d9fdff76be24c0a0f10bf017de04a809ac0000000000000000266a24aa21a9ede2f61c3f71d1defd3fa999dfa36953755c690689799962b48bebd836974e8cf90120000000000000000000000000000000000000000000000000000000000000000000000000".hexToByteArray()
@@ -20,6 +20,6 @@ class StructureTests {
         assertEquals(4, header.nonce)
         assertEquals(536870912, header.version)
 
-        assertArrayEquals(raw.take(BlockHeader.standardSize).toByteArray(), header.toBytes())
+        assertArrayEquals(raw.take(BlockHeader.naturalSize).toByteArray(), header.toBytes())
     }
 }

@@ -14,11 +14,9 @@ class MerkleBlock(version: Int, preBlockHash: String, merkleRootHash: String, ti
             val header = BlockHeader.fromBytes(data)
 
             val totalTxs = data.readInt32LE(80)
-            val hashes = data.sliceArray(84).readVarList { bytes -> Pair(bytes.sliceArray(0, 32).toHashString(), 32) }
+            val (hashes , size) = data.readVarListAndSize(84) { bytes ->  Pair(bytes.sliceArray(0, 32).toHashString(), 32) }
 
-            val (value, size) = data.sliceArray(84).readVarIntValueSize()
-            val len = (32 * value + size).toInt()
-            val flags = data.sliceArray(84 + len).readVarList { bytes -> Pair(bytes[0], 1) }
+            val flags = data.sliceArray(84 + size.toInt()).readVarList { bytes -> Pair(bytes[0], 1) }
 
             return MerkleBlock(header.version, header.preBlockHash, header.merkleRootHash, header.timestamp, header.bits, header.nonce, totalTxs, hashes, flags)
         }

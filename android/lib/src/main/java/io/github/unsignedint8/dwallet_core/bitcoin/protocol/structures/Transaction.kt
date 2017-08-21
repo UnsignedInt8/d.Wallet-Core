@@ -10,9 +10,21 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
     companion object {
 
-        fun fromBytes(data: ByteArray) {
+        fun fromBytes(data: ByteArray): Transaction {
             val version = data.readInt32LE()
-//data.readVarList {  }
+            val (txIns, txInsLength) = data.readVarListAndSize(4) { bytes ->
+                val (txIn, len) = TxIn.fromBytes(bytes)
+                Pair(txIn, len)
+            }
+
+            val (txOuts, txOutsLength) = data.readVarListAndSize(4 + txInsLength.toInt()) { bytes ->
+                val (txOut, len) = TxOut.fromBytes(bytes)
+                Pair(txOut, len)
+            }
+
+            val lockTime = data.readInt32LE((4 + txInsLength + txOutsLength).toInt())
+
+            return Transaction(version, txIns, txOuts, lockTime)
         }
 
         const val message = "tx"
@@ -50,18 +62,26 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
         }
 
         fun toBytes() = prevOutput.toBytes() + signatureScript.size.toVarIntBytes() + signatureScript + sequence.toInt32LEBytes()
+
+        val txId: String
+            get() = prevOutput.referencedTxHash
+
+        val vout: Int
+            get() = prevOutput.index
     }
 
     class TxOut(val value: Long, val pubkeyScript: ByteArray) {
 
         companion object {
 
-            fun fromBytes(data: ByteArray): TxOut {
+            fun fromBytes(data: ByteArray): Pair<TxOut, Int> {
                 val value = data.readInt64LE()
                 val (scriptLength, varIntSize) = data.readVarIntValueSize(8)
-                val pubkeyScript = data.sliceArray((8 + scriptLength + varIntSize).toInt())
+                val offset = (8 + varIntSize).toInt()
+                val len = (offset + scriptLength).toInt()
+                val pubkeyScript = data.sliceArray(offset, len)
 
-                return TxOut(value, pubkeyScript)
+                return Pair(TxOut(value, pubkeyScript), len)
             }
         }
 
