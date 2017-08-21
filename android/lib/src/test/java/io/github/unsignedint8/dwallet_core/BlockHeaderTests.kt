@@ -19,7 +19,7 @@ class BlockHeaderTests {
         assertEquals(1503021092, header.timestamp)
         assertEquals(4, header.nonce)
         assertEquals(536870912, header.version)
-
+        println(header.hash)
         assertArrayEquals(raw.take(BlockHeader.naturalSize).toByteArray(), header.toBytes())
     }
 }

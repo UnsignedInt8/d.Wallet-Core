@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures
 
+import io.github.unsignedint8.dwallet_core.crypto.hash256
 import io.github.unsignedint8.dwallet_core.extensions.*
 
 /**
@@ -7,6 +8,12 @@ import io.github.unsignedint8.dwallet_core.extensions.*
  */
 
 class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOut>, val lockTime: Int) {
+
+    private constructor(version: Int, txIns: List<TxIn>, txOuts: List<TxOut>, lockTime: Int, hash: String) : this(version, txIns, txOuts, lockTime) {
+        id = hash
+    }
+
+    lateinit var id: String
 
     companion object {
 
@@ -24,7 +31,7 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
             val lockTime = data.readInt32LE((4 + txInsLength + txOutsLength).toInt())
 
-            return Transaction(version, txIns, txOuts, lockTime)
+            return Transaction(version, txIns, txOuts, lockTime, hash256(data).toHashString())
         }
 
         const val message = "tx"

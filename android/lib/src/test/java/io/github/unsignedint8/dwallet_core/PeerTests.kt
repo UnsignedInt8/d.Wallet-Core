@@ -40,13 +40,13 @@ class PeerTests {
     @Test
     fun testNodeVersion() {
         var gotcount = 0
-        val host = "120.77.42.241"
-        val port = 8333
-        val magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
+        val host = "localhost"// "120.77.42.241"
+        val port = 19000
+        val magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
 
         val node = Node()
         node.magic = magic
-        node.initBloomFilter(arrayOf("955fdc03645db4fc7d60146416e6db31386c392d".hexToByteArray(), "f0dac0a82914efb6de792e92423089c1b625ef9f".hexToByteArray()),
+        node.initBloomFilter(arrayOf("bc7662ecd3c4e0024d00e8647fb9ff6539a7b379".hexToByteArray()),
                 0.0001, nFlags = BloomFilter.BLOOM_UPDATE_ALL)
 
         node.onHeaders { _, headers ->
@@ -80,7 +80,7 @@ class PeerTests {
             println("socket port: ${node.localPort}")
         }
 
-        runBlocking { delay(60 * 1000) }
+        runBlocking { delay(40 * 1000) }
 
     }
 }
