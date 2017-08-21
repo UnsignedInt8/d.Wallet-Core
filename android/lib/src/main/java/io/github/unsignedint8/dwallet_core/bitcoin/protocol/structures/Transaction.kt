@@ -1,6 +1,6 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures
 
-import io.github.unsignedint8.dwallet_core.crypto.hash256
+import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 
 /**
@@ -17,7 +17,10 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
     companion object {
 
-        fun fromBytes(data: ByteArray): Transaction {
+        fun fromBytes(data: ByteArray): Transaction = fromBytes2(data).first
+
+        fun fromBytes2(data: ByteArray): Pair<Transaction, Int> {
+
             val version = data.readInt32LE()
             val (txIns, txInsLength) = data.readVarListAndSize(4) { bytes ->
                 val (txIn, len) = TxIn.fromBytes(bytes)
@@ -31,7 +34,7 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
 
             val lockTime = data.readInt32LE((4 + txInsLength + txOutsLength).toInt())
 
-            return Transaction(version, txIns, txOuts, lockTime, hash256(data).toHashString())
+            return Pair(Transaction(version, txIns, txOuts, lockTime, hash256(data).toHashString()), (4 + txInsLength + txOutsLength + 4).toInt())
         }
 
         const val message = "tx"

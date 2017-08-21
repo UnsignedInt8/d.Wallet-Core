@@ -63,7 +63,7 @@ class TxTests {
         assertEquals("2a7dcf153b5435817519fea9bab0e84981eb4cf6aab357b00aec840f902b8a5b", tx2.id)
         assertEquals(true, mb.hashes.containsAll(listOf(tx1.id, tx2.id)))
 
-        
+
     }
 
 }
