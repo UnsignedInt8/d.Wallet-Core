@@ -105,6 +105,7 @@ class Words {
                 const val OP_AND = 0x84.toByte()
                 const val OP_OR = 0x85.toByte()
                 const val OP_XOR = 0x86.toByte()
+                val items = listOf(OP_INVERT, OP_AND, OP_OR, OP_XOR)
             }
         }
 
@@ -131,6 +132,7 @@ class Words {
                 const val OP_MOD = 0x97.toByte()
                 const val OP_LSHIFT = 0x98.toByte()
                 const val OP_RSHIFT = 0x99.toByte()
+                val items = listOf(OP_2MUL, OP_2DIV, OP_MUL, OP_DIV, OP_MOD, OP_LSHIFT, OP_RSHIFT)
             }
         }
 
@@ -191,6 +193,7 @@ class Words {
             const val OP_PUBKEYHASH = 0xfd.toByte()
             const val OP_PUBKEY = 0xfe.toByte()
             const val OP_INVALIDOPCODE = 0xff.toByte()
+            val items = listOf(OP_PUBKEY, OP_PUBKEYHASH, OP_INVALIDOPCODE)
         }
     }
 
@@ -208,7 +211,13 @@ class Words {
             const val OP_RESERVED2 = 0x8a.toByte()
             const val OP_NOP1 = 0xb0.toByte()
             const val OP_NOP4 = 0xb3.toByte()
+            const val OP_NOP5 = 0xb4.toByte()
+            const val OP_NOP6 = 0xb5.toByte()
+            const val OP_NOP7 = 0xb6.toByte()
+            const val OP_NOP8 = 0xb7.toByte()
+            const val OP_NOP9 = 0xb8.toByte()
             const val OP_NOP10 = 0xb9.toByte()
+            val items = listOf(OP_RESERVED, OP_VER, OP_VERIF, OP_VERNOTIF, OP_RESERVED1, OP_RESERVED2, OP_NOP1, OP_NOP4, OP_NOP5, OP_NOP6, OP_NOP7, OP_NOP8, OP_NOP9, OP_NOP10)
         }
     }
 }
