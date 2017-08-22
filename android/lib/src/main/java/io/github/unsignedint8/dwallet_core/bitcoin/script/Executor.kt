@@ -144,4 +144,177 @@ class Executor {
     fun OP_1ADD() {
         stack.push(stack.pop().add(BigInteger.ONE))
     }
+
+    fun OP_1SUB() {
+        stack.push(stack.pop().subtract(BigInteger.ONE))
+    }
+
+    fun OP_NEGATE() {
+        stack.push(stack.pop().multiply(BigInteger.valueOf(-1)))
+    }
+
+    fun OP_ABS() {
+        stack.push(stack.pop().abs())
+    }
+
+    fun OP_NOT() {
+        if (stack.pop().compareTo(BigInteger.ZERO) == 0) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_0NOTEQUAL() {
+        if (stack.pop().compareTo(BigInteger.ZERO) == 0) {
+            OP_0()
+        } else {
+            OP_1()
+        }
+    }
+
+    fun OP_ADD() {
+        val a = stack.pop()
+        val b = stack.pop()
+        stack.push(a.add(b))
+    }
+
+    fun OP_SUB() {
+        val a = stack.pop()
+        val b = stack.pop()
+        stack.push(b.minus(a))
+    }
+
+    fun OP_MUL() = stack.push(stack.pop().multiply(stack.pop()))
+
+    fun OP_DIV() {
+        val divisor = stack.pop()
+        val dividend = stack.pop()
+        stack.push(dividend.divide(divisor))
+    }
+
+    fun OP_MOD() {
+        val divisor = stack.pop()
+        val dividend = stack.pop()
+        stack.push(dividend.mod(divisor))
+    }
+
+    fun OP_LSHIFT() {
+        val n = stack.pop()
+        val value = stack.pop()
+        stack.push(value.shiftLeft(value.toInt()))
+    }
+
+    fun OP_RSHIFT() {
+        val n = stack.pop()
+        val value = stack.pop()
+        stack.push(value.shiftRight(n.toInt()))
+    }
+
+    fun OP_BOOLAND() {
+        val result = stack.pop().compareTo(BigInteger.ZERO) != 0 && stack.pop().compareTo(BigInteger.ZERO) != 0
+        if (result)
+            OP_1()
+        else
+            OP_0()
+    }
+
+    fun OP_BOOLOR() {
+        val result = stack.pop().compareTo(BigInteger.ZERO) != 0 || stack.pop().compareTo(BigInteger.ZERO) != 0
+        if (result)
+            OP_1()
+        else
+            OP_0()
+    }
+
+    fun OP_NUMEQUAL() = OP_EQUAL()
+
+    fun OP_NUMNOTEQUAL() {
+        val a = stack.pop()
+        val b = stack.pop()
+        if (a.compareTo(b) != 0) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_LESSTHAN() {
+        val b = stack.pop()
+        val a = stack.pop()
+        if (a < b) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_GREATERTHAN() {
+        val b = stack.pop()
+        val a = stack.pop()
+
+        if (a > b) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_LESSTHANOREQUAL() {
+        val b = stack.pop()
+        val a = stack.pop()
+
+        if (a <= b) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_GREATERTHANOREQUAL() {
+        val b = stack.pop()
+        val a = stack.pop()
+
+        if (a >= b) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+    fun OP_MIN() {
+        val b = stack.pop()
+        val a = stack.pop()
+
+        if (a > b) {
+            stack.push(b)
+        } else {
+            stack.push(a)
+        }
+    }
+
+    fun OP_MAX() {
+        val b = stack.pop()
+        val a = stack.pop()
+
+        if (a > b) {
+            stack.push(a)
+        } else {
+            stack.push(b)
+        }
+    }
+
+    fun OP_WITHIN() {
+        val max = stack.pop()
+        val min = stack.pop()
+        val x = stack.pop()
+
+        if (x >= min && x < max) {
+            OP_1()
+        } else {
+            OP_0()
+        }
+    }
+
+
 }
