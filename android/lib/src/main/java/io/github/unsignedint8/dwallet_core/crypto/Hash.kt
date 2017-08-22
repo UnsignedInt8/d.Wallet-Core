@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core.crypto
 
+import org.spongycastle.crypto.digests.RIPEMD160Digest
 import java.security.MessageDigest
 
 /**
@@ -9,3 +10,7 @@ import java.security.MessageDigest
 fun sha256(data: ByteArray) = MessageDigest.getInstance("sha-256").digest(data)
 
 fun hash256(data: ByteArray) = sha256(sha256(data))
+
+fun ripemd160(data: ByteArray) = RIPEMD160Digest().digest(data)
+
+fun hash160(data: ByteArray) = ripemd160(sha256(data))

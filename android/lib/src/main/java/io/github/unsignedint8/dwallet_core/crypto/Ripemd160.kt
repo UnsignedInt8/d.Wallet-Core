@@ -14,3 +14,4 @@ fun RIPEMD160Digest.digest(input: ByteArray): ByteArray {
 
     return output
 }
+
