@@ -120,7 +120,6 @@ class Node : Event() {
                 data += buf
             }
 
-
             if (data.size < Message.standardSize) {
                 println("data size are not equal, actual: ${data?.size} expected: ${Message.standardSize}")
                 return
@@ -155,7 +154,6 @@ class Node : Event() {
                 println("verack has not been received - ${msg.command}")
                 return
             }
-
 
             val handler = msgHandlers[msg.command] ?: return
             handler(data)
