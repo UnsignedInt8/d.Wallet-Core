@@ -24,3 +24,17 @@ inline fun <S> ByteArray.reduce(seed: S, operation: (item: Byte, acc: S) -> S): 
     }
     return accumulator
 }
+
+inline fun <T> Iterable<T>.skip(n: Int): List<T> {
+    require(n >= 0) { "Requested element count $n is less than zero." }
+    if (n == 0) return this.toList()
+
+    var count = 0
+    val list = ArrayList<T>(n)
+    for (item in this) {
+        if (++count <= n)
+            continue
+        list.add(item)
+    }
+    return list
+}
