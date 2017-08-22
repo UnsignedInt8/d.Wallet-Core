@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core
 
+import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import org.junit.Test
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import io.github.unsignedint8.dwallet_core.crypto.*
@@ -35,6 +36,12 @@ class Ripemd160Tests {
         assertEquals("010966776006953D5567439E5E39F86A0D273BEE".toLowerCase(), hash160.toHexString())
 
         assertEquals("010966776006953D5567439E5E39F86A0D273BEE".toLowerCase(), hash160(input).toHexString())
+    }
+
+    @Test
+    fun testAddress() {
+        val input = "0450863AD64A87AE8A2FE83C1AF1A8403CB53F53E486D8511DAD8A04887E5B23522CD470243453A299FA9E77237716103ABC11A1DF38855ED6F2EE187E9C582BA6".hexToByteArray()
+        assertEquals("16UwLL9Risc3QfPqBUvKofHmBQ7wMtjvM", Address(input).toString())
     }
 
     @Test
