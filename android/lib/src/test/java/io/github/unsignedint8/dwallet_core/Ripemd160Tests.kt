@@ -5,6 +5,7 @@ import org.junit.Test
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
+import io.github.unsignedint8.dwallet_core.utils.BaseX
 import java.nio.charset.Charset
 import org.junit.Assert.*
 

@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core.crypto
+package io.github.unsignedint8.dwallet_core.utils
 
 import io.github.unsignedint8.dwallet_core.extensions.ZERO
 import io.github.unsignedint8.dwallet_core.extensions.toBigInteger

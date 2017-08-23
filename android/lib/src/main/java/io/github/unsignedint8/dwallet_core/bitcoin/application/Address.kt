@@ -2,6 +2,7 @@ package io.github.unsignedint8.dwallet_core.bitcoin.application
 
 import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
+import io.github.unsignedint8.dwallet_core.utils.BaseX
 
 /**
  * Created by unsignedint8 on 8/22/17.

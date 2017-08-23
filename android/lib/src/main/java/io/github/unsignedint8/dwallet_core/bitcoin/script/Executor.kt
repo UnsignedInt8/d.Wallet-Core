@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.script
 
+import io.github.unsignedint8.dwallet_core.crypto.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import java.math.BigInteger
 import java.util.*
@@ -35,19 +36,9 @@ class Executor {
 
     fun OP_FALSE() = OP_0()
 
-    fun OP_PUSHDATA1(data: ByteArray) {
-        if (data.size > 255) throw IllegalArgumentException("size too large")
-        stack.push(BigInteger(data))
-    }
-
-    fun OP_PUSHDATA2(data: ByteArray) {
-        if (data.size > 65535) throw IllegalArgumentException("size too large")
-        stack.push(BigInteger(data))
-    }
-
-    fun OP_PUSHDATA4(data: ByteArray) = stack.push(BigInteger(data))
-
     fun OP_PUSH(value: BigInteger) = stack.push(value)
+
+    fun OP_PUSH(data: ByteArray) = stack.push(BigInteger(data))
 
     fun OP_1() = stack.push(BigInteger.ONE)
 
@@ -314,6 +305,26 @@ class Executor {
         } else {
             OP_0()
         }
+    }
+
+    fun OP_RIPEMD160() {
+        OP_PUSH(ripemd160(stack.pop().toByteArray()))
+    }
+
+    fun OP_SHA1() {
+        OP_PUSH(sha1(stack.pop().toByteArray()))
+    }
+
+    fun OP_SHA256() {
+        OP_PUSH(sha256(stack.pop().toByteArray()))
+    }
+
+    fun OP_HASH160() {
+        OP_PUSH(ripemd160(sha256(stack.pop().toByteArray())))
+    }
+
+    fun OP_HASH256() {
+        OP_PUSH(sha256(sha256(stack.pop().toByteArray())))
     }
 
 
