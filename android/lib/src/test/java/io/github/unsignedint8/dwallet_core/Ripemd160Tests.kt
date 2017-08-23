@@ -4,8 +4,7 @@ import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import org.junit.Test
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import io.github.unsignedint8.dwallet_core.crypto.*
-import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
-import io.github.unsignedint8.dwallet_core.extensions.toHexString
+import io.github.unsignedint8.dwallet_core.extensions.*
 import java.nio.charset.Charset
 import org.junit.Assert.*
 
@@ -67,5 +66,30 @@ class Ripemd160Tests {
         assertEquals("FPBt6CHo3fovdL", BaseX.base58.encode("ffffffffffffffffffff".hexToByteArray()))
         assertEquals("YcVfxkQb6JRzqk5kF2tNLv", BaseX.base58.encode("ffffffffffffffffffffffffffffffff".hexToByteArray()))
         assertEquals("5Hx15HFGyep2CfPxsJKe2fXJsCVn5DEiyoeGGF6JZjGbTRnqfiD", BaseX.base58.encode("801184cd2cdd640ca42cfc3a091c51d549b2f016d454b2774019c2b2d2e08529fd206ec97e".hexToByteArray()))
+    }
+
+    @Test
+    fun testBase58decode() {
+        assertEquals("91c81cbfdd58bbd2", BaseX.base58.decode("RPGNSU3bqTX").toHexString())
+        assertEquals("000f", BaseX.base2.decode("01111").toHexString())
+        assertEquals("00ff", BaseX.base2.decode("011111111").toHexString())
+        assertEquals("0fff", BaseX.base2.decode("111111111111").toHexString())
+        assertEquals("ff00ff00", BaseX.base2.decode("11111111000000001111111100000000").toHexString())
+        assertEquals("0000000f", BaseX.base16.decode("000f").toHexString())
+        assertEquals("000fff", BaseX.base16.decode("0fff").toHexString())
+        assertEquals("", BaseX.base58.decode("").toHexString())
+        assertEquals("61", BaseX.base58.decode("2g").toHexString())
+        assertEquals("626262", BaseX.base58.decode("a3gV").toHexString())
+        assertEquals("636363", BaseX.base58.decode("aPEr").toHexString())
+        assertEquals("73696d706c792061206c6f6e6720737472696e67", BaseX.base58.decode("2cFupjhnEsSn59qHXstmK2ffpLv2").toHexString())
+        assertEquals("00eb15231dfceb60925886b67d065299925915aeb172c06647", BaseX.base58.decode("1NS17iag9jJgTHD1VXjvLCEnZuQ3rJDE9L").toHexString())
+        assertEquals("516b6fcd0f", BaseX.base58.decode("ABnLTmg").toHexString())
+        assertEquals("bf4f89001e670274dd", BaseX.base58.decode("3SEo3LWLoPntC").toHexString())
+        assertEquals("572e4794", BaseX.base58.decode("3EFU7m").toHexString())
+        assertEquals("ecac89cad93923c02321", BaseX.base58.decode("EJDM8drfXA6uyA").toHexString())
+        assertEquals("10c8511e", BaseX.base58.decode("Rt5zm").toHexString())
+        assertEquals("ffffffffffffffffffff", BaseX.base58.decode("FPBt6CHo3fovdL").toHexString())
+        assertEquals("ffffffffffffffffffffffffffffffff", BaseX.base58.decode("YcVfxkQb6JRzqk5kF2tNLv").toHexString())
+        assertEquals("801184cd2cdd640ca42cfc3a091c51d549b2f016d454b2774019c2b2d2e08529fd206ec97e", BaseX.base58.decode("5Hx15HFGyep2CfPxsJKe2fXJsCVn5DEiyoeGGF6JZjGbTRnqfiD").toHexString())
     }
 }

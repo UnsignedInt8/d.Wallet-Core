@@ -56,6 +56,34 @@ class BaseX(val alphabet: String) {
         return string
     }
 
+    fun decode(string: String): ByteArray {
+        if (string.isEmpty()) return ByteArray(0)
+
+        var bytes = mutableListOf(0)
+        string.forEachIndexed { i, c ->
+            var carry = alphaMap[c] ?: return@forEachIndexed
+
+            bytes.forEachIndexed { i, byte ->
+                carry += byte * base
+                bytes[i] = carry.and(0xff)
+                carry = carry.shr(8)
+            }
+
+            while (carry > 0) {
+                bytes.add(carry.and(0xff))
+                carry = carry.shr(8)
+            }
+        }
+
+        var k = 0
+        while (k < string.length - 1 && string[k] == leader){
+            bytes.add(0)
+            k++
+        }
+
+        return bytes.map { it.toByte() }.reversed().toByteArray()
+    }
+
     companion object {
         val base2 by lazy { BaseX("01") }
         val base8 by lazy { BaseX("01234567") }
