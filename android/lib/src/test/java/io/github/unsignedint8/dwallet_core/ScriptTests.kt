@@ -2,6 +2,7 @@ package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.application.*
 import io.github.unsignedint8.dwallet_core.bitcoin.script.*
+import io.github.unsignedint8.dwallet_core.crypto.hash160
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import java.util.*
@@ -63,5 +64,20 @@ class ScriptTests {
         assertEquals(3, ops.size)
         assertEquals(true, Interpreter.isP2SHScript(ops.map { it.first }))
         assertEquals("342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey", Address.pubkeyHashToMultisignatureAddress("19a7d869032368fd1f1e26e5e73a4ad0e474960e".hexToByteArray()))
+    }
+
+    @Test
+    fun testP2SHSignScript() {
+        // answer https://blockchain.info/tx/6a26d2ecb67f27d1fa5524763b49029d7106e91e3cc05743073461a719776192
+        // question https://blockchain.info/tx/9c08a4d78931342b37fd5f72900fb9983087e6f46c4a097d8a1f52c74e28eaf6
+
+        val pubkeyScript = "a91419a7d869032368fd1f1e26e5e73a4ad0e474960e87"
+        val pubkeyOps = Interpreter.scriptToOps(pubkeyScript.hexToByteArray())
+
+        val signScript = "5121029b6d2c97b8b7c718c325d7be3ac30f7c9d67651bce0c929f55ee77ce58efcf8451ae"
+        val signOps = Interpreter.scriptToOps(signScript.hexToByteArray())
+
+        println(signOps[1].second!!.toHexString())
+        println(hash160(signOps.last().second!!).toHexString())
     }
 }

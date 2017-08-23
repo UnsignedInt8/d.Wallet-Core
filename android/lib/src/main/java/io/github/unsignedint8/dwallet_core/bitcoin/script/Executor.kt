@@ -17,16 +17,8 @@ class Executor {
     private val stack = Stack<BigInteger>()
     private val altStack = Stack<BigInteger>()
 
-    private fun checkValidity(bytes: ByteArray) {
-
-    }
-
-    private fun parseToOpcodes(data: ByteArray, offset: Int = 0) {
-
-    }
-
-    fun parse(data: ByteArray) {
-
+    fun execute(data: ByteArray) {
+        val ops = Interpreter.scriptToOps(data)
     }
 
     /**
@@ -326,6 +318,5 @@ class Executor {
     fun OP_HASH256() {
         OP_PUSH(sha256(sha256(stack.pop().toByteArray())))
     }
-
 
 }
