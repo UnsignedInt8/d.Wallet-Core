@@ -18,10 +18,10 @@ class ECC private constructor() {
         Security.insertProviderAt(BouncyCastleProvider(), 1)
     }
 
-    fun generateKeyPair(): KeyPair {
+    fun generateKeyPair(seed: ByteArray = SecureRandom.getSeed(256)): KeyPair {
         val keyGen = KeyPairGenerator.getInstance("ECDsA", "SC")
         val ecSpec = ECGenParameterSpec("secp256k1")
-        keyGen.initialize(ecSpec, SecureRandom())
+        keyGen.initialize(ecSpec, SecureRandom(seed))
         return keyGen.generateKeyPair()
     }
 }
