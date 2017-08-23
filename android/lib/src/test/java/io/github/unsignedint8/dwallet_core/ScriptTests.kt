@@ -1,6 +1,6 @@
 package io.github.unsignedint8.dwallet_core
 
-import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
+import io.github.unsignedint8.dwallet_core.bitcoin.application.*
 import io.github.unsignedint8.dwallet_core.bitcoin.script.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
@@ -42,5 +42,17 @@ class ScriptTests {
 
         assertEquals(3, ops.size)
         assertArrayEquals(arrayOf(Words.Crypto.OP_HASH256.raw, 32.toByte(), Words.Bitwise.OP_EQUAL.raw), ops.map { it.first }.toTypedArray())
+    }
+
+    @Test
+    fun testStandard() {
+        var script = "48304502207fba64e8b5a5027ecc3acb6df9a666bc72feb668622b3b49f120967fd4b67a26022100978e3954c8ac40f19a80f787ad3ecce4f54b9a6155c7720246cfbf43c66e9a5f01410453e4880d737f41e8ece50b99f4524bad7ac10a6403fad016b7f606a09d0574bb13d5ae3ef3993f2c5f130987ce85a7796804f314b64a642a224c0c525b389dac"
+        var ops = Interpreter.scriptToOps(script.hexToByteArray())
+        assertEquals("19c7JHZoNK2XmvB1rznrjgpDfmxMvx2EWc", Address(ops.last().second!!).toString())
+
+        script = "76a914494294730abf03c846988654f15d1864469c737a88ac"
+        ops = Interpreter.scriptToOps(script.hexToByteArray())
+        assertArrayEquals(arrayOf(Words.Stack.OP_DUP.raw, Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUALVERIFY.raw, Words.Crypto.OP_CHECKSIG.raw), ops.map { it.first }.toTypedArray())
+
     }
 }
