@@ -14,6 +14,8 @@ class Interpreter {
 
         fun checkValidity(opcode: Byte) = !disabledCodes.any { it == opcode }
 
+        fun checkOpsValidity(opcodes: List<Byte>) = opcodes.all { checkValidity(it) }
+
         fun scriptToOps(data: ByteArray): List<Pair<Byte, ByteArray?>> {
             var offset = 0
             val ops = mutableListOf<Pair<Byte, ByteArray?>>()
@@ -27,7 +29,7 @@ class Interpreter {
             return ops
         }
 
-        fun parse(data: ByteArray, offset: Int = 0): Triple<Byte, ByteArray?, Int> {
+        private fun parse(data: ByteArray, offset: Int = 0): Triple<Byte, ByteArray?, Int> {
             val opcode = data[offset]
             var operand: ByteArray? = null
             var totalLength = 1
