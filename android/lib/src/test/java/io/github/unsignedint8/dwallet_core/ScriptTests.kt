@@ -78,6 +78,6 @@ class ScriptTests {
         val signOps = Interpreter.scriptToOps(signScript.hexToByteArray())
 
         println(signOps[1].second!!.toHexString())
-        println(hash160(signOps.last().second!!).toHexString())
+        println(Address(signOps[1].second!!).toString())
     }
 }
