@@ -26,12 +26,16 @@ class Address(val pubkey: ByteArray, val netId: ByteArray = Main.pubkeyHash) {
             val tpubKey = byteArrayOf(0x04, 0x35, 0x87.toByte(), 0xCF.toByte())
             val tprvKey = byteArrayOf(0x04, 0x35, 0x83.toByte(), 0x94.toByte())
         }
+
+        fun pubkeyHashToMultisignatureAddress(pubkeyHash: ByteArray, netId: ByteArray = Main.scriptHash) = pubkeyHashToBase58Checking(pubkeyHash, netId)
+
+        private fun pubkeyHashToBase58Checking(pubkeyHash: ByteArray, netId: ByteArray): String {
+            val ex = netId + pubkeyHash
+            val checksum = hash256(ex).take(4).toByteArray()
+            val addr = ex + checksum
+            return BaseX.base58.encode(addr)
+        }
     }
 
-    override fun toString(): String {
-        val ripemd160Ex = netId + hash160(pubkey)
-        val checksum = hash256(ripemd160Ex).take(4).toByteArray()
-        val address = ripemd160Ex + checksum
-        return BaseX.base58.encode(address)
-    }
+    override fun toString() = pubkeyHashToBase58Checking(hash160(pubkey), netId)
 }
