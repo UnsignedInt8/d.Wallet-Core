@@ -14,10 +14,24 @@ class Interpreter {
 
         fun checkValidity(opcode: Byte) = !disabledCodes.any { it == opcode }
 
-        fun parse(data: ByteArray): Triple<Byte, ByteArray?, Int> {
-            val opcode = data.first()
+        fun scriptToOps(data: ByteArray): List<Pair<Byte, ByteArray?>> {
+            var offset = 0
+            val ops = mutableListOf<Pair<Byte, ByteArray?>>()
+
+            while (offset < data.size) {
+                val (opcode, operand, length) = parse(data, offset)
+                ops.add(Pair(opcode, operand))
+                offset += length
+            }
+
+            return ops
+        }
+
+        fun parse(data: ByteArray, offset: Int = 0): Triple<Byte, ByteArray?, Int> {
+            val opcode = data[offset]
             var operand: ByteArray? = null
             var totalLength = 1
+            var offset = offset
 
             when (opcode) {
 
@@ -26,25 +40,35 @@ class Interpreter {
                 }
 
                 in Words.Constants.NA_LOW.raw..Words.Constants.NA_HIGH.raw -> {
-                    operand = data.sliceArray(1, opcode.toInt())
+                    offset += 1
+                    operand = data.sliceArray(offset, offset + opcode)
+                    totalLength += opcode.toInt()
+                }
+
+                in Words.Constants.NA_LOW.raw..Words.Constants.NA_HIGH.raw -> {
+                    offset += 1
+                    operand = data.sliceArray(offset, offset + opcode.toInt())
                     totalLength += opcode.toInt()
                 }
 
                 Words.Constants.OP_PUSHDATA1.raw -> {
-                    val dataLength = data[1].toInt()
-                    operand = data.sliceArray(2, 2 + dataLength)
+                    val dataLength = data[offset + 1].toInt()
+                    offset += 2
+                    operand = data.sliceArray(offset, offset + dataLength)
                     totalLength += 1 + dataLength
                 }
 
                 Words.Constants.OP_PUSHDATA2.raw -> {
-                    val dataLength = data.readInt16LE(1).toInt()
-                    operand = data.sliceArray(3, 3 + dataLength)
+                    val dataLength = data.readInt16LE(offset + 1).toInt()
+                    offset += 3
+                    operand = data.sliceArray(offset, offset + dataLength)
                     totalLength += 2 + dataLength
                 }
 
                 Words.Constants.OP_PUSHDATA4.raw -> {
-                    val dataLength = data.readInt32LE(1)
-                    operand = data.sliceArray(5, 5 + dataLength)
+                    val dataLength = data.readInt32LE(offset + 1)
+                    offset += 5
+                    operand = data.sliceArray(offset, offset + dataLength)
                     totalLength += 4 + dataLength
                 }
             }
