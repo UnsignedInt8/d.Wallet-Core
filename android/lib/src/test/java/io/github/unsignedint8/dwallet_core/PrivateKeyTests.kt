@@ -2,7 +2,11 @@ package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import io.github.unsignedint8.dwallet_core.bitcoin.application.PrivateKey
+import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.ExtendedKey
+import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Hash
+import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Seed
 import io.github.unsignedint8.dwallet_core.bitcoin.script.Interpreter
+import io.github.unsignedint8.dwallet_core.crypto.Crypto
 import io.github.unsignedint8.dwallet_core.crypto.hash256
 import io.github.unsignedint8.dwallet_core.extensions.*
 import io.github.unsignedint8.dwallet_core.utils.BaseX
@@ -10,11 +14,16 @@ import org.junit.Test
 import java.math.BigInteger
 import org.junit.Assert.*
 
+
 /**
  * Created by unsignedint8 on 8/24/17.
  */
 
 class PrivateKeyTests {
+
+    init {
+        Crypto.initSecurityEnvironment()
+    }
 
     @Test
     fun testRandomPrivKey() {
@@ -51,5 +60,20 @@ class PrivateKeyTests {
 
         scriptSign = "0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3" // "47304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901"
         val ops2 = Interpreter.scriptToOps(scriptSign.hexToByteArray())
+    }
+
+    @Test
+    fun testUncompressedHDKey() {
+
+        val passphraseHash = Hash("check this one *&##X87 check this 2 this passphrase 593 is tough to crack&@!!", 50000, "SHA-256").hash()!!
+        assertEquals("30dde251aa487b04c7f35f2288efba6a6c89fd338aaad5cf60fc6b81fb23a476", passphraseHash.toHexString())
+
+        val keyHash = Hash(passphraseHash).getHmacSHA512(Seed.BITCOIN_SEED)
+        assertEquals("6d9e7e5fd8aa569c98f1bea704cbbb10252c76e8013bd69a7fefdc04822a09d4a24a2cae513d6c70c4076d685c56945b565810ee70bdb96198a2b60b83e1e7ba", keyHash.toHexString())
+
+        val exKey = ExtendedKey(keyHash, false)
+        assertEquals("a24a2cae513d6c70c4076d685c56945b565810ee70bdb96198a2b60b83e1e7ba", exKey.chainCode!!.toHexString())
+        assertEquals("HarqLWPftSVzTwufETzTJ6jCT7jXuUxVDzzNg2t9qiUHME3687vYBVTyTLAFjH4exdNYCbFtGnzvgWHnCJSFA2jkCa7zj8hCnJSZv9yukLsmHGzFFXtYUYoXZGHS5SA8DDq6QS4D3gzi3UoDYMi7J4E2q9h", exKey.serializePublic())
+        assertEquals("xprv9s21ZrQH143K3g56LSYgKiKx4LD4GJh27DUXRqShDpn2cAD4EAPbVn5T9BqqcGswHzcrztzJEJMHpS7wstai53cS6esPPkRGjp4voMhXrTP", exKey.serializePrivate())
     }
 }
