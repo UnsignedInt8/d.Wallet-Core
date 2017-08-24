@@ -109,7 +109,6 @@ class Words {
     }
 
     enum class Crypto(val raw: Byte) {
-
         OP_RIPEMD160(0xa6.toByte()),
         OP_SHA1(0xa7.toByte()),
         OP_SHA256(0xa8.toByte()),
@@ -123,7 +122,6 @@ class Words {
     }
 
     enum class Locktime(val raw: Byte) {
-
         OP_CHECKLOCKTIMEVERIFY(0xb1.toByte()),
         OP_CHECKSEQUENCEVERIFY(0xb2.toByte()),
     }
@@ -171,6 +169,7 @@ class Words {
             /**
              * Any opcode not assigned is also reserved. Using an unassigned opcode makes the transaction invalid.
              */
+
             OP_RESERVED(0x50.toByte()),
             OP_VER(0x62.toByte()),
             OP_VERIF(0x65.toByte()),

@@ -34,17 +34,21 @@ class PrivateKey {
 
     @Transient private var pubKeyHash: ByteArray? = null
 
-    /** Generates an entirely new keypair.  */
+    /**
+     *  Generates an entirely new keypair.
+     */
     constructor() {
         val generator = ECKeyPairGenerator()
+
         val keygenParams = ECKeyGenerationParameters(ecParams, secureRandom)
         generator.init(keygenParams)
+
         val keypair = generator.generateKeyPair()
         val privParams = keypair.private as ECPrivateKeyParameters
         val pubParams = keypair.public as ECPublicKeyParameters
+
         priv = privParams.d
-        // The public key is an encoded point on the elliptic curve. It has no meaning independent of the curve.
-        pubKey = pubParams.q.getEncoded(true)
+        pubKey = pubParams.q.getEncoded(true) // The public key is an encoded point on the elliptic curve. It has no meaning independent of the curve.
     }
 
     /**
@@ -56,42 +60,7 @@ class PrivateKey {
         this.pubKey = publicKeyFromPrivate(privKey)
     }
 
-    /**
-     * Output this ECKey as an ASN.1 encoded private key, as understood by OpenSSL or used by the BitCoin reference
-     * implementation in its wallet storage format.
-     */
-    //    fun toASN1(): ByteArray {
-//        try {
-//            val baos = ByteArrayOutputStream(400)
-//            val encoder = ASN1OutputStream(baos)
-//
-//            // ASN1_SEQUENCE(EC_PRIVATEKEY) = {
-//            //   ASN1_SIMPLE(EC_PRIVATEKEY, version, LONG),
-//            //   ASN1_SIMPLE(EC_PRIVATEKEY, privateKey, ASN1_OCTET_STRING),
-//            //   ASN1_EXP_OPT(EC_PRIVATEKEY, parameters, ECPKPARAMETERS, 0),
-//            //   ASN1_EXP_OPT(EC_PRIVATEKEY, publicKey, ASN1_BIT_STRING, 1)
-//            // } ASN1_SEQUENCE_END(EC_PRIVATEKEY)
-//            val seq = DERSequenceGenerator(encoder)
-//            seq.addObject(DERInteger(1)) // version
-//            seq.addObject(DEROctetString(priv.toByteArray()))
-//            seq.addObject(DERTaggedObject(0, SECNamedCurves.getByName("secp256k1").getDERObject()))
-//            seq.addObject(DERTaggedObject(1, DERBitString(pubKey)))
-//            seq.close()
-//            encoder.close()
-//            return baos.toByteArray()
-//        } catch (e: IOException) {
-//            throw RuntimeException(e)  // Cannot happen, writing to memory stream.
-//        }
-//
-//    }
-
-
-    override fun toString(): String {
-        val b = StringBuffer()
-        b.append("pub:").append(pubKey.toHexString())
-        b.append(" priv:").append(priv.toByteArray().toHexString())
-        return b.toString()
-    }
+    override fun toString() = "pub: ${pubKey.toHexString()} priv: ${priv.toByteArray().toHexString()}"
 
     /**
      * Returns the address that corresponds to the public part of this ECKey. Note that an address is derived from
@@ -104,25 +73,28 @@ class PrivateKey {
      * 32 bytes long.
      */
     fun sign(input: ByteArray): ByteArray {
+
         val signer = ECDSASigner()
-        val privKey = ECPrivateKeyParameters(priv, ecParams)
-        signer.init(true, privKey)
-        val sigs = signer.generateSignature(input)
+        signer.init(true, ECPrivateKeyParameters(priv, ecParams))
+
+        val signature = signer.generateSignature(input)
+        var bos: ByteArrayOutputStream?=null
 
         // What we get back from the signer are the two components of a signature, r and s. To get a flat byte stream
         // of the type used by BitCoin we have to encode them using DER encoding, which is just a way to pack the two
         // components into a structure.
         try {
-            val bos = ByteArrayOutputStream()
+            bos = ByteArrayOutputStream()
             val seq = DERSequenceGenerator(bos)
-            seq.addObject(ASN1Integer(sigs[0]))
-            seq.addObject(ASN1Integer(sigs[1]))
+            seq.addObject(ASN1Integer(signature[0]))
+            seq.addObject(ASN1Integer(signature[1]))
             seq.close()
             return bos.toByteArray()
         } catch (e: IOException) {
             throw RuntimeException(e)  // Cannot happen.
+        } finally {
+            bos?.close()
         }
-
     }
 
     /**

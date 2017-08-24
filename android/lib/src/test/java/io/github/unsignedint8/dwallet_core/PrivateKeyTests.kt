@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core
 
+import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import io.github.unsignedint8.dwallet_core.bitcoin.application.PrivateKey
 import io.github.unsignedint8.dwallet_core.bitcoin.script.Interpreter
 import io.github.unsignedint8.dwallet_core.crypto.hash256
@@ -35,5 +36,20 @@ class PrivateKeyTests {
         assertEquals("0271e80b9425e4116cb9bea13792f690d956788aefb4f39632f6cecf8a59508972", pp.pubKey.toHexString())
     }
 
+    @Test
+    fun testSignature() {
+        // regtest tx
 
+        val wifPriv = "cTf3uEpv9UuKLLmvvR3Zr2riiJ53FjjsUJZ35CWfT5ehiyc78uoW"
+
+        var scriptSign = "483045022100d68415c728150daa0abf58d1c530eb4e82ab50be73bcd60745eba2f856bcae02022011732cbdfbe0b811dae554c239e42227ee367d72faf707d4af6e321d0e69c4960121034bf9a0bd44d38531e1d714c0d9ccf77c1a1a92cda24b44e403e274ac8d424076"
+        val ops = Interpreter.scriptToOps(scriptSign.hexToByteArray())
+        val signature = ops.first().second!!
+        val pubkey = ops.last().second!!
+
+        assertEquals("mnpbqSLQ3r293VHSjN82Ht63zf3PD8gBmm", Address(pubkey, Address.Network.BTC.Testnet.pubkeyHash).toString())
+
+        scriptSign = "0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3" // "47304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901"
+        val ops2 = Interpreter.scriptToOps(scriptSign.hexToByteArray())
+    }
 }
