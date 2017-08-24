@@ -2,7 +2,6 @@ package io.github.unsignedint8.dwallet_core
 
 import io.github.unsignedint8.dwallet_core.bitcoin.application.*
 import io.github.unsignedint8.dwallet_core.bitcoin.script.*
-import io.github.unsignedint8.dwallet_core.crypto.hash160
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
 import java.util.*
@@ -54,7 +53,7 @@ class ScriptTests {
         script = "76a914494294730abf03c846988654f15d1864469c737a88ac"
         ops = Interpreter.scriptToOps(script.hexToByteArray())
         assertArrayEquals(arrayOf(Words.Stack.OP_DUP.raw, Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUALVERIFY.raw, Words.Crypto.OP_CHECKSIG.raw), ops.map { it.first }.toTypedArray())
-        assertEquals(true, Interpreter.isP2PKHScript(ops.map { it.first }))
+        assertEquals(true, Interpreter.isP2PKHOutScript(ops.map { it.first }))
     }
 
     @Test
@@ -62,7 +61,7 @@ class ScriptTests {
         var script = "a91419a7d869032368fd1f1e26e5e73a4ad0e474960e87"
         var ops = Interpreter.scriptToOps(script.hexToByteArray())
         assertEquals(3, ops.size)
-        assertEquals(true, Interpreter.isP2SHScript(ops.map { it.first }))
+        assertEquals(true, Interpreter.isP2SHOutScript(ops.map { it.first }))
         assertEquals("342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey", Address.pubkeyHashToMultisignatureAddress("19a7d869032368fd1f1e26e5e73a4ad0e474960e".hexToByteArray()))
     }
 

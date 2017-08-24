@@ -38,3 +38,12 @@ inline fun <T> Iterable<T>.skip(n: Int): List<T> {
     }
     return list
 }
+
+inline fun ByteArray.skip(n: Int): ByteArray {
+    require(n >= 0)
+    if (n == 0) return this
+
+    var array = ArrayList<Byte>()
+    this.filterIndexedTo(array) { count, item -> count + 1 > n }
+    return array.toByteArray()
+}

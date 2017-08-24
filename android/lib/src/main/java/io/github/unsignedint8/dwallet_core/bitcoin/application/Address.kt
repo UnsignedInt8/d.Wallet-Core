@@ -13,7 +13,7 @@ class Address(val pubkey: ByteArray, val netId: ByteArray = BTC.Main.pubkeyHash)
 
         fun pubkeyHashToMultisignatureAddress(pubkeyHash: ByteArray, netId: ByteArray = BTC.Main.scriptHash) = pubkeyHashToBase58Checking(pubkeyHash, netId)
 
-        private fun pubkeyHashToBase58Checking(pubkeyHash: ByteArray, netId: ByteArray): String {
+        fun pubkeyHashToBase58Checking(pubkeyHash: ByteArray, netId: ByteArray): String {
             val ex = netId + pubkeyHash
             val checksum = hash256(ex).take(4).toByteArray()
             val addr = ex + checksum
@@ -49,7 +49,7 @@ class Address(val pubkey: ByteArray, val netId: ByteArray = BTC.Main.pubkeyHash)
 
         object LTC {
 
-            object  Main {
+            object Main {
                 val pubkeyHash = byteArrayOf(0x30)
                 val scriptHash = byteArrayOf(0x05)
             }
@@ -58,4 +58,6 @@ class Address(val pubkey: ByteArray, val netId: ByteArray = BTC.Main.pubkeyHash)
     }
 
     override fun toString() = pubkeyHashToBase58Checking(hash160(pubkey), netId)
+
+    val pubkeyHash = hash160(pubkey)
 }

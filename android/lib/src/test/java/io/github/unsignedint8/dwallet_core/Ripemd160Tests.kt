@@ -95,4 +95,11 @@ class Ripemd160Tests {
         assertEquals("ffffffffffffffffffffffffffffffff", BaseX.base58.decode("YcVfxkQb6JRzqk5kF2tNLv").toHexString())
         assertEquals("801184cd2cdd640ca42cfc3a091c51d549b2f016d454b2774019c2b2d2e08529fd206ec97e", BaseX.base58.decode("5Hx15HFGyep2CfPxsJKe2fXJsCVn5DEiyoeGGF6JZjGbTRnqfiD").toHexString())
     }
+
+    @Test
+    fun testPrivWIF() {
+        val priv = "1E99423A4ED27608A15A2616A2B0E9E52CED330AC530EDCC32C8FFC6A526AEDD".hexToByteArray()
+        val wif = BaseX.base58.encode(priv)
+        println(wif)
+    }
 }

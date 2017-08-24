@@ -29,9 +29,9 @@ class Interpreter {
             return ops
         }
 
-        fun isP2PKHScript(opcodes: List<Byte>) = arrayOf(Words.Stack.OP_DUP.raw, Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUALVERIFY.raw, Words.Crypto.OP_CHECKSIG.raw).contentEquals(opcodes.toTypedArray())
+        fun isP2PKHOutScript(opcodes: List<Byte>) = arrayOf(Words.Stack.OP_DUP.raw, Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUALVERIFY.raw, Words.Crypto.OP_CHECKSIG.raw).contentEquals(opcodes.toTypedArray())
 
-        fun isP2SHScript(opcodes: List<Byte>) = arrayOf(Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUAL.raw).contentEquals(opcodes.toTypedArray())
+        fun isP2SHOutScript(opcodes: List<Byte>) = arrayOf(Words.Crypto.OP_HASH160.raw, 20.toByte(), Words.Bitwise.OP_EQUAL.raw).contentEquals(opcodes.toTypedArray())
 
         private fun parse(data: ByteArray, offset: Int = 0): Triple<Byte, ByteArray?, Int> {
             val opcode = data[offset]
