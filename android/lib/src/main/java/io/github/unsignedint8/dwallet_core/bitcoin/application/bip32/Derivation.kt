@@ -1,5 +1,9 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.application.bip32
 
+import android.R.attr.path
+
+
+
 /**
  * Created by Jesion on 2015-01-19.
  */
@@ -8,7 +12,7 @@ class Derivation(private val root: ExtendedKey) {
 
     @Throws(Exception::class)
     fun derive(path: String): ExtendedKey {
-        val p = path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val p = path.split("/")
         if (p.size == 2) {
             val sequence = Integer.parseInt(p[1])
             return basic(sequence)
@@ -24,6 +28,7 @@ class Derivation(private val root: ExtendedKey) {
         }
         throw Exception("Invalid derivation path")
     }
+
 
     /**
      * Level 1

@@ -10,6 +10,7 @@ import org.spongycastle.util.Arrays
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import java.io.ByteArrayOutputStream
+import java.math.BigInteger
 import kotlin.experimental.and
 import kotlin.experimental.or
 
@@ -117,18 +118,20 @@ class ExtendedKey {
     private fun getChild(i: Int): ExtendedKey {
 
         //Hmac hashing algo, which is using parents chainCode as its key
-        val mac = Mac.getInstance("HmacSHA512", "BC")
+        val mac = Mac.getInstance("HmacSHA512", "SC")
         val key = SecretKeySpec(chainCode, "HmacSHA512")
         mac.init(key)
         //treating master's pub key as base... not sure why but simple m/i derivation goes by pub only but has to be tested a lot
         val pub = this.ecKey!!.public!!
         val child = ByteArray(pub.size + 4)
         System.arraycopy(pub, 0, child, 0, pub.size)
+
         //now some byte shifting
         child[pub.size] = (i.ushr(24) and 0xff).toByte()
         child[pub.size + 1] = (i.ushr(16) and 0xff).toByte()
         child[pub.size + 2] = (i.ushr(8) and 0xff).toByte()
         child[pub.size + 3] = (i and 0xff).toByte()
+
         val keyHash = mac.doFinal(child)
         return ExtendedKey(keyHash, this.ecKey!!.isCompressed, i, this.depth + 1, fingerPrint, this.ecKey)
     }
@@ -163,8 +166,7 @@ class ExtendedKey {
     /**
      * Gets an Address
      */
-    val address: Address
-        get() = Address(public)
+    fun toAddress(netId: ByteArray = Address.Network.BTC.Main.pubkeyHash) = Address(public, netId)
 
     /**
      * Gets public key bytes
@@ -232,7 +234,7 @@ class ExtendedKey {
 
         @Throws(Exception::class)
         fun parse(serialized: String, compressed: Boolean): ExtendedKey {
-            val data = ByteUtil.fromBase58WithChecksum(serialized);
+            val data = ByteUtil.fromBase58WithChecksum(serialized)
             if (data.size != 78) {
                 throw Exception("Invalid extended key")
             }
