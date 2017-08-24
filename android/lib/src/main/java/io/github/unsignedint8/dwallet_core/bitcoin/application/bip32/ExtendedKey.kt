@@ -1,16 +1,12 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.application.bip32
 
-
 import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
-import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.ECKey
 import io.github.unsignedint8.dwallet_core.extensions.toHexString
-import io.github.unsignedint8.dwallet_core.utils.BaseX
 import org.spongycastle.util.Arrays
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import java.io.ByteArrayOutputStream
-import java.math.BigInteger
 import kotlin.experimental.and
 import kotlin.experimental.or
 
