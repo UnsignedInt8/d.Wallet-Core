@@ -5,5 +5,5 @@ package io.github.unsignedint8.dwallet_core.bitcoin.application
  */
 
 class Wallet {
-    
+
 }

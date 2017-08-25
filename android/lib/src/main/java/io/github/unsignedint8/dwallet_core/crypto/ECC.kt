@@ -7,5 +7,5 @@ import java.security.*
  */
 
 object Crypto {
-    fun initSecurityEnvironment() = Security.insertProviderAt(org.spongycastle.jce.provider.BouncyCastleProvider(), 1)
+    fun setupCryptoProvider() = Security.insertProviderAt(org.spongycastle.jce.provider.BouncyCastleProvider(), 1)
 }

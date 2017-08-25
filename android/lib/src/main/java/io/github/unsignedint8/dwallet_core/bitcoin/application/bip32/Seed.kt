@@ -7,8 +7,4 @@ import java.security.Security
  */
 object Seed {
     const val BITCOIN_SEED = "Bitcoin seed"
-
-    init {
-
-    }
 }

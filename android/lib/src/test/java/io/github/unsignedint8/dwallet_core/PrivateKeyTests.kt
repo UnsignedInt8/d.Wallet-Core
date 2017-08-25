@@ -23,7 +23,7 @@ import org.junit.Assert.*
 class PrivateKeyTests {
 
     init {
-        Crypto.initSecurityEnvironment()
+        Crypto.setupCryptoProvider()
     }
 
     @Test
@@ -76,13 +76,6 @@ class PrivateKeyTests {
         assertEquals("a24a2cae513d6c70c4076d685c56945b565810ee70bdb96198a2b60b83e1e7ba", exKey.chainCode!!.toHexString())
         assertEquals("HarqLWPftSVzTwufETzTJ6jCT7jXuUxVDzzNg2t9qiUHME3687vYBVTyTLAFjH4exdNYCbFtGnzvgWHnCJSFA2jkCa7zj8hCnJSZv9yukLsmHGzFFXtYUYoXZGHS5SA8DDq6QS4D3gzi3UoDYMi7J4E2q9h", exKey.serializePublic())
         assertEquals("xprv9s21ZrQH143K3g56LSYgKiKx4LD4GJh27DUXRqShDpn2cAD4EAPbVn5T9BqqcGswHzcrztzJEJMHpS7wstai53cS6esPPkRGjp4voMhXrTP", exKey.serializePrivate())
-
-//        val derivation = Derivation(exKey)
-//        val child = derivation.derive("m/0/0/3")
-//        assertEquals("HarqLYJ6Zz44AomHsPcCZrpnzJw8vvM1P6Jncf2KY4T5q3BQjQL4SygThSmN1G22WZfnDMJUR5RAKEQorypX6QYmYRc9FvqzSqpWkkT2rnmsrSrYgVUcRknZr7njDDyZxSupUSAVdGfnUgu8MY5V7QAA8Jf", child.serializePublic())
-//        assertEquals("04e3f6246aa3de30bf41e2d4dae1ff89e131df957b22cadf43a38d5364e34f874a804bbfd1aca4e38fe10fc55e0d1f03641918f0a1cc64f4a3d49ea5b46bef563a", child.publicHex)
-//        assertEquals("xprv9yRjeYDqF5X9XjLDomcEfK9QPZ3JGLcdaR6jaAeFnJ4a9Nem3aH4EzuZhh54pfg2XXGTYL6oCoHLHtnZa6Quqe5D1TLnhgYgbeoY6EfgeWN", child.serializePrivate())
-//        assertEquals("1BBYqmkUmYrmcfK1WFw4GfLgQX7fxf7VDo", child.toAddress().toString())
     }
 
     @Test
@@ -101,4 +94,12 @@ class PrivateKeyTests {
         assertEquals("xprv9yVEYKB5xCCVF1RBybgpwKRwjKthpVsqMioy8vdbAoxSkjG6iHYbk46KGGYv7u1S9Q7WNAexAorPmfJ2SHNpANvhHzSGnxvD7pXYYA3Seyj", child.serializePrivate())
         assertEquals("xprv9yVEYKB5xCCVF1RBybgpwKRwjKthpVsqMioy8vdbAoxSkjG6iHYbk46KGGYv7u1S9Q7WNAexAorPmfJ2SHNpANvhHzSGnxvD7pXYYA3Seyj", key.derive(0).derive(0).derive(3).serializePrivate())
     }
+
+    @Test
+    fun testMasterPublicKey() {
+        val key = ExtendedKey.parse("xprv9s21ZrQH143K2bgzHsT4og2s5qMh6MYAZjmcv4KUdQzzFSDJ5oZXTpjAfpkivs4ShahG4pSdiXxQMTN1CCAZaUoEHWjd9A5t2cRjdpBFWGk", true)
+        assertEquals("027aba236ca1e1dd7169bfe35769f37f1426c5fcf37a840ccf7d735efb728c0e5e", key.publicHex)
+    }
+
+
 }
