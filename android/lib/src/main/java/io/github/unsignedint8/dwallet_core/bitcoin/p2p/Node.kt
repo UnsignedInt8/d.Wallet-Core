@@ -8,6 +8,7 @@ import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
 import kotlinx.coroutines.experimental.*
 import java.security.*
+import kotlin.experimental.and
 
 /**
  * Created by unsignedint8 on 8/18/17.
@@ -49,12 +50,6 @@ class Node : Event() {
     var isFullNode = false
         private set
 
-    var canSetBloomFilter = false
-        private set
-
-    var canGetUtxo = false
-        private set
-
     var isSegwit2xNode = false
         private set
 
@@ -79,7 +74,6 @@ class Node : Event() {
 
     fun initBloomFilter(elements: Array<ByteArray>, falsePositiveRate: Double, nTweak: Int = 0, nFlags: Int = BloomFilter.BLOOM_UPDATE_NONE) {
         filter = BloomFilter.create(elements.size, falsePositiveRate, nTweak, nFlags)
-        println("filter count: ${elements.size}")
         elements.forEach { filter?.insert(it) }
     }
 
@@ -87,17 +81,17 @@ class Node : Event() {
         filter?.insert(element)
     }
 
-     fun connectAsync(host: String, port: Int) = async(CommonPool) {
-         socket.keepAlive = true
+    fun connectAsync(host: String, port: Int) = async(CommonPool) {
+        socket.keepAlive = true
 
-         val result = socket.connectAsync(host, port, 10 * 1000).await()
-         if (!result) return@async false
+        val result = socket.connectAsync(host, port, 10 * 1000).await()
+        if (!result) return@async false
 
-         sendVersion()
-         beginReceivingData()
+        sendVersion()
+        beginReceivingData()
 
-         return@async result
-     }
+        return@async result
+    }
 
     private suspend fun beginReceivingData() {
 
@@ -166,6 +160,11 @@ class Node : Event() {
 
     fun onSocketClosed(callback: (sender: Node, socket: SocketEx) -> Unit) {
         super.register("socket-shutdown", callback as Callback)
+
+        try {
+            this.socket.close()
+        } catch (e: Exception) {
+        }
     }
 
     private fun sendMessage(command: String, payload: ByteArray = ByteArray(0)) {
@@ -183,8 +182,7 @@ class Node : Event() {
         val v = Version.fromBytes(payload)
         peerBlockchainHeight = v.startHeight
         peerVersion = v.version
-        isFullNode = v.services[0] >= 1.toByte()
-        println("services: ${v.services.reduce("", { item, acc -> item.toString() + acc })}")
+        isFullNode = v.services[0] and 0x01 != Byte.ZERO
 
         sendVerack()
     }

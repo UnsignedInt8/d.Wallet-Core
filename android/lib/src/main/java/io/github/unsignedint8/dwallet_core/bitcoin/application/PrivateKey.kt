@@ -27,7 +27,9 @@ import java.security.SecureRandom
  * source from https://github.com/bitcoin-labs/bitcoinj-minimal/blob/master/core/ECKey.java
  *
  */
-class PrivateKey {
+
+@Deprecated("It will be deleted soon")
+internal class PrivateKey {
 
     val priv: BigInteger
     val pubKey: ByteArray
