@@ -87,17 +87,17 @@ class Node : Event() {
         filter?.insert(element)
     }
 
-    suspend fun connectAsync(host: String, port: Int): Boolean {
-        socket.keepAlive = true
+     fun connectAsync(host: String, port: Int) = async(CommonPool) {
+         socket.keepAlive = true
 
-        val result = socket.connectAsync(host, port, 10 * 1000).await()
-        if (!result) return false
+         val result = socket.connectAsync(host, port, 10 * 1000).await()
+         if (!result) return@async false
 
-        sendVersion()
-        beginReceivingData()
+         sendVersion()
+         beginReceivingData()
 
-        return result
-    }
+         return@async result
+     }
 
     private suspend fun beginReceivingData() {
 

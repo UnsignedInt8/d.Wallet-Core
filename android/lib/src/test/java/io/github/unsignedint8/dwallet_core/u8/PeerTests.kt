@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core
+package io.github.unsignedint8.dwallet_core.u8
 
 import io.github.unsignedint8.dwallet_core.bitcoin.p2p.Node
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.Version
@@ -77,7 +77,7 @@ class PeerTests {
         }
 
         async(CommonPool) {
-            node.connectAsync(host, port)
+            node.connectAsync(host, port).await()
             println("socket port: ${node.localPort}")
         }
 

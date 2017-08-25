@@ -45,7 +45,7 @@ internal class Hash(private val input: ByteArray, private val rounds: Int = 5000
      * @throws Exception
      */
     @Throws(Exception::class)
-    fun getHmacSHA512(keyStr: String): ByteArray {
+    fun getHmacSHA512(keyStr: String = Seed.BITCOIN_SEED): ByteArray {
         val key = SecretKeySpec(keyStr.toByteArray(), HmacSHA512)
         val mac = Mac.getInstance(HmacSHA512, "SC")
         mac.init(key)

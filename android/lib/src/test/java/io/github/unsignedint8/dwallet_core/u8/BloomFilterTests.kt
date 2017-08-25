@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core
+package io.github.unsignedint8.dwallet_core.u8
 
 import io.github.unsignedint8.dwallet_core.crypto.murmurHash3
 import io.github.unsignedint8.dwallet_core.crypto.sha1

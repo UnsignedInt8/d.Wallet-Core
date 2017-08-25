@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core
+package io.github.unsignedint8.dwallet_core.u8
 
 /**
  * Created by unsignedint8 on 8/14/17.
