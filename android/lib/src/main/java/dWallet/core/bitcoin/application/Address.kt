@@ -9,7 +9,7 @@ import dWallet.core.utils.BaseX
 
 class Address(val pubkey: ByteArray, val netId: ByteArray) {
 
-    companion object Network {
+    companion object {
 
         fun pubkeyHashToMultisignatureAddress(pubkeyHash: ByteArray, netId: ByteArray) = pubkeyHashToBase58Checking(pubkeyHash, netId)
 
