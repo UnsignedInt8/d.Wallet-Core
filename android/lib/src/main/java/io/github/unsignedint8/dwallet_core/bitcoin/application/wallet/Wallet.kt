@@ -19,9 +19,9 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
     val externalPrivKeys = mutableListOf<ECKey>()
     val changePrivKeys = mutableListOf<ECKey>()
     val importedPrivKeys = mutableListOf<ECKey>()
+    val allPrivKeys get() = externalPrivKeys + changePrivKeys + importedPrivKeys
 
     private val utxos = mutableMapOf<String, Transaction>()
-    private val allPrivKeys get() = externalPrivKeys + changePrivKeys + importedPrivKeys
 
     /**
      * As the ExtendedKey doesn't support hardened derivation keys, so we use m/44/0/0/0/0 to navigate private keys

@@ -83,10 +83,10 @@ class WalletTests {
     @Test
     fun testBalance() = runBlocking {
 
-        val w = Wallet.create().first
-        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4")
-        keys.forEach { w.insertWIF(it) }
-        val filterItems = w.importedPrivKeys.map { it.publicKeyHash!! } + w.importedPrivKeys.map { it.public!! }
+        val w = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider") // Wallet.create().first
+//        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") // listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4")
+//        keys.forEach { w.insertWIF(it) }
+        val filterItems = w.allPrivKeys.map { it.publicKeyHash!! } + w.allPrivKeys.map { it.public!! }
 
         val peer = Node(Message.Magic.Bitcoin.testnet.toInt32LEBytes(), 0)
         peer.initBloomFilter(filterItems, 0.001)
