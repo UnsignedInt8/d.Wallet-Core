@@ -1,6 +1,7 @@
 package io.github.unsignedint8.dwallet_core.u8
 
 import io.github.unsignedint8.dwallet_core.bitcoin.application.*
+import io.github.unsignedint8.dwallet_core.bitcoin.application.wallet.Coins
 import io.github.unsignedint8.dwallet_core.bitcoin.script.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import org.junit.Test
@@ -34,7 +35,7 @@ class ScriptTests {
         signScript = "493046022100bc4add188fd3f3857b66b71f83c558b84ccae792aa549c90a93dc7b0842ac2d1022100e2648f9998a32a01a6d6c25e62d6f385b42b6bed896539ce95547a9ee76473d101210368e828b31aeddf82a53bdf803065aac378b7c330299189d277c1ff182724c967"
         val ops2 = Interpreter.scriptToOps(signScript.hexToByteArray())
         assertEquals("3046022100bc4add188fd3f3857b66b71f83c558b84ccae792aa549c90a93dc7b0842ac2d1022100e2648f9998a32a01a6d6c25e62d6f385b42b6bed896539ce95547a9ee76473d101", ops2.first().second!!.toHexString())
-        assertEquals("1FMb8Jnn1jSh7yjDFfonC8xCCH3ittoEzB", Address(ops2.last().second!!).toString())
+        assertEquals("1FMb8Jnn1jSh7yjDFfonC8xCCH3ittoEzB", Address(ops2.last().second!!, Coins.Bitcoin.pubkeyHashId).toString())
         assertEquals(true, Interpreter.checkOpsValidity(ops2.map { it.first }))
 
         val pubkeyScript = "aa206fe28c0ab6f1b372c1a6a246ae63f74f931e8365e15a089c68d619000000000087".hexToByteArray()
@@ -48,7 +49,7 @@ class ScriptTests {
     fun testStandardP2PKH() {
         var script = "48304502207fba64e8b5a5027ecc3acb6df9a666bc72feb668622b3b49f120967fd4b67a26022100978e3954c8ac40f19a80f787ad3ecce4f54b9a6155c7720246cfbf43c66e9a5f01410453e4880d737f41e8ece50b99f4524bad7ac10a6403fad016b7f606a09d0574bb13d5ae3ef3993f2c5f130987ce85a7796804f314b64a642a224c0c525b389dac"
         var ops = Interpreter.scriptToOps(script.hexToByteArray())
-        assertEquals("19c7JHZoNK2XmvB1rznrjgpDfmxMvx2EWc", Address(ops.last().second!!).toString())
+        assertEquals("19c7JHZoNK2XmvB1rznrjgpDfmxMvx2EWc", Address(ops.last().second!!, Coins.Bitcoin.pubkeyHashId).toString())
 
         script = "76a914494294730abf03c846988654f15d1864469c737a88ac"
         ops = Interpreter.scriptToOps(script.hexToByteArray())
@@ -62,7 +63,7 @@ class ScriptTests {
         var ops = Interpreter.scriptToOps(script.hexToByteArray())
         assertEquals(3, ops.size)
         assertEquals(true, Interpreter.isP2SHOutScript(ops.map { it.first }))
-        assertEquals("342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey", Address.pubkeyHashToMultisignatureAddress("19a7d869032368fd1f1e26e5e73a4ad0e474960e".hexToByteArray()))
+        assertEquals("342ftSRCvFHfCeFFBuz4xwbeqnDw6BGUey", Address.pubkeyHashToMultisignatureAddress("19a7d869032368fd1f1e26e5e73a4ad0e474960e".hexToByteArray(), Coins.Bitcoin.scriptHashId))
     }
 
     @Test
@@ -77,6 +78,6 @@ class ScriptTests {
         val signOps = Interpreter.scriptToOps(signScript.hexToByteArray())
 
         println(signOps[1].second!!.toHexString())
-        println(Address(signOps[1].second!!).toString())
+        println(Address(signOps[1].second!!, Coins.Bitcoin.pubkeyHashId).toString())
     }
 }

@@ -162,7 +162,7 @@ class ExtendedKey {
     /**
      * Gets an Address
      */
-    fun toAddress(netId: ByteArray = Address.Network.BTC.Main.pubkeyHash) = Address(public, netId)
+    fun toAddress(netId: ByteArray) = Address(public, netId)
 
     /**
      * Gets public key bytes

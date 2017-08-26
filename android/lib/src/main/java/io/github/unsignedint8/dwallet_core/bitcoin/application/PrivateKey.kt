@@ -68,7 +68,7 @@ internal class PrivateKey {
      * Returns the address that corresponds to the public part of this ECKey. Note that an address is derived from
      * the RIPEMD-160 hash of the public key and is not the public key itself (which is too large to be convenient).
      */
-    fun toAddress(netId: ByteArray = Address.Network.BTC.Main.pubkeyHash) = Address(pubKey, netId)
+    fun toAddress(netId: ByteArray) = Address(pubKey, netId)
 
     /**
      * Calcuates an ECDSA signature in DER format for the given input hash. Note that the input is expected to be

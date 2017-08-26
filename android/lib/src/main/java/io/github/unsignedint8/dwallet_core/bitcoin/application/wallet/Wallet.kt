@@ -13,7 +13,7 @@ import java.security.SecureRandom
  * Created by unsignedint8 on 8/24/17.
  */
 
-open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKeys: List<ExtendedKey>, changeKeys: List<ExtendedKey>, val coin: CoinType = CoinType.Bitcoin) : Event() {
+open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKeys: List<ExtendedKey>, changeKeys: List<ExtendedKey>, val coin: Coins = Coins.Bitcoin) : Event() {
 
     private val externalPrivKeys = mutableListOf<ExtendedKey>()
     private val changePrivKeys = mutableListOf<ExtendedKey>()
@@ -30,12 +30,12 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
         if (externalKeys.size < externalKeysAmount) {
             val begin = externalKeys.size
-            (begin..externalKeysAmount).mapTo(externalPrivKeys) { masterXprvKey.derive(44).derive(coin.raw).derive(0).derive(0).derive(it) }
+            (begin..externalKeysAmount).mapTo(externalPrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(0).derive(it) }
         }
 
         if (changeKeys.size < changeKeysAmount) {
             val begin = changeKeys.size
-            (begin..changeKeysAmount).mapTo(changePrivKeys) { masterXprvKey.derive(44).derive(coin.raw).derive(0).derive(1).derive(it) }
+            (begin..changeKeysAmount).mapTo(changePrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(1).derive(it) }
         }
 
         (externalPrivKeys + changePrivKeys).forEach { allPrivKeys.add(it.ecKey!!) }
@@ -44,7 +44,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     companion object {
 
-        fun fromMnemonic(mnemonic: String, passphrase: String = "", coin: CoinType = CoinType.Bitcoin): Wallet {
+        fun fromMnemonic(mnemonic: String, passphrase: String = "", coin: Coins = Coins.Bitcoin): Wallet {
             val seed = BIP39.mnemonicToSeed(mnemonic, passphrase)
             val seedHash = Hash(seed).getHmacSHA512()
             val masterPrivateKey = ExtendedKey(seedHash)
@@ -52,9 +52,9 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             return fromMasterXprvKey(masterPrivateKey, coin = coin)
         }
 
-        fun fromMasterXprvKey(masterPrivateKey: ExtendedKey, externalKeys: List<ExtendedKey> = listOf(), changeKeys: List<ExtendedKey> = listOf(), coin: CoinType = CoinType.Bitcoin) = Wallet(masterPrivateKey, externalKeys, changeKeys, coin)
+        fun fromMasterXprvKey(masterPrivateKey: ExtendedKey, externalKeys: List<ExtendedKey> = listOf(), changeKeys: List<ExtendedKey> = listOf(), coin: Coins = Coins.Bitcoin) = Wallet(masterPrivateKey, externalKeys, changeKeys, coin)
 
-        fun fromMasterXprvKey(masterPrivateKey: String, externalKeys: List<String> = listOf(), changeKeys: List<String> = listOf(), coin: CoinType = CoinType.Bitcoin): Wallet? {
+        fun fromMasterXprvKey(masterPrivateKey: String, externalKeys: List<String> = listOf(), changeKeys: List<String> = listOf(), coin: Coins = Coins.Bitcoin): Wallet? {
             return try {
                 val master = ExtendedKey.parse(masterPrivateKey, true)
                 val external = externalKeys.map { ExtendedKey.parse(it, true) }
@@ -66,7 +66,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             }
         }
 
-        fun create(passphrase: String = "", coin: CoinType = CoinType.Bitcoin): Wallet {
+        fun create(passphrase: String = "", coin: Coins = Coins.Bitcoin): Wallet {
             val mnemonic = BIP39.getMnemonic(SecureRandom.getSeed(256))
             return fromMnemonic(mnemonic, passphrase, coin)
         }
@@ -85,6 +85,10 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             field = value
             super.trigger(Events.balanceChanged, this, field)
         }
+
+    val externalAddresses by lazy { externalPrivKeys.map { it.toAddress(coin.pubkeyHashId) } }
+
+    val changeAddresses by lazy {}
 
     fun insertTx(tx: Transaction) {
         if (utxos.contains(tx.id)) return

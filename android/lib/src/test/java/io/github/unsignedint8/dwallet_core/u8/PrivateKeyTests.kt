@@ -6,6 +6,7 @@ import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Derivation
 import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.ExtendedKey
 import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Hash
 import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Seed
+import io.github.unsignedint8.dwallet_core.bitcoin.application.wallet.Coins
 import io.github.unsignedint8.dwallet_core.bitcoin.script.Interpreter
 import io.github.unsignedint8.dwallet_core.crypto.Crypto
 import io.github.unsignedint8.dwallet_core.crypto.hash256
@@ -57,7 +58,7 @@ class PrivateKeyTests {
         val signature = ops.first().second!!
         val pubkey = ops.last().second!!
 
-        assertEquals("mnpbqSLQ3r293VHSjN82Ht63zf3PD8gBmm", Address(pubkey, Address.Network.BTC.Testnet.pubkeyHash).toString())
+        assertEquals("mnpbqSLQ3r293VHSjN82Ht63zf3PD8gBmm", Address(pubkey, Coins.BitcoinTestnet.pubkeyHashId).toString())
 
         scriptSign = "0411db93e1dcdb8a016b49840f8c53bc1eb68a382e97b1482ecad7b148a6909a5cb2e0eaddfb84ccf9744464f82e160bfa9b8b64f9d4c03f999b8643f656b412a3" // "47304402204e45e16932b8af514961a1d3a1a25fdf3f4f7732e9d624c6c61548ab5fb8cd410220181522ec8eca07de4860a4acdd12909d831cc56cbbac4622082221a8768d1d0901"
         val ops2 = Interpreter.scriptToOps(scriptSign.hexToByteArray())
@@ -87,7 +88,7 @@ class PrivateKeyTests {
 
         val key = ExtendedKey.parse("xprv9s21ZrQH143K2owk4zcoEBgttttZekAqXTwpMSs8L9dvQjAM4kEdEosP5QYUVbM1Us5kNt4TmBDVVdMffMQm9o44wEa4MLGjnHHc3siJrRB", true)
         assertEquals("0291b612168ac4bc762d3e6555de0933d02bfaef5fd47d4a69b573017442eab8bc", key.publicHex)
-        assertEquals("1CmsagqC722cx5aUbm6dRWw5fcEcRpuVAG", key.toAddress().toString())
+        assertEquals("1CmsagqC722cx5aUbm6dRWw5fcEcRpuVAG", key.toAddress(Coins.Bitcoin.pubkeyHashId).toString())
 
         val derivation = Derivation(key)
         val child = derivation.derive("m/0/0/3")
