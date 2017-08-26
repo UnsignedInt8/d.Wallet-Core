@@ -88,7 +88,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     val externalAddresses by lazy { externalPrivKeys.map { it.toAddress(coin.pubkeyHashId) } }
 
-    val changeAddresses by lazy {}
+    val changeAddresses by lazy { changePrivKeys.map { it.toAddress(coin.pubkeyHashId) } }
 
     fun insertTx(tx: Transaction) {
         if (utxos.contains(tx.id)) return
@@ -127,5 +127,6 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
     }
 
     fun onBalanceChanged(callback: (sender: Wallet, balance: Long) -> Unit) = super.register(Events.balanceChanged, callback as Callback)
+
 
 }
