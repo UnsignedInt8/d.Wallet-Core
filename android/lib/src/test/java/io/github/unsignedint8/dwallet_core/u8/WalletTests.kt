@@ -32,9 +32,10 @@ class WalletTests {
             filter.insert(it.pubkeyHash)
         }
 
-        "cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y" //mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
+        wallet.insertWIF("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y")//mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
 
         println(wallet.externalAddresses.map { it.toString() })
+        println(wallet.changeAddresses.map { it.toString() })
     }
 
     @Test

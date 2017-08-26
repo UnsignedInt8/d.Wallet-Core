@@ -101,7 +101,7 @@ class PrivateKeyTests {
 
     @Test
     fun testWif() {
-        val key = ECKey.ECKeyParser.parse("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y")
+        val key = ECKey.ECKeyParser.parse("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y")!!
         val addr = Address(key.public!!, Coins.BitcoinTestnet.pubkeyHashId)
         assertEquals(Address(key.public!!, Coins.BitcoinTestnet.pubkeyHashId).pubkeyHash.toHexString(), key.publicKeyHash!!.toHexString())
         assertEquals("mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr", addr.toString())

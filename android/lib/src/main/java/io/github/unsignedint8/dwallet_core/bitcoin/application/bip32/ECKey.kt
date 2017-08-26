@@ -173,9 +173,12 @@ class ECKey {
 
     object ECKeyParser {
 
-        @Throws(Exception::class)
-        fun parse(wif: String): ECKey {
-            return parseBytes(ByteUtil.fromBase58(wif))
+        fun parse(wif: String): ECKey? {
+            return try {
+                parseBytes(ByteUtil.fromBase58(wif))
+            } catch (e: Exception) {
+                null
+            }
         }
 
         @Throws(Exception::class)
