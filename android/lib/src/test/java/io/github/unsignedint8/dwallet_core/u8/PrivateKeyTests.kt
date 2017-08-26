@@ -2,10 +2,7 @@ package io.github.unsignedint8.dwallet_core.u8
 
 import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import io.github.unsignedint8.dwallet_core.bitcoin.application.PrivateKey
-import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Derivation
-import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.ExtendedKey
-import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Hash
-import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.Seed
+import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.*
 import io.github.unsignedint8.dwallet_core.bitcoin.application.wallet.Coins
 import io.github.unsignedint8.dwallet_core.bitcoin.script.Interpreter
 import io.github.unsignedint8.dwallet_core.crypto.Crypto
@@ -102,5 +99,11 @@ class PrivateKeyTests {
         assertEquals("027aba236ca1e1dd7169bfe35769f37f1426c5fcf37a840ccf7d735efb728c0e5e", key.publicHex)
     }
 
-
+    @Test
+    fun testWif() {
+        val key = ECKey.ECKeyParser.parse("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y")
+        val addr = Address(key.public!!, Coins.BitcoinTestnet.pubkeyHashId)
+        assertEquals(Address(key.public!!, Coins.BitcoinTestnet.pubkeyHashId).pubkeyHash.toHexString(), key.publicKeyHash!!.toHexString())
+        assertEquals("mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr", addr.toString())
+    }
 }

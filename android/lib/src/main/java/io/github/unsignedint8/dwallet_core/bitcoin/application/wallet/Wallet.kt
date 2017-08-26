@@ -1,5 +1,6 @@
 package io.github.unsignedint8.dwallet_core.bitcoin.application.wallet
 
+import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import io.github.unsignedint8.dwallet_core.bitcoin.application.bip32.*
 import io.github.unsignedint8.dwallet_core.bitcoin.application.bip39.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
@@ -13,10 +14,10 @@ import java.security.SecureRandom
  * Created by unsignedint8 on 8/24/17.
  */
 
-open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKeys: List<ExtendedKey>, changeKeys: List<ExtendedKey>, val coin: Coins = Coins.Bitcoin) : Event() {
+open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKeys: List<ECKey>, changeKeys: List<ECKey>, val coin: Coins = Coins.Bitcoin) : Event() {
 
-    private val externalPrivKeys = mutableListOf<ExtendedKey>()
-    private val changePrivKeys = mutableListOf<ExtendedKey>()
+    private val externalPrivKeys = mutableListOf<ECKey>()
+    private val changePrivKeys = mutableListOf<ECKey>()
     private val allPrivKeys = mutableListOf<ECKey>()
     private val cachedTxs = mutableMapOf<String, Transaction>()
     private val utxos = mutableMapOf<String, Transaction>()
@@ -27,18 +28,19 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
      */
     init {
         externalKeys.forEach { externalPrivKeys.add(it) }
+        changeKeys.forEach { changePrivKeys.add(it) }
 
         if (externalKeys.size < externalKeysAmount) {
             val begin = externalKeys.size
-            (begin..externalKeysAmount).mapTo(externalPrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(0).derive(it) }
+            (begin..externalKeysAmount).mapTo(externalPrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(0).derive(it).ecKey!! }
         }
 
         if (changeKeys.size < changeKeysAmount) {
             val begin = changeKeys.size
-            (begin..changeKeysAmount).mapTo(changePrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(1).derive(it) }
+            (begin..changeKeysAmount).mapTo(changePrivKeys) { masterXprvKey.derive(44).derive(coin.hdCoinId).derive(0).derive(1).derive(it).ecKey!! }
         }
 
-        (externalPrivKeys + changePrivKeys).forEach { allPrivKeys.add(it.ecKey!!) }
+        (externalPrivKeys + changePrivKeys).forEach { allPrivKeys.add(it) }
         allPrivKeys.add(masterXprvKey.ecKey!!)
     }
 
@@ -52,13 +54,13 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             return fromMasterXprvKey(masterPrivateKey, coin = coin)
         }
 
-        fun fromMasterXprvKey(masterPrivateKey: ExtendedKey, externalKeys: List<ExtendedKey> = listOf(), changeKeys: List<ExtendedKey> = listOf(), coin: Coins = Coins.Bitcoin) = Wallet(masterPrivateKey, externalKeys, changeKeys, coin)
+        fun fromMasterXprvKey(masterPrivateKey: ExtendedKey, externalKeys: List<ECKey> = listOf(), changeKeys: List<ECKey> = listOf(), coin: Coins = Coins.Bitcoin) = Wallet(masterPrivateKey, externalKeys, changeKeys, coin)
 
         fun fromMasterXprvKey(masterPrivateKey: String, externalKeys: List<String> = listOf(), changeKeys: List<String> = listOf(), coin: Coins = Coins.Bitcoin): Wallet? {
             return try {
                 val master = ExtendedKey.parse(masterPrivateKey, true)
-                val external = externalKeys.map { ExtendedKey.parse(it, true) }
-                val change = changeKeys.map { ExtendedKey.parse(it, true) }
+                val external = externalKeys.map { ECKey.ECKeyParser.parse(it) }
+                val change = changeKeys.map { ECKey.ECKeyParser.parse(it) }
 
                 fromMasterXprvKey(master, external, change, coin)
             } catch (e: Exception) {
@@ -79,6 +81,10 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         }
     }
 
+    /**
+     * Properties
+     */
+
     var balance: Long = 0
         private set(value) {
             if (field == value) return
@@ -86,9 +92,24 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             super.trigger(Events.balanceChanged, this, field)
         }
 
-    val externalAddresses by lazy { externalPrivKeys.map { it.toAddress(coin.pubkeyHashId) } }
+    val externalAddresses by lazy { externalPrivKeys.map { Address(it.public!!, coin.pubkeyHashId) } }
 
-    val changeAddresses by lazy { changePrivKeys.map { it.toAddress(coin.pubkeyHashId) } }
+    val changeAddresses by lazy { changePrivKeys.map { Address(it.public!!, coin.pubkeyHashId) } }
+
+    /**
+     * Importing Private keys
+     */
+
+    fun addWif(wif: String) {
+        try {
+            externalPrivKeys.add(ECKey.ECKeyParser.parse(wif))
+        } catch (e: Exception) {
+        }
+    }
+
+    /**
+     * Handling Txs
+     */
 
     fun insertTx(tx: Transaction) {
         if (utxos.contains(tx.id)) return

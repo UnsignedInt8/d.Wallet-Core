@@ -6,7 +6,6 @@ package io.github.unsignedint8.dwallet_core.bitcoin.application.bip32
 
 
 import io.github.unsignedint8.dwallet_core.extensions.*
-import io.github.unsignedint8.dwallet_core.utils.*
 
 import org.spongycastle.asn1.ASN1InputStream
 import org.spongycastle.asn1.ASN1Integer
@@ -115,7 +114,7 @@ class ECKey {
 
     val wif: String
         @Throws(Exception::class)
-        get() = BaseX.base58.encode(wifBytes)
+        get() = ByteUtil.toBase58(wifBytes)
 
     fun hasPrivate(): Boolean {
         return priv != null
@@ -124,16 +123,13 @@ class ECKey {
     val publicHex: String?
         get() = public?.toHexString()
 
-    override fun equals(obj: Any?): Boolean {
+    override fun equals(obj: Any?): Boolean = if (obj is ECKey) {
+        Arrays.areEqual(obj.private, this.private)
+                && Arrays.areEqual(obj.public, this.public)
+                && Arrays.areEqual(obj.publicKeyHash, this.publicKeyHash)
+                && obj.isCompressed == this.isCompressed
 
-        return if (obj is ECKey) {
-            Arrays.areEqual(obj.private, this.private)
-                    && Arrays.areEqual(obj.public, this.public)
-                    && Arrays.areEqual(obj.publicKeyHash, this.publicKeyHash)
-                    && obj.isCompressed == this.isCompressed
-
-        } else false
-    }
+    } else false
 
     private fun setPub(compressed: Boolean, fromPrivate: Boolean, bytes: ByteArray?) {
         this.isCompressed = compressed
@@ -179,7 +175,7 @@ class ECKey {
 
         @Throws(Exception::class)
         fun parse(wif: String): ECKey {
-            return parseBytes(BaseX.base58.decode(wif))
+            return parseBytes(ByteUtil.fromBase58(wif))
         }
 
         @Throws(Exception::class)
