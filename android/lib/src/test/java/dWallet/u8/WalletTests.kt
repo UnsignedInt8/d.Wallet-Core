@@ -1,0 +1,111 @@
+package dWallet.u8
+
+import dWallet.core.bitcoin.application.Address
+import dWallet.core.bitcoin.application.wallet.Coins
+import dWallet.core.bitcoin.application.wallet.Wallet
+import dWallet.core.bitcoin.p2p.Node
+import dWallet.core.bitcoin.protocol.structures.InvTypes
+import dWallet.core.bitcoin.protocol.structures.InventoryVector
+import dWallet.core.bitcoin.protocol.structures.Message
+import dWallet.core.bitcoin.protocol.structures.Transaction
+import dWallet.core.bitcoin.script.Interpreter
+import dWallet.core.crypto.Crypto
+import dWallet.core.extensions.hexToByteArray
+import dWallet.core.extensions.toInt32LEBytes
+import dWallet.core.utils.BloomFilter
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.runBlocking
+import org.junit.Test
+import org.junit.Assert.*
+
+/**
+ * Created by unsignedint8 on 8/26/17.
+ */
+
+class WalletTests {
+
+    private val wallet: Wallet
+    private val filter: BloomFilter
+
+    init {
+        Crypto.setupCryptoProvider()
+
+        Wallet.changeKeysAmount = 1
+        Wallet.externalKeysAmount = 1
+        wallet = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider", coin = Coins.BitcoinTestnet)
+
+        filter = BloomFilter.create(Wallet.changeKeysAmount + Wallet.externalKeysAmount, 0.001)
+
+        (wallet.externalAddresses + wallet.changeAddresses).forEach {
+            filter.insert(it.pubkey)
+            filter.insert(it.pubkeyHash)
+        }
+
+        println(wallet.externalAddresses.map { it.toString() })
+        println(wallet.changeAddresses.map { it.toString() })
+    }
+
+    @Test
+    fun testInsertedAddress() {
+        assertEquals(null, wallet.importAddresses.singleOrNull { it.toString() == "mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr" })
+    }
+
+    @Test
+    fun testIsValid() {
+        // a tx to n37awpBdJ9DwoHDwBYV8nFskqWEUsbJ3D5
+        var tx = Transaction.fromBytes("020000000b03e61d3ff653fd1106344cc1eccba791ae4fbb60f97589e5af5a076aa751c60f0000000049483045022100d2cadff06ea897032ddc1b4688af5d7a2901ea1bc0399554cce592d56f22152a02203823944a3693998144d59ea691ec90425a3eaa133dbae9a00708039634a1dd6e01feffffff114c3eb41b17f4640d0894066b625df145e45159dfc98e293346349e83b0949b0000000049483045022100cfc8c7dcf9cf52922b15e73150016a0cf119152d2bbddad4c7ae5f85bfc1969d022044576f2a920b2baf0eaceadcafe4d3c6dac07c052a4e588978c3cac8fa91c94501feffffff693efd70ebe6fd087bd15f8f6411c275e815dbbf4dd32dab95a187a03ee4fb120000000049483045022100d0a74bd5169238f046476aeeb85c762035d2fb1cf04efecee57893a7d091405602204f99fd0dd64466cead82aa7495aa08160b93612dde8750950bef388455e13d5601feffffff79e077943f51a7785b637037a0b8af6dd24d6eb2df696c5c43e88f40cbc75b4f000000004847304402207688faed291e1009e280e457b9a8a255c878ad067c22cd4af2bf8fe6318afb68022026e68a2fa86ae6299dab7574fdd7ec9bbb78a6b6d3c873719a78738e9e7229b801feffffff7fbb91421f16c52584ceb2b0c4a3c79679fd36ea7c024149a66c56d8e3b6044a00000000484730440220256ac119b1ef6bbe2dab8065714b09cbbd816766995c2ff0b492c37fc53194ea02207f29fb3714083c7abea2916ad4410f2885be5d2f17fc7dc3443e561e3862219701feffffff952399c110cce5ec681c8cfeeaa6e5b7c12a5a7a85954050d915204118f32afd000000004847304402205061f93c6a05948c5ef341153e7dbaa7307f3322811cb0fae9dc8e982e8e82a402203533ac4e6beb1144222a79043ed2e9afffef336bae431c81f5ec35818d2c194b01feffffffd0a86b48dc199d2c43f5288cd8ec303bf5ed1ecd0fe9573bea7fe4b3f0c633c00000000048473044022034b7a2eeeef92775289b406ced0fc26d15758377b417eef65739af2273994c1b0220239b3db0d7b963dd5412ed0bb08eb7c025a6bb64ab83a1c58099e1d4aa120af701feffffff2a05e3197b56082e3ea102c91184511c3a8d4154d154b0c05b122d84f7dc6d98000000006a473044022041f9d1cd4b0e3a8b4678398ab169ded8e39600738e7dbcaeabdd5a17f4bf82af0220704a041b8fb899f6201b8b24c2fa49754d8ef563a35a3ea1277e0278b98a8a460121037363481179ae6496d8698fc6beb554b843ff5835f0e228a5b5288f688af2992cfeffffff67fb551aadd906cc72e00232f818697cd6ad9e6cd934024cb6831dff9bc53e84000000006b483045022100f82dd08bb48fe304c94313ae1e3b4de14d02f6ebc58e0172cde3e1bd33b5c6f6022045359ac6694e68b4a9e40a9b9a718fc5dc28e5b91789634b5371b96bd1c5b39b0121035dc39903575f472ba45b463ad687646fa8778d09047f3993c41d3a7adb120c6dfeffffffeac00ed589b956f33bd01c71baae2d66b2d13d7c5201f8ce3d231bb78d042d2f000000004948304502210090c1cd734480facc07caf9223417961db825f6fb53d17c6a8695210fe3c29af60220704303bdf0112d8328645474e5e6285eaecaccdcd2256711439c0804597fd91201feffffffc33ace425b352babe3b44abeab7115d8d405753d6d144c04ec1666b6dd2f2fe7000000006b483045022100b9faed87c7ae745b38fab421f6616079188803504ea07bb35a5645b906af1db102205aaf57bd96ee2f7f69da54bf6b57a7ce5c8e4712873d706aacbe73ce555c7dcb012102e97acf7ba8f336c3b08ff6aac79ff15b9dc331b4dc59d081bfc486278d41152efeffffff02b7d40e00000000001976a91402dbbfe0a50d9860ae5b82f2ec6c827c377340e288ac00e1f505000000001976a914ece7610011e33565e4c2c425ac902761853cbb5f88acf3090000".hexToByteArray())
+        assertEquals(true, wallet.isIncomeTx(tx))
+        assertEquals(false, wallet.isOutgoTx(tx))
+
+        // a tx to mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
+        wallet.insertWIF("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") //mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
+        tx = Transaction.fromBytes("020000000c1ca6da37a1b952f300da58d27436951fdd21fb9c8939649fd0ea8310951dfcfa020000006a473044022034283d0b9b161f8ec747baeb7c5e0508fcb026441d223cffcdfe1f5eb106e3c00220661ebf44584d3f7c9fcb262d7fba39e285fb90949a97dac8ec6128c58a6a283901210262c73907f1933f280d96ababed53b97dc7bdd406d39108e62d6a9ec2d7d29a3cfeffffff1db453f3ce1f414c9f21e6c78b0bd7981985e9affc345042fc1058ec41b05359020000006a47304402201ba065c9200352725bb900ced07cb6a306bf899f92b8e02ed7f34c039d20cf45022074777a3612e566f578639c959fd6f3a4d5c3a745dd71d86bcb8afc68c4e0275901210262c73907f1933f280d96ababed53b97dc7bdd406d39108e62d6a9ec2d7d29a3cfeffffff26e5e287df7fc5654100621b4c267f3a79f707966e5c6156450627c5e03b3ab9010000006a473044022070efb13d83b0f5432b8d6c99b9ca0a802f4703bb9fe660175dffe0182ac7597a022073d12fd00a5e1cfbf3601d9c4a19a913e7a1e01ccbd0441f0b77b2a525c8720d0121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffff30677129a452e5678d0c37a2da3350f53430662f22ecd9303cb405b9f53e632c010000006b483045022100d81a8719711943d2ecb4802be4ff52607b3065487e687a102c2407d506ad0c7602207abe6fb4c43d2f62b37beed79e9a3aaeeb502f5e41922141f8d569221752b0dc0121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffff620ff329efa5bbebfbf6dfa30416d03f3d1e4836a3b28e929dfb38f6e1775bb4010000006a473044022025b2cd59325d5dba757d85be399cd9e0a49948e8edf972ee96bb8e67d8c1365702202c780a71debc2a4bef838ee9f2d9e85238b284850fb2d001d6bc74a290c8bd9e0121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffff8413f23237d97940047eaeb6808cc674389be4ef82861b84840d9a3d30b78c5a010000006b483045022100dcebd750369753babe5cbe38cae0057bee18838f7941a4e79db9f69f4a0e521702200d2f718307d97386cfcfe31861561d1916f78028529c4d7bde96a31c019c97010121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffff84fd198ba1042fc7cda946e8bba318ed29ffc88d03e2ce33cfa3a468efaffe3f020000006a473044022100fc8cd0ba2eaa190cf2e9a53c840212a8c34d5e68d0007625d4ac2e1220e1bffb021f17526b272b475d0c65fc9b62cbcfac3d4b62ec5e961862667f21af4811f2c201210262c73907f1933f280d96ababed53b97dc7bdd406d39108e62d6a9ec2d7d29a3cfeffffffaa4ced1dd329f2814720c2104d661f00b233f57e71a30573dbdf901034de6b3b010000006a473044022021f84047353c55af855c25d3d6279ae87b7b5821b596fc59859d8da9d77c65a302204ab0a7f693057ea2a04e8b00cabb5dab5ba2c6adabef432953afd1457c53216f01210262c73907f1933f280d96ababed53b97dc7bdd406d39108e62d6a9ec2d7d29a3cfeffffffbbcb75f605ba339ecac696334c13ed0ce69f299cb5b4536b42460c103560860f000000006b4830450221009589df0db1e4fa33d1838af7de2b9aa2e175dd1c87d011781a0290faceed0d3602207a268eb6aafbb12e9463a7ec71e885c0e26f9ff175029e4251752c96dbd5c7800121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffffc2ecc5894bb2f81890dee2bbcd6bddfa77a0e9e224e69b894f275779592fc3ae000000006a47304402205a82f9c3ca629bf7bdaa497618ffa8b9c51689168c2610af08f541f25a8febb302204c82fd0f7b4a4428db361fa41042fb3a7e168138960fc1d6ddb4647748c546bd0121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffffc7f9267ec13562a127d2d768a3279416af9766777a0cb652591c9cbcd8db1e3f010000006a47304402202afcd2376492e94fc6dbd025161e549e9965395cbc6f8001da26a421ec3c79f4022041e44e18769d9865ab88bc87206eb9f139c92937ee75d2ea6b87b2214b904db70121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffffd9da13216a851a0a28a8f5d6893daa29629586d2e2c938021bb77677e20355a3010000006b483045022100d3fc0019fb3ec0034907cf9293dba052ca0b111f7e19c9a9e13d262d696931de022012bf781b651ecc1855f5678a8979d107ccdac006c7bf58433792102153dc98b90121028a3361822dd96f1e0831ac36abbeb10e74224729fb201fefde885d2463723487feffffff02e3e40e00000000001976a91425f9d6d776a18e4a4888edad7117061bc2126e8788ac00e1f505000000001976a914aec6287421dd340e06a5d01e9dbc1e9d37741dae88acf2090000".hexToByteArray())
+
+        assertEquals("miykbHWUUfFPcQJyjPvJ1yu7RwFyu2W657", Address.pubkeyHashToBase58Checking(Interpreter.scriptToOps(tx.txOuts[0].pubkeyScript)[2].second!!, Coins.BitcoinTestnet.pubkeyHashId))
+        assertEquals(true, wallet.isIncomeTx(tx))
+        assertEquals(false, wallet.isOutgoTx(tx))
+
+        assertEquals(100000000, tx.txOuts.first { out ->
+            val ops = Interpreter.scriptToOps(out.pubkeyScript)
+            ops[2].second!!.contentEquals(wallet.importedPrivKeys.first().publicKeyHash!!)
+        }.value)
+
+        // a tx sent to an unowned address
+        tx = Transaction.fromBytes("020000000b2817d61c7ecf9b8e653392fe02b419dc36250006aa2b0cc6df4abc6481c0baf80000000049483045022100e9b50058cde317fc793905563f6b87f43f0722acece8304474d74ab3603c50410220682cdf624b59a593d3364b95ddf680d4307baf2ea1b253e9c9915edb6142fb9e01feffffff29a9c44b1e9956095b9faa23e1edf6d42a3309f62c3f57cf4cb6d377753cd78e0000000049483045022100909361b9f45584c9c1d1c1e7116ac9d61a68dc9701329ce227dd3a1fe9d3cff402200f9a87226e86e7ae7565f49349c577d077080ee62d6153c113fa928fdcaeea2601feffffff3bdd74ee088829a4ae6b8a23b5ea4639a043b53f0b0ccd0ea697c550c7fe0ca9000000004847304402200959d88a4dd1396072a63f3a5b058ac3742084f60a9b2d9d4c9fd8216e9360da02204206e5b1e5195c3bfd5c38ecf11ea1a68cce6d9c8ef018d76bf6245d9c93d5b501feffffff51d41b0f997f8b7eb506132b392963fd3ac1dffadebe1312fac6d4fd1043d66900000000484730440220725707b0675b084e8b1df7377951542e8c43d54ba9aedfde619670ce1c77920f02203a9a13fe55fa1a41ca27473910fc78a4081ddd81454c65c95175f66d1be2e44901feffffff52e6cb4ab384a2e68fdf4aabd8995b847eca0db5019242cd314bbb578b33f7670000000048473044022065dffba272b63df772a013fd1cafeed9c9e335e1b9b254b1bdfa12e653ef8f27022014914b4be4e4305f6daeda946312cff781f8c657dc5b2b1b0f1f8613edce9fd301feffffff7477d3e2de89dd9827f44eccbf7c37bbdbb30e5165db291c08b46f44749f81f10000000048473044022011136756f36b45f8d73fd04114d4ef7bca782fd6b4493ff7ed770959aa0f9ae302207eb0560648a8c4b88d27a6a57e1051685ab4b8194cf09d3e3325e5efd19fa54e01feffffff9e00ee481d1b053520b206a8b8612769d8404bd53bb167b1e2b12a0aff7a1811000000004847304402204e5dbf1a49b21adf23db06b666daa5f55f61b1f4e43bd55b529552147eac0db002205f237b8e59f58820b9b23da78fb1111bf6c35b30ec89cc0dfc5c04253439228301feffffffda1bd3b4076a0cf075422c858c92da7adb1aadb24959cf98781baac7bb787c7d0000000048473044022032a94489c844423379bad9209803c2130b0701257c44fec6ff60fa6eb7c9f85402207dc87b18b743eb518ca90591d69dc2fb668fae302c00823b45db19050f7cca0b01feffffffff5091a2af58399b82af4bc3eac89dbf892113949c4c3527e62e098c6427d2d1000000006a473044022022c31c23179adf1781e6f575cc1e6663d5f9f1915d5cac0a48c71098492fb8f1022029aa9b2744bccd2d23c35903ba54d1b46fe6fb547ef934b7931e420053dda7eb012102e696302ee2892b490e8f4e46032115ece59f6745ac5a564361c95d8e89f1ba6ffeffffff4321e4d948a7760584c2c27ce16d8845a778563fee74828774ca9e323ca4c0fa010000006b483045022100a29724f946823ea2e63244e20d1dede48c27b5255fda2d5cc249e45bc5f97c8502205f17cf620f58e7d817c90a0291ef61390e0c1083ffc3cdb60163f7d29ced0d1d012103db13c9c5bcae40fa62b0ac2bd388691d4799b90c3823aee1ab819e04278a9d9afeffffff8c0e129c7a25c70fe3743ca211360b78a014ce586c111e0bf3d2d1ee2bb2d76f010000006a47304402204275cdd3f701c2feaec1235a348d73ce1b7469d08a1cb4de2c0b504d255d648a02206bf58803179727b45f5437c40e546da0ebad30956e2e56f4e4c50cfc051a2725012103ca5f2de867c4a2e01eccf2fca0f5d554d6f5d160821fb92ece868f99d86112d4feffffff0200e1f505000000001976a91425f9d6d776a18e4a4888edad7117061bc2126e8788acb7d40e00000000001976a91487b2833c7815956123b29caf1f74125c83a83e4288acf3090000".hexToByteArray())
+        assertEquals(false, wallet.isIncomeTx(tx))
+        assertEquals(false, wallet.isOutgoTx(tx))
+    }
+
+    @Test
+    fun testBalance() = runBlocking {
+
+        val w = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider") // Wallet.create().first
+//        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") // listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4")
+//        keys.forEach { w.insertWIF(it) }
+        val filterItems = w.allPrivKeys.map { it.publicKeyHash!! } + w.allPrivKeys.map { it.public!! }
+
+        val peer = Node(Message.Magic.Bitcoin.testnet.toInt32LEBytes(), 0)
+        peer.initBloomFilter(filterItems, 0.001)
+
+        peer.onInv { sender, items ->
+            val blocks = items.filter { it.type == InvTypes.MSG_BLOCK || it.type == InvTypes.MSG_FILTERED_BLOCK }.map { InventoryVector(InvTypes.MSG_FILTERED_BLOCK, it.hash) }
+            val txs = items.filter { it.type == InvTypes.MSG_TX }
+
+            if (blocks.isNotEmpty()) sender.sendGetData(blocks)
+            if (txs.isNotEmpty()) sender.sendGetData(txs)
+
+            if (blocks.size > 1) sender.sendGetBlocks(listOf(items.last().hash))
+        }
+
+        peer.onTx { _, tx ->
+            w.insertTx(tx)
+            println("balance: " + w.balance)
+        }
+
+        peer.onVerack { sender, _ -> sender.sendGetBlocks() }
+
+        if (!peer.connectAsync("localhost", 19000).await()) return@runBlocking
+
+        delay(10 * 1000)
+    }
+}
