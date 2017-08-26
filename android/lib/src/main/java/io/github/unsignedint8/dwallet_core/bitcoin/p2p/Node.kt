@@ -13,7 +13,7 @@ import kotlin.experimental.and
  * Created by unsignedint8 on 8/18/17.
  */
 
-class Node : Event() {
+class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     private val msgHandlers: Map<String, (payload: ByteArray) -> Unit>
     private val socket = SocketEx()
@@ -27,6 +27,7 @@ class Node : Event() {
         msgHandlers[GetHeaders.headers] = fun(d: ByteArray) { handleHeaders(d) }
         msgHandlers[InventoryVector.inv] = fun(d: ByteArray) { handleInv(d) }
         msgHandlers[MerkleBlock.message] = fun(d: ByteArray) { handleMerkleblock(d) }
+        msgHandlers[Transaction.message] = fun(d: ByteArray) { handleTx(d) }
     }
 
     val peerAddress: String
@@ -61,18 +62,14 @@ class Node : Event() {
     var peerVersion = 0
         private set
 
-    var magic = Message.Magic.Bitcoin.main.toInt32LEBytes()
-
     var version = 70001
 
     var ua = "/Wallet:0.0.1/"
 
-    var startHeight = 0
-
     private var filter: BloomFilter? = null
 
-    fun initBloomFilter(elements: Array<ByteArray>, falsePositiveRate: Double, nTweak: Int = 0, nFlags: Int = BloomFilter.BLOOM_UPDATE_NONE) {
-        filter = BloomFilter.create(elements.size, falsePositiveRate, nTweak, nFlags)
+    fun initBloomFilter(elements: Iterable<ByteArray>, falsePositiveRate: Double, nTweak: Int = 0, nFlags: Int = BloomFilter.BLOOM_UPDATE_NONE) {
+        filter = BloomFilter.create(elements.count(), falsePositiveRate, nTweak, nFlags)
         elements.forEach { filter?.insert(it) }
     }
 
@@ -139,7 +136,7 @@ class Node : Event() {
             }
 
             if (!msg.verifyChecksum(data)) {
-                println("checksum are not equal")
+                println("both checksum are not equal")
                 return
             }
 
@@ -152,6 +149,7 @@ class Node : Event() {
             handler(data)
 
         } finally {
+
             if (!shutdown) runNext()
             if (shutdown) super.trigger("socket-shutdown", this, socket)
         }
@@ -271,5 +269,18 @@ class Node : Event() {
 
     fun sendMempool() {
         sendMessage("mempool")
+    }
+
+    fun sendTx(tx: Transaction) {
+        sendMessage(Transaction.message, tx.toBytes())
+    }
+
+    private fun handleTx(data: ByteArray) {
+        val tx = Transaction.fromBytes(data)
+        super.trigger(Transaction.message, this, tx)
+    }
+
+    fun onTx(callback: (sender: Node, tx: Transaction) -> Unit) {
+        super.register(Transaction.message, callback as EventCallback)
     }
 }

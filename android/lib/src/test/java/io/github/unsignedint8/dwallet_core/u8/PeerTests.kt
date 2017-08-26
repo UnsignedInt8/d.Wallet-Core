@@ -44,9 +44,9 @@ class PeerTests {
         val port = 19000
         val magic = Message.Magic.Bitcoin.regtest.toInt32LEBytes()
 
-        val node = Node()
+        val node = Node(Message.Magic.Bitcoin.main.toInt32LEBytes())
         node.magic = magic
-        node.initBloomFilter(arrayOf("bc7662ecd3c4e0024d00e8647fb9ff6539a7b379".hexToByteArray()),
+        node.initBloomFilter(listOf("bc7662ecd3c4e0024d00e8647fb9ff6539a7b379".hexToByteArray()),
                 0.0001, nFlags = BloomFilter.BLOOM_UPDATE_ALL)
 
         node.onHeaders { _, headers ->
@@ -61,16 +61,19 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-//            node.sendGetMerkleblocks(invs.map { it.hash })
-            node.sendGetData(invs.takeLast(5))
+            node.sendGetMerkleblocks(invs.map { it.hash })
+//            node.sendGetData(invs.takeLast(5))
         }
+
+        node.onTx { sender, tx -> println(tx.id) }
 
         node.onReject { _, reject -> println("${reject.message} ${reject.reason}") }
 
         node.onVerack { _, _ ->
             node.sendGetBlocks()
-//            node.sendGetHeaders()
         }
+
+
 
         node.onMerkleblocks { _, block ->
             println(block.preBlockHash)

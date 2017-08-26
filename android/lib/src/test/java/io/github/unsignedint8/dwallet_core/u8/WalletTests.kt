@@ -3,13 +3,24 @@ package io.github.unsignedint8.dwallet_core.u8
 import io.github.unsignedint8.dwallet_core.bitcoin.application.Address
 import io.github.unsignedint8.dwallet_core.bitcoin.application.wallet.Coins
 import io.github.unsignedint8.dwallet_core.bitcoin.application.wallet.Wallet
+import io.github.unsignedint8.dwallet_core.bitcoin.p2p.Node
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.InvTypes
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.InventoryVector
+import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.Message
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.Transaction
 import io.github.unsignedint8.dwallet_core.bitcoin.script.Interpreter
 import io.github.unsignedint8.dwallet_core.crypto.Crypto
 import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
+import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
+import io.github.unsignedint8.dwallet_core.utils.BaseX
 import io.github.unsignedint8.dwallet_core.utils.BloomFilter
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 import org.junit.Assert.*
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.*
 
 /**
  * Created by unsignedint8 on 8/26/17.
@@ -63,14 +74,42 @@ class WalletTests {
             ops[2].second!!.contentEquals(wallet.importedPrivKeys.first().publicKeyHash!!)
         }.value)
 
-        // a tx sent to unowned address
+        // a tx sent to an unowned address
         tx = Transaction.fromBytes("020000000b2817d61c7ecf9b8e653392fe02b419dc36250006aa2b0cc6df4abc6481c0baf80000000049483045022100e9b50058cde317fc793905563f6b87f43f0722acece8304474d74ab3603c50410220682cdf624b59a593d3364b95ddf680d4307baf2ea1b253e9c9915edb6142fb9e01feffffff29a9c44b1e9956095b9faa23e1edf6d42a3309f62c3f57cf4cb6d377753cd78e0000000049483045022100909361b9f45584c9c1d1c1e7116ac9d61a68dc9701329ce227dd3a1fe9d3cff402200f9a87226e86e7ae7565f49349c577d077080ee62d6153c113fa928fdcaeea2601feffffff3bdd74ee088829a4ae6b8a23b5ea4639a043b53f0b0ccd0ea697c550c7fe0ca9000000004847304402200959d88a4dd1396072a63f3a5b058ac3742084f60a9b2d9d4c9fd8216e9360da02204206e5b1e5195c3bfd5c38ecf11ea1a68cce6d9c8ef018d76bf6245d9c93d5b501feffffff51d41b0f997f8b7eb506132b392963fd3ac1dffadebe1312fac6d4fd1043d66900000000484730440220725707b0675b084e8b1df7377951542e8c43d54ba9aedfde619670ce1c77920f02203a9a13fe55fa1a41ca27473910fc78a4081ddd81454c65c95175f66d1be2e44901feffffff52e6cb4ab384a2e68fdf4aabd8995b847eca0db5019242cd314bbb578b33f7670000000048473044022065dffba272b63df772a013fd1cafeed9c9e335e1b9b254b1bdfa12e653ef8f27022014914b4be4e4305f6daeda946312cff781f8c657dc5b2b1b0f1f8613edce9fd301feffffff7477d3e2de89dd9827f44eccbf7c37bbdbb30e5165db291c08b46f44749f81f10000000048473044022011136756f36b45f8d73fd04114d4ef7bca782fd6b4493ff7ed770959aa0f9ae302207eb0560648a8c4b88d27a6a57e1051685ab4b8194cf09d3e3325e5efd19fa54e01feffffff9e00ee481d1b053520b206a8b8612769d8404bd53bb167b1e2b12a0aff7a1811000000004847304402204e5dbf1a49b21adf23db06b666daa5f55f61b1f4e43bd55b529552147eac0db002205f237b8e59f58820b9b23da78fb1111bf6c35b30ec89cc0dfc5c04253439228301feffffffda1bd3b4076a0cf075422c858c92da7adb1aadb24959cf98781baac7bb787c7d0000000048473044022032a94489c844423379bad9209803c2130b0701257c44fec6ff60fa6eb7c9f85402207dc87b18b743eb518ca90591d69dc2fb668fae302c00823b45db19050f7cca0b01feffffffff5091a2af58399b82af4bc3eac89dbf892113949c4c3527e62e098c6427d2d1000000006a473044022022c31c23179adf1781e6f575cc1e6663d5f9f1915d5cac0a48c71098492fb8f1022029aa9b2744bccd2d23c35903ba54d1b46fe6fb547ef934b7931e420053dda7eb012102e696302ee2892b490e8f4e46032115ece59f6745ac5a564361c95d8e89f1ba6ffeffffff4321e4d948a7760584c2c27ce16d8845a778563fee74828774ca9e323ca4c0fa010000006b483045022100a29724f946823ea2e63244e20d1dede48c27b5255fda2d5cc249e45bc5f97c8502205f17cf620f58e7d817c90a0291ef61390e0c1083ffc3cdb60163f7d29ced0d1d012103db13c9c5bcae40fa62b0ac2bd388691d4799b90c3823aee1ab819e04278a9d9afeffffff8c0e129c7a25c70fe3743ca211360b78a014ce586c111e0bf3d2d1ee2bb2d76f010000006a47304402204275cdd3f701c2feaec1235a348d73ce1b7469d08a1cb4de2c0b504d255d648a02206bf58803179727b45f5437c40e546da0ebad30956e2e56f4e4c50cfc051a2725012103ca5f2de867c4a2e01eccf2fca0f5d554d6f5d160821fb92ece868f99d86112d4feffffff0200e1f505000000001976a91425f9d6d776a18e4a4888edad7117061bc2126e8788acb7d40e00000000001976a91487b2833c7815956123b29caf1f74125c83a83e4288acf3090000".hexToByteArray())
         assertEquals(false, wallet.isIncomeTx(tx))
         assertEquals(false, wallet.isOutgoTx(tx))
     }
 
     @Test
-    fun testBalance() {
+    fun testBalance() = runBlocking {
 
+        val w = Wallet.create().first
+        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4")
+        keys.forEach { w.insertWIF(it) }
+        val filterItems = w.importedPrivKeys.map { it.publicKeyHash!! } + w.importedPrivKeys.map { it.public!! }
+
+        val peer = Node(Message.Magic.Bitcoin.testnet.toInt32LEBytes(), 0)
+        peer.initBloomFilter(filterItems, 0.001)
+
+        peer.onInv { sender, items ->
+            val blocks = items.filter { it.type == InvTypes.MSG_BLOCK || it.type == InvTypes.MSG_FILTERED_BLOCK }.map { InventoryVector(InvTypes.MSG_FILTERED_BLOCK, it.hash) }
+            val txs = items.filter { it.type == InvTypes.MSG_TX }
+
+            if (blocks.isNotEmpty()) sender.sendGetData(blocks)
+            if (txs.isNotEmpty()) sender.sendGetData(txs)
+
+            if (blocks.size > 1) sender.sendGetBlocks(listOf(items.last().hash))
+        }
+
+        peer.onTx { _, tx ->
+            w.insertTx(tx)
+            println("balance: " + w.balance)
+        }
+
+        peer.onVerack { sender, _ -> sender.sendGetBlocks() }
+
+        if (!peer.connectAsync("localhost", 19000).await()) return@runBlocking
+
+        delay(100 * 1000)
     }
 }

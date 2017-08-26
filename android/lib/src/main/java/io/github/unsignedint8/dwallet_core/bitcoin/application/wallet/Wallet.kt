@@ -20,9 +20,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
     val changePrivKeys = mutableListOf<ECKey>()
     val importedPrivKeys = mutableListOf<ECKey>()
 
-    private val cachedTxs = mutableMapOf<String, Transaction>()
     private val utxos = mutableMapOf<String, Transaction>()
-
     private val allPrivKeys get() = externalPrivKeys + changePrivKeys + importedPrivKeys
 
     /**
@@ -115,18 +113,19 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         return true
     }
 
-    fun dumpExternalKeys() = externalPrivKeys.map { it.wif }
+    fun dumpExternalWIFKeys() = externalPrivKeys.map { it.wif }
 
-    fun dumpChangeKeys() = changePrivKeys.map { it.wif }
+    fun dumpChangeWIFKeys() = changePrivKeys.map { it.wif }
 
-    fun dumpImportedKeys() = importedPrivKeys.map { it.wif }
+    fun dumpImportedWIFKeys() = importedPrivKeys.map { it.wif }
 
     /**
      * Handling Txs
      */
 
-    fun insertTx(tx: Transaction) {
-        if (utxos.contains(tx.id)) return
+    fun insertTx(tx: Transaction): Boolean {
+        if (utxos.contains(tx.id)) return false
+        if (!isIncomeTx(tx) && !isOutgoTx(tx)) return false
 
         val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
         usedUtxos.forEach { utxos.remove(it.id) }
@@ -140,12 +139,11 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
                 return@filter allPrivKeys.any { key -> key.publicKeyHash!!.contentEquals(ops[2].second!!) }
             }.sum { txOut -> txOut.value }
         }
+
+        return true
     }
 
-    fun isUtxo(tx: Transaction): Boolean {
-        insertTx(tx)
-        return utxos.contains(tx.id)
-    }
+    fun isUtxo(tx: Transaction) = insertTx(tx)
 
     fun isIncomeTx(tx: Transaction) = tx.txOuts.any { out ->
         val ops = Interpreter.scriptToOps(out.pubkeyScript)
