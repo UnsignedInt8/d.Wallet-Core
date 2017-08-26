@@ -4,7 +4,6 @@ import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.*
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.*
 import io.github.unsignedint8.dwallet_core.infrastructure.*
-import io.github.unsignedint8.dwallet_core.network.*
 import io.github.unsignedint8.dwallet_core.utils.*
 import kotlinx.coroutines.experimental.*
 import java.security.*
@@ -159,7 +158,7 @@ class Node : Event() {
     }
 
     fun onSocketClosed(callback: (sender: Node, socket: SocketEx) -> Unit) {
-        super.register("socket-shutdown", callback as Callback)
+        super.register("socket-shutdown", callback as EventCallback)
 
         try {
             this.socket.close()
@@ -197,7 +196,7 @@ class Node : Event() {
     }
 
     fun onVerack(callback: (sender: Node, version: Int) -> Unit) {
-        super.register(Version.verack, callback as Callback)
+        super.register(Version.verack, callback as EventCallback)
     }
 
     private fun sendFilterLoad() {
@@ -219,7 +218,7 @@ class Node : Event() {
     }
 
     fun onHeaders(callback: (sender: Node, headers: List<BlockHeader>) -> Unit) {
-        super.register(GetHeaders.headers, callback as Callback)
+        super.register(GetHeaders.headers, callback as EventCallback)
     }
 
     fun sendPing() {
@@ -236,7 +235,7 @@ class Node : Event() {
     }
 
     fun onReject(callback: (sender: Node, reject: Reject) -> Unit) {
-        super.register(Reject.text, callback as Callback)
+        super.register(Reject.text, callback as EventCallback)
     }
 
     fun sendGetBlocks(locatorHashes: List<String> = listOf(String.ZEROHASH), stopHash: String = String.ZEROHASH) {
@@ -249,7 +248,7 @@ class Node : Event() {
     }
 
     fun onInv(callback: (sender: Node, items: List<InventoryVector>) -> Unit) {
-        super.register(InventoryVector.inv, callback as Callback)
+        super.register(InventoryVector.inv, callback as EventCallback)
     }
 
     fun sendGetData(items: List<InventoryVector>) {
@@ -267,7 +266,7 @@ class Node : Event() {
     }
 
     fun onMerkleblocks(callback: (sender: Node, merkleblock: MerkleBlock) -> Unit) {
-        super.register(MerkleBlock.message, callback as Callback)
+        super.register(MerkleBlock.message, callback as EventCallback)
     }
 
     fun sendMempool() {

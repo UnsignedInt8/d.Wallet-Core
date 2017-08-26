@@ -1,4 +1,4 @@
-package io.github.unsignedint8.dwallet_core.network
+package io.github.unsignedint8.dwallet_core.infrastructure
 
 import kotlinx.coroutines.experimental.*
 import java.net.InetSocketAddress

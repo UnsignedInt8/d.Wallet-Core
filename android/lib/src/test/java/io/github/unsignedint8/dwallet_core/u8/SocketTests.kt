@@ -5,7 +5,7 @@ package io.github.unsignedint8.dwallet_core.u8
  */
 
 
-import io.github.unsignedint8.dwallet_core.network.SocketEx
+import io.github.unsignedint8.dwallet_core.infrastructure.SocketEx
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay

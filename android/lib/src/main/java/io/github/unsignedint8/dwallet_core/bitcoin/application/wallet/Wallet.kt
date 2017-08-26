@@ -161,6 +161,6 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         return@any allPrivKeys.any { ecKey -> ops.any { it.second != null && it.second!!.contentEquals(ecKey.public!!) } }
     }
 
-    fun onBalanceChanged(callback: (sender: Wallet, balance: Long) -> Unit) = super.register(Events.balanceChanged, callback as Callback)
+    fun onBalanceChanged(callback: (sender: Wallet, balance: Long) -> Unit) = super.register(Events.balanceChanged, callback as EventCallback)
 
 }

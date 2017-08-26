@@ -5,7 +5,7 @@ import io.github.unsignedint8.dwallet_core.bitcoin.protocol.messages.Version
 import io.github.unsignedint8.dwallet_core.bitcoin.protocol.structures.*
 import io.github.unsignedint8.dwallet_core.extensions.hexToByteArray
 import io.github.unsignedint8.dwallet_core.extensions.toInt32LEBytes
-import io.github.unsignedint8.dwallet_core.network.*
+import io.github.unsignedint8.dwallet_core.infrastructure.SocketEx
 import io.github.unsignedint8.dwallet_core.utils.BloomFilter
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
