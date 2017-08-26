@@ -47,3 +47,11 @@ inline fun ByteArray.skip(n: Int): ByteArray {
     this.filterIndexedTo(array) { count, item -> count + 1 > n }
     return array.toByteArray()
 }
+
+inline fun <T> Iterable<T>.sum(selector: (T) -> Long): Long {
+    var sum = 0L
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
