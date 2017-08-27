@@ -1,6 +1,7 @@
 package dWallet.core.bitcoin.protocol.structures
 
 import dWallet.core.extensions.*
+import dWallet.core.utils.MerkleTree
 
 /**
  * Created by unsignedint8 on 8/20/17.
@@ -31,4 +32,5 @@ class MerkleBlock(version: Int, preBlockHash: String, merkleRootHash: String, ti
     }
 
     override fun toBytes() = super.toBytes() + totalTxs.toInt32LEBytes() + hashes.size.toVarIntBytes() + hashes.reduce(ByteArray(0), { item, acc -> acc + item.hashToBytes() }) + flags.size.toVarIntBytes() + flags.toByteArray()
+
 }

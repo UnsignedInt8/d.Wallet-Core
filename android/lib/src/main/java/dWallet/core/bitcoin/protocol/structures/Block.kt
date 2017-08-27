@@ -1,6 +1,7 @@
 package dWallet.core.bitcoin.protocol.structures
 
 import dWallet.core.extensions.*
+import dWallet.core.utils.MerkleTree
 
 /**
  * Created by unsignedint8 on 8/21/17.
@@ -21,4 +22,6 @@ class Block(version: Int, preBlockHash: String, merkleRootHash: String, timestam
     }
 
     override fun toBytes() = super.toBytes() + txs.size.toVarIntBytes() + txs.reduce(ByteArray(0), { item, acc -> acc + item.toBytes() })
+
+    fun isValidMerkleRoot() = MerkleTree.generateRoot(txs.map { it.id }) == merkleRootHash
 }

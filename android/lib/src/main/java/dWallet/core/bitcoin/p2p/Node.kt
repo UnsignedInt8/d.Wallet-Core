@@ -28,6 +28,7 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
         msgHandlers[InventoryVector.inv] = fun(d: ByteArray) { handleInv(d) }
         msgHandlers[MerkleBlock.message] = fun(d: ByteArray) { handleMerkleblock(d) }
         msgHandlers[Transaction.message] = fun(d: ByteArray) { handleTx(d) }
+        msgHandlers[Block.message] = fun(d: ByteArray) { handleBlock(d) }
     }
 
     val peerAddress: String
@@ -282,5 +283,14 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     fun onTx(callback: (sender: Node, tx: Transaction) -> Unit) {
         super.register(Transaction.message, callback as EventCallback)
+    }
+
+    private fun handleBlock(data: ByteArray) {
+        val block = Block.fromBytes(data)
+        super.trigger(Block.message, this, block)
+    }
+
+    fun onBlock(callback: (sender: Node, block: Block) -> Unit) {
+        super.register(Block.message, callback as EventCallback)
     }
 }

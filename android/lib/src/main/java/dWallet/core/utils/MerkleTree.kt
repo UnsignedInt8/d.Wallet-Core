@@ -2,6 +2,7 @@ package dWallet.core.utils
 
 import dWallet.core.crypto.hash256
 import dWallet.core.extensions.hashToBytes
+import dWallet.core.extensions.toHashString
 
 /**
  * Created by unsignedint8 on 8/27/17.
@@ -11,8 +12,8 @@ class MerkleTree {
 
     companion object {
 
-        fun generateRoot(hashes: List<String>): ByteArray? {
-            return fromByteArray(hashes.map { it.hashToBytes() })
+        fun generateRoot(hashes: List<String>): String? {
+            return fromByteArray(hashes.map { it.hashToBytes() })?.toHashString()
         }
 
         private fun fromByteArray(hashes: List<ByteArray>): ByteArray? {

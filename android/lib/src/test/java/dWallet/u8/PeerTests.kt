@@ -7,6 +7,7 @@ import dWallet.core.extensions.hexToByteArray
 import dWallet.core.extensions.toInt32LEBytes
 import dWallet.core.infrastructure.SocketEx
 import dWallet.core.utils.BloomFilter
+import dWallet.core.utils.MerkleTree
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
 
@@ -61,8 +62,8 @@ class PeerTests {
         node.onInv { _, invs ->
             println("inv ${invs.size} ${invs.all { it.type == InvTypes.MSG_BLOCK }}")
             println(invs.first().hash)
-            node.sendGetMerkleblocks(invs.map { it.hash })
-//            node.sendGetData(invs.takeLast(5))
+//            node.sendGetMerkleblocks(invs.map { it.hash })
+            node.sendGetData(invs.takeLast(5))
         }
 
         node.onTx { sender, tx -> println(tx.id) }
@@ -73,10 +74,18 @@ class PeerTests {
             node.sendGetBlocks()
         }
 
+        node.onBlock { sender, block ->
 
+            if (!block.isValidMerkleRoot()) {
+                println("block " + block.hash + " " + block.isValidMerkleRoot() + " " + block.txs.size)
+                println(block.merkleRootHash)
+                println(MerkleTree.generateRoot(block.txs.map { it.id }))
+                println(block.txs.map { it.id })
+            }
+        }
 
         node.onMerkleblocks { _, block ->
-            println(block.preBlockHash)
+            println(block.preBlockHash + " ")
         }
 
         async(CommonPool) {
@@ -84,7 +93,7 @@ class PeerTests {
             println("socket port: ${node.localPort}")
         }
 
-        runBlocking { delay(40 * 1000) }
+        runBlocking { delay(140 * 1000) }
 
     }
 }

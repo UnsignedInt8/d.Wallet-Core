@@ -33,8 +33,9 @@ class Transaction(val version: Int, val txIns: List<TxIn>, val txOuts: List<TxOu
             }
 
             val lockTime = data.readInt32LE((4 + txInsLength + txOutsLength).toInt())
+            val txLength = (4 + txInsLength + txOutsLength + 4).toInt()
 
-            return Pair(Transaction(version, txIns, txOuts, lockTime, hash256(data).toHashString()), (4 + txInsLength + txOutsLength + 4).toInt())
+            return Pair(Transaction(version, txIns, txOuts, lockTime, hash256(data.sliceArray(0, txLength)).toHashString()), txLength)
         }
 
         const val message = "tx"
