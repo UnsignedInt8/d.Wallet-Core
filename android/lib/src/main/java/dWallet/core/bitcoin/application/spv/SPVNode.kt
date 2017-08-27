@@ -11,7 +11,7 @@ import dWallet.core.bitcoin.p2p.Node
  *
  */
 
-open class SPVNode(network: Network, val wallet: Wallet, private val latestBlockHash: String, latestHeight: Int) {
+open class SPVNode(network: Network, val wallet: Wallet, latestBlockHash: String, latestHeight: Int) {
 
     private val node = Node(network.magic, latestHeight)
 
