@@ -78,6 +78,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
         private object Events {
             const val balanceChanged = "BalanceChanged"
+            const val utxoRemvoed = "UtxoRemoved"
         }
     }
 
@@ -140,8 +141,12 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             }.sum { txOut -> txOut.value }
         }
 
+        if (usedUtxos.isNotEmpty()) super.trigger(Events.utxoRemvoed, this, usedUtxos)
+
         return true
     }
+
+    fun insertTxs(txs: Iterable<Transaction>) = txs.forEach { insertTx(it) }
 
     fun isUtxo(tx: Transaction) = insertTx(tx)
 
@@ -161,4 +166,5 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun onBalanceChanged(callback: (sender: Wallet, balance: Long) -> Unit) = super.register(Events.balanceChanged, callback as EventCallback)
 
+    fun onUtxoRemoved(callback: (sender: Wallet, utxos: List<Transaction>) -> Unit) = super.register(Events.utxoRemvoed, callback as EventCallback)
 }
