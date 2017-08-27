@@ -264,7 +264,7 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
         super.trigger(MerkleBlock.message, this, block)
     }
 
-    fun onMerkleblocks(callback: (sender: Node, merkleblock: MerkleBlock) -> Unit) {
+    fun onMerkleblock(callback: (sender: Node, merkleblock: MerkleBlock) -> Unit) {
         super.register(MerkleBlock.message, callback as EventCallback)
     }
 

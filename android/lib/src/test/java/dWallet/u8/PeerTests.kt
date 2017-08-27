@@ -84,7 +84,7 @@ class PeerTests {
             }
         }
 
-        node.onMerkleblocks { _, block ->
+        node.onMerkleblock { _, block ->
             if (block.flags.isNotEmpty()) println("flags: " + block.flags)
             println(block.preBlockHash + " ")
         }

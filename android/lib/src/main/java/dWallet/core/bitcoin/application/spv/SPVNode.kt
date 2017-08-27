@@ -2,9 +2,10 @@ package dWallet.core.bitcoin.application.spv
 
 import dWallet.core.bitcoin.application.wallet.*
 import dWallet.core.bitcoin.p2p.Node
-import dWallet.core.bitcoin.protocol.structures.InvTypes
-import dWallet.core.bitcoin.protocol.structures.InventoryVector
-import dWallet.core.bitcoin.protocol.structures.MerkleBlock
+import dWallet.core.bitcoin.protocol.structures.*
+import dWallet.core.extensions.*
+import dWallet.core.infrastructure.Event
+import dWallet.core.infrastructure.EventCallback
 
 /**
  * Created by unsignedint8 on 8/26/17.
@@ -14,7 +15,7 @@ import dWallet.core.bitcoin.protocol.structures.MerkleBlock
  *
  */
 
-open class SPVNode(network: Network, val wallet: Wallet, latestBlockHash: String, latestHeight: Int, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) {
+open class SPVNode(network: Network, wallet: Wallet, latestHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
 
     private val node = Node(network.magic, latestHeight)
     private val knownBlocks = mutableSetOf<String>()
@@ -25,22 +26,38 @@ open class SPVNode(network: Network, val wallet: Wallet, latestBlockHash: String
         knownTxHashes.forEach { knownTxs.add(it) }
 
         node.initBloomFilter(wallet.allPrivKeys.map { it.publicKeyHash!! } + wallet.allPrivKeys.map { it.public!! }, 0.0001)
-        node.onVerack { sender, _ -> sender.sendGetBlocks(listOf(latestBlockHash)) }
+
+        node.onVerack { sender, _ ->
+            sender.sendGetBlocks(listOf(latestBlockHash))
+            sender.sendMempool()
+        }
 
         node.onInv { sender, items ->
             val blocks = items.filter { it.type == InvTypes.MSG_BLOCK && !knownBlocks.contains(it.hash) }.map { InventoryVector(InvTypes.MSG_FILTERED_BLOCK, it.hash) }
             val txs = items.filter { it.type == InvTypes.MSG_TX && !knownTxs.contains(it.hash) }
 
             if (txs.isNotEmpty()) sender.sendGetData(txs)
+            if (blocks.isEmpty()) return@onInv
 
-            if (blocks.isNotEmpty()) {
-                sender.sendGetData(blocks)
-                sender.sendGetBlocks(listOf(blocks.last().hash))
-                println("latest block hash ${blocks.last().hash}")
-            }
+            sender.sendGetData(blocks)
+            sender.sendGetBlocks(listOf(blocks.last().hash)) // continue requesting the latest block
+        }
+
+        node.onTx { _, tx ->
+            wallet.insertTx(tx)
+            knownTxs.add(tx.id)
+            if (wallet.isUserTx(tx)) this.trigger(Transaction.message, this, tx)
+        }
+
+        node.onMerkleblock { _, merkleblock ->
+            knownBlocks.add(merkleblock.hash)
+            this.trigger(MerkleBlock.message, this, merkleblock)
         }
     }
 
     fun connectAsync(host: String, port: Int) = node.connectAsync(host, port)
 
+    fun onTx(callback: (sender: SPVNode, tx: Transaction) -> Unit) = super.register(Transaction.message, callback as EventCallback)
+
+    fun onMerkleblock(callback: (sender: SPVNode, merkleblock: MerkleBlock) -> Unit) = super.register(MerkleBlock.message, callback as EventCallback)
 }

@@ -26,6 +26,10 @@ class Address(val pubkey: ByteArray, val netId: ByteArray) {
             val hash = sha256(decoded, 0, 21, 2)
             return hash.sliceArray(0..3).contentEquals(decoded.sliceArray(21..24))
         }
+
+        fun fromString(address: String) {
+            
+        }
     }
 
     override fun toString() = pubkeyHashToBase58Checking(hash160(pubkey), netId)

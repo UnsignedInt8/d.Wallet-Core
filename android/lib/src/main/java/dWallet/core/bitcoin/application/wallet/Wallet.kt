@@ -79,6 +79,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         private object Events {
             const val balanceChanged = "BalanceChanged"
             const val utxoRemvoed = "UtxoRemoved"
+            const val utxoAdded = "UtxoAdded"
         }
     }
 
@@ -126,7 +127,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun insertTx(tx: Transaction): Boolean {
         if (utxos.contains(tx.id)) return false
-        if (!isIncomeTx(tx) && !isOutgoTx(tx)) return false
+        if (!isIncomeTx(tx)) return false
 
         val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
         usedUtxos.forEach { utxos.remove(it.id) }
@@ -141,6 +142,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             }.sum { txOut -> txOut.value }
         }
 
+        super.trigger(Events.utxoAdded, this, tx)
         if (usedUtxos.isNotEmpty()) super.trigger(Events.utxoRemvoed, this, usedUtxos)
 
         return true
@@ -164,7 +166,20 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         return@any allPrivKeys.any { ecKey -> ops.any { it.second != null && it.second!!.contentEquals(ecKey.public!!) } }
     }
 
+    fun isUserTx(tx: Transaction) = isIncomeTx(tx) || isOutgoTx(tx)
+
     fun onBalanceChanged(callback: (sender: Wallet, balance: Long) -> Unit) = super.register(Events.balanceChanged, callback as EventCallback)
 
-    fun onUtxoRemoved(callback: (sender: Wallet, utxos: List<Transaction>) -> Unit) = super.register(Events.utxoRemvoed, callback as EventCallback)
+    fun onUtxosRemoved(callback: (sender: Wallet, utxos: List<Transaction>) -> Unit) = super.register(Events.utxoRemvoed, callback as EventCallback)
+
+    fun onUtxoAdded(callback: (sender: Wallet, utxos: Transaction) -> Unit) = super.register(Events.utxoAdded, callback as EventCallback)
+
+    /**
+     * Sending Tx
+     */
+
+    fun createTx(toAddress: String, amount: Long, fee: Long) {
+        // TODO: implement it
+
+    }
 }
