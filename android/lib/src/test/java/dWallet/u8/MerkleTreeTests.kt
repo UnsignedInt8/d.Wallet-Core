@@ -1,6 +1,5 @@
 package dWallet.u8
 
-import dWallet.core.extensions.toHashString
 import dWallet.core.utils.MerkleTree
 import org.junit.Test
 import org.junit.Assert.*
@@ -14,26 +13,26 @@ class MerkleTreeTests {
     @Test
     fun test80000() {
         val hashes = listOf("c06fbab289f723c6261d3030ddb6be121f7d2508d77862bb1e484f5cd7f92b25", "5a4ebf66822b0b2d56bd9dc64ece0bc38ee7844a23ff1d7320a88c5fdb2ad3e2")
-        assertEquals("8fb300e3fdb6f30a4c67233b997f99fdd518b968b9a3fd65857bfe78b2600719", MerkleTree.generateRoot(hashes))
+        assertEquals("8fb300e3fdb6f30a4c67233b997f99fdd518b968b9a3fd65857bfe78b2600719", MerkleTree.generateRootHash(hashes))
     }
 
     @Test
     fun test481955() {
         val hashes = listOf("5c9bed0716c7920081101eea92530cff33cf1bacf1b3036a2342157869cb4ece")
-        assertEquals("5c9bed0716c7920081101eea92530cff33cf1bacf1b3036a2342157869cb4ece", MerkleTree.generateRoot(hashes))
+        assertEquals("5c9bed0716c7920081101eea92530cff33cf1bacf1b3036a2342157869cb4ece", MerkleTree.generateRootHash(hashes))
     }
 
     @Test
     fun test50001() {
         val hashes = listOf("e1882d41800d96d0fddc196cd8d3f0b45d65b030c652d97eaba79a1174e64d58", "7940cdde4d713e171849efc6bd89939185be270266c94e92369e3877ad89455a", "f84761459a00c6df3176ae5d94c99e69f25100d09548e5686bd0c354bb8cc60a")
-        assertEquals("ee3a2d2b895cafacff526d06a55b55e049cf84a9735e4a63f7fd08f96d0f4649", MerkleTree.generateRoot(hashes))
+        assertEquals("ee3a2d2b895cafacff526d06a55b55e049cf84a9735e4a63f7fd08f96d0f4649", MerkleTree.generateRootHash(hashes))
     }
 
     @Test
     fun testItems(){
         val hashes = listOf("aa151b40af4bbd61085cbb115046f7d23a9dc8659ada5465c30649236ce998e9", "6fd7b22beed1d2f30b1e116c58ce14a0780b3611a23c74e30fc7257a9c120e8c", "829186075dcb208a3830fa55dd4f5ec8828c5347b48472ef46f03a97fdcddb1f", "116ff28f61f36a1293032eaf0a869c5e5979283b2e6aa9eb0602e5cd002bdcbc", "85bf5ba778d24616d2ec7ee91bcf1e2df53f8566f116e8667ae778798305bf7c", "226c67a7e937cb2bd663f6ae0d4abc645ee8621d44a51ddbd95a53b6754b60d0", "2a7dcf153b5435817519fea9bab0e84981eb4cf6aab357b00aec840f902b8a5b", "cb3231549a135ab81ea867ec4ec96ad29782563efe7d12497942006135ab0a7e", "48f80c5f900f8c4e536330623a9e86526490e22a72a73829fd50afb41ac21195")
         println("cfb0adb00f5710a22bf91aca207bb704c757b60209fa7a9768a47d010a6a4636")
-        println(MerkleTree.generateRoot(hashes))
+        println(MerkleTree.generateRootHash(hashes))
 
         val h2 = listOf("aa151b40af4bbd61085cbb115046f7d23a9dc8659ada5465c30649236ce998e9",
                 "6fd7b22beed1d2f30b1e116c58ce14a0780b3611a23c74e30fc7257a9c120e8c",
@@ -56,6 +55,6 @@ class MerkleTreeTests {
                 "dfe6d75ca99dfb45847f39935311f930cbcef7ebd9d7fdfaf46e0c779fd66954",
                 "b3f5bafeab5103f5fd0c973c1256c52950a2c460d506e1b5a6bb8716bffa4eb8",
                 "986ddcf7842d125bc0b054d154418d3a1c518411c902a13e2e08567b19e3052a")
-        println(MerkleTree.generateRoot(h2))
+        println(MerkleTree.generateRootHash(h2))
     }
 }

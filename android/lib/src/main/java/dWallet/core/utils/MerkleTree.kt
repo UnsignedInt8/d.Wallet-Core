@@ -12,11 +12,11 @@ class MerkleTree {
 
     companion object {
 
-        fun generateRoot(hashes: List<String>): String? {
-            return fromByteArray(hashes.map { it.hashToBytes() })?.toHashString()
+        fun generateRootHash(hashes: List<String>): String? {
+            return buildRoot(hashes.map { it.hashToBytes() })?.toHashString()
         }
 
-        private fun fromByteArray(hashes: List<ByteArray>): ByteArray? {
+        fun buildRoot(hashes: List<ByteArray>): ByteArray? {
             if (hashes.size == 1) return hashes.first()
 
             val items = mutableListOf<ByteArray>()
@@ -29,7 +29,7 @@ class MerkleTree {
             val upperLevel = concatHashes.map { hash256(it) }
 
             return if (upperLevel.size > 1) {
-                fromByteArray(upperLevel)
+                buildRoot(upperLevel)
             } else {
                 upperLevel.firstOrNull()
             }

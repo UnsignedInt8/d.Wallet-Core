@@ -23,5 +23,5 @@ class Block(version: Int, preBlockHash: String, merkleRootHash: String, timestam
 
     override fun toBytes() = super.toBytes() + txs.size.toVarIntBytes() + txs.reduce(ByteArray(0), { item, acc -> acc + item.toBytes() })
 
-    fun isValidMerkleRoot() = MerkleTree.generateRoot(txs.map { it.id }) == merkleRootHash
+    fun isValidMerkleRoot() = MerkleTree.generateRootHash(txs.map { it.id }) == merkleRootHash
 }
