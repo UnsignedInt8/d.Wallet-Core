@@ -19,6 +19,8 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
     private val socket = SocketEx()
 
     init {
+        socket.keepAlive = true
+
         msgHandlers = mutableMapOf()
         msgHandlers[Version.text] = fun(payload: ByteArray) { handleVersion(payload) }
         msgHandlers[Version.verack] = fun(_: ByteArray) { handleVerack() }
@@ -29,6 +31,7 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
         msgHandlers[MerkleBlock.message] = fun(d: ByteArray) { handleMerkleblock(d) }
         msgHandlers[Transaction.message] = fun(d: ByteArray) { handleTx(d) }
         msgHandlers[Block.message] = fun(d: ByteArray) { handleBlock(d) }
+        msgHandlers[Addr.text] = fun(d: ByteArray) { handleAddr(d) }
     }
 
     val peerAddress: String
@@ -79,22 +82,21 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
     }
 
     fun connectAsync(host: String, port: Int) = async(CommonPool) {
-        socket.keepAlive = true
-
+        println("isclosed: ${socket.isClosed}")
         val result = socket.connectAsync(host, port, 10 * 1000).await()
         if (!result) return@async false
 
         sendVersion()
-        beginReceivingData()
+        communicateAsync()
 
         return@async result
     }
 
-    private suspend fun beginReceivingData() {
+    private suspend fun communicateAsync() {
 
         if (socket.isClosed) return
 
-        fun runNext() = async(CommonPool) { beginReceivingData() }
+        fun runNext() = async(CommonPool) { communicateAsync() }
         var shutdown = false
 
         try {
@@ -121,8 +123,6 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
                 println("magic numbers are not equal")
                 return
             }
-
-            println("cmd: ${msg.command}")
 
             data = data.takeLast(data.size - 24).toByteArray()
             while (data.size < msg.length) {
@@ -152,17 +152,20 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
         } finally {
 
             if (!shutdown) runNext()
-            if (shutdown) super.trigger("socket-shutdown", this, socket)
+
+            if (shutdown) {
+                try {
+                    this.socket.close()
+                } catch (e: Exception) {
+                }
+
+                super.trigger("socket-shutdown", this, socket)
+            }
         }
     }
 
     fun onSocketClosed(callback: (sender: Node, socket: SocketEx) -> Unit) {
         super.register("socket-shutdown", callback as EventCallback)
-
-        try {
-            this.socket.close()
-        } catch (e: Exception) {
-        }
     }
 
     private fun sendMessage(command: String, payload: ByteArray = ByteArray(0)) {
@@ -196,6 +199,15 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     fun onVerack(callback: (sender: Node, version: Int) -> Unit) {
         super.register(Version.verack, callback as EventCallback)
+    }
+
+    private fun handleAddr(data: ByteArray) {
+        val addr = Addr.fromBytes(data)
+        super.trigger(Addr.text, this, addr.addrs)
+    }
+
+    fun onAddr(callback: (sender: Node, addrs: List<NetworkAddress>) -> Unit) {
+        super.register(Addr.text, callback as EventCallback)
     }
 
     private fun sendFilterLoad() {

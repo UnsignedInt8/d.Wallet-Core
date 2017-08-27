@@ -2,10 +2,12 @@ package dWallet.core.bitcoin.application.spv
 
 import dWallet.core.bitcoin.application.wallet.*
 import dWallet.core.bitcoin.p2p.Node
+import dWallet.core.bitcoin.protocol.messages.Addr
 import dWallet.core.bitcoin.protocol.structures.*
 import dWallet.core.extensions.*
 import dWallet.core.infrastructure.Event
 import dWallet.core.infrastructure.EventCallback
+import kotlinx.coroutines.experimental.Deferred
 
 /**
  * Created by unsignedint8 on 8/26/17.
@@ -52,16 +54,26 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
             knownBlocks.add(merkleblock.hash)
             this.trigger(MerkleBlock.message, this, merkleblock)
         }
+
+        node.onSocketClosed { _, _ -> super.trigger("ConnectionLost", this, 0) }
+
+        node.onAddr { _, addrs -> super.trigger(Addr.text, this, addrs) }
     }
 
-    fun connectAsync(host: String, port: Int) = node.connectAsync(host, port)
+    suspend fun connectAsync(host: String, port: Int): Boolean {
+        return node.connectAsync(host, port).await()
+    }
 
     fun onTx(callback: (sender: SPVNode, tx: Transaction) -> Unit) = super.register(Transaction.message, callback as EventCallback)
 
     fun onMerkleblock(callback: (sender: SPVNode, merkleblock: MerkleBlock) -> Unit) = super.register(MerkleBlock.message, callback as EventCallback)
 
-    val progress: Int
-        get() = (latestHeight + knownBlocks.size) / node.peerBlockchainHeight
+    fun onAddr(callback: (sender: SPVNode, addrs: List<NetworkAddress>) -> Unit) = super.register(Addr.text, callback as EventCallback)
+
+    fun onConnectionLost(callback: (sender: SPVNode, placeholder: Any) -> Unit) = super.register("ConnectionLost", callback as EventCallback)
+
+    val progress: Double
+        get() = Math.min((latestHeight + knownBlocks.size).toDouble() / peerHeight.toDouble() * 100.0, 100.0)
 
     val peerHeight: Int
         get() = node.peerBlockchainHeight
