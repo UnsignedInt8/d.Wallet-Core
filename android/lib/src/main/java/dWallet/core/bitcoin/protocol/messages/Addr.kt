@@ -16,6 +16,7 @@ class Addr(val addrs: List<NetworkAddress>) {
         }
 
         val text = "addr"
+        val getaddr = "getaddr"
     }
 
     val count = addrs.size

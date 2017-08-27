@@ -32,6 +32,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         node.onVerack { sender, _ ->
             sender.sendGetBlocks(listOf(latestBlockHash))
             sender.sendMempool()
+            sender.sendGetAddr()
         }
 
         node.onInv { sender, items ->

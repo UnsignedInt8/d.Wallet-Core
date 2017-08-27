@@ -82,7 +82,7 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
     }
 
     fun connectAsync(host: String, port: Int) = async(CommonPool) {
-        println("isclosed: ${socket.isClosed}")
+
         val result = socket.connectAsync(host, port, 10 * 1000).await()
         if (!result) return@async false
 
@@ -208,6 +208,10 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     fun onAddr(callback: (sender: Node, addrs: List<NetworkAddress>) -> Unit) {
         super.register(Addr.text, callback as EventCallback)
+    }
+
+    fun sendGetAddr() {
+        sendMessage(Addr.getaddr)
     }
 
     private fun sendFilterLoad() {

@@ -26,7 +26,7 @@ class SPVNodeTests {
         val w = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider") // Wallet.create().first
         val spv = SPVNode(Network.BitcoinTestnet, w)
 //        spv.onTx { _, tx -> println("progress: ${spv.progress}") }
-//        spv.onMerkleblock { _, merkleblock -> println("progress: ${spv.progress}") }
+        spv.onMerkleblock { _, merkleblock -> println("progress: ${spv.progress}") }
         spv.onAddr { _, addr -> println(addr) }
 
 
