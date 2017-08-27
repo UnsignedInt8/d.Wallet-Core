@@ -5,6 +5,8 @@ import dWallet.core.crypto.sha1
 import dWallet.core.crypto.sha256
 import dWallet.core.extensions.*
 import dWallet.core.utils.BloomFilter
+import dWallet.core.utils.BloomFilter2
+import dWallet.core.utils.BloomFilter3
 import org.junit.Test
 import org.junit.Assert.*
 
@@ -71,8 +73,12 @@ class BloomFilterTests {
     @Test
     fun testCreateBloomFilter() {
         val f = BloomFilter.create(100, 0.1)
-        assert(f.data.isNotEmpty())
-        assert(f.nHashFuncs > 0)
+        assertEquals(true, f.data.isNotEmpty())
+        assertEquals(true, f.nHashFuncs > 0)
+
+        val f2 = BloomFilter2(100, 0.1)
+        assertEquals(true, f2.data?.isNotEmpty() ?: false)
+        assertEquals(true, f2.nHashFuncs > 0)
     }
 
     @Test
@@ -91,18 +97,34 @@ class BloomFilterTests {
             assertEquals(it.second, f.data.size)
             assertEquals(it.third, f.nHashFuncs)
         }
+
+        cases.forEach {
+            val f2 = BloomFilter2(it.first.first, it.first.second)
+
+            assertEquals(it.second, f2.data?.size)
+            assertEquals(it.third.toLong(), f2.nHashFuncs)
+        }
     }
 
     @Test
     fun testInsertingBloomFilter() {
         val f = BloomFilter.create(3, 0.01)
         f.insert(a)
-        assert(f.contains(a))
-        assert(!f.contains(b))
-        f.insert(c)
-        assert(f.contains(c))
-        f.insert(d)
-        assert(f.contains(d))
+        assertEquals(true, f.contains(a))
+        assertEquals(true, !f.contains(b))
+//        f.insert(c)
+//        assertEquals(true, f.contains(c))
+//        f.insert(d)
+//        assertEquals(true, f.contains(d))
+
+        val f2 = BloomFilter3(3, 0.01)
+        f2.insert(a)
+        assertEquals(true, f2.contains(a))
+        assertEquals(false, f2.contains(b))
+        f2.insert(c)
+        assertEquals(true, f2.contains(c))
+        f2.insert(d)
+        assertEquals(true, f2.contains(d))
     }
 
     @Test
@@ -124,6 +146,20 @@ class BloomFilterTests {
         assertEquals(5, f.nHashFuncs)
         assertEquals(0, f.nTweak)
         assertEquals(1, f.nFlags)
+
+        val f2 = BloomFilter3(3, 0.01, 0, BloomFilter3.BloomUpdate.UPDATE_ALL)
+        f2.insert("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())
+        assertEquals(true, f2.contains("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()))
+        assertEquals(false, f2.contains("19108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()))
+        f2.insert("b5a2c786d9ef4658287ced5914b37a1b4aa32eee".hexToByteArray())
+        assertEquals(true, f2.contains("b5a2c786d9ef4658287ced5914b37a1b4aa32eee".hexToByteArray()))
+        f2.insert("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray())
+        assertEquals(true, f2.contains("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray()))
+
+        assertArrayEquals(byteArrayOf(97, 78, 155.toByte()), f2.data)
+        assertEquals(5, f2.nHashFuncs)
+        assertEquals(0, f2.nTweak)
+        assertEquals(1.toByte(), f2.nFlags)
     }
 
     @Test

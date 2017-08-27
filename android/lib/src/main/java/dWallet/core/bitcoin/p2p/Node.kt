@@ -70,10 +70,10 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     var ua = "/Wallet:0.0.1/"
 
-    private var filter: BloomFilter? = null
+    private var filter: BloomFilter3? = null
 
-    fun initBloomFilter(elements: Iterable<ByteArray>, falsePositiveRate: Double, nTweak: Int = 0, nFlags: Int = BloomFilter.BLOOM_UPDATE_NONE) {
-        filter = BloomFilter.create(elements.count(), falsePositiveRate, nTweak, nFlags)
+    fun initBloomFilter(elements: Iterable<ByteArray>, falsePositiveRate: Double, nTweak: Long = 0, nFlags: BloomFilter3.BloomUpdate = BloomFilter3.BloomUpdate.UPDATE_NONE) {
+        filter = BloomFilter3(elements.count(), falsePositiveRate, nTweak, nFlags)
         elements.forEach { filter?.insert(it) }
     }
 
@@ -216,7 +216,7 @@ class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     private fun sendFilterLoad() {
         if (filter == null) return
-        sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs, filter!!.nTweak, filter!!.nFlags).toBytes())
+        sendMessage(FilterLoad.text, FilterLoad(filter!!.data, filter!!.nHashFuncs.toInt(), filter!!.nTweak.toInt(), filter!!.nFlags.toInt()).toBytes())
     }
 
     fun sendFilterClear() {

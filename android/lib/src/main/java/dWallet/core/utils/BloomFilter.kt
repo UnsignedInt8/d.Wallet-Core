@@ -61,15 +61,15 @@ class BloomFilter private constructor(var data: ByteArray, val nHashFuncs: Int, 
         kotlin.repeat(nHashFuncs) {
             val index = hash(data, it)
             val position = 1 shl (7 and index)
-            if (index shr 3 !in 0 until data.size) return@repeat
-            this.data[index shr 3] = (this.data[index shr 3].toInt() or position).toByte()
+            if (index ushr 3 !in 0 until data.size) return@repeat
+            this.data[index ushr 3] = (this.data[index shr 3].toInt() or position).toByte()
         }
     }
 
     fun contains(data: ByteArray): Boolean {
         kotlin.repeat(nHashFuncs) {
             val index = this.hash(data, it)
-            val bit = index shr 3
+            val bit = index ushr 3
             if (bit in 0..this.data.size && (this.data[bit] and (1 shl (7 and index)).toByte()) == 1.toByte()) {
                 return true
             }

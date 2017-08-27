@@ -23,8 +23,8 @@ class SPVNodeTests {
 
     @Test
     fun testSync() = runBlocking {
-        Wallet.changeKeysAmount = 2
-        Wallet.externalKeysAmount = 2
+//        Wallet.changeKeysAmount = 2
+//        Wallet.externalKeysAmount = 1
         val w = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider") // Wallet.create().first
         w.insertWIF("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") //mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
         w.insertWIF("cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4") //miwTG5Wt5t188CXh8oT3bTjGvbzS6kcgqT
@@ -34,7 +34,6 @@ class SPVNodeTests {
         spv.onTx { _, tx -> println("progress: ${spv.progress.format(2)}") }
         spv.onMerkleblock { _, merkleblock -> println("progress: ${spv.progress.format(2)}") }
         spv.onAddr { _, addr -> println(addr) }
-
 
         if (!spv.connectAsync("localhost", 19000)) {
             println("not connected")

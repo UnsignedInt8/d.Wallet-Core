@@ -7,6 +7,7 @@ import dWallet.core.extensions.hexToByteArray
 import dWallet.core.extensions.toInt32LEBytes
 import dWallet.core.infrastructure.SocketEx
 import dWallet.core.utils.BloomFilter
+import dWallet.core.utils.BloomFilter3
 import dWallet.core.utils.MerkleTree
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
@@ -48,7 +49,7 @@ class PeerTests {
         val node = Node(Message.Magic.Bitcoin.main.toInt32LEBytes())
         node.magic = magic
         node.initBloomFilter(listOf("bc7662ecd3c4e0024d00e8647fb9ff6539a7b379".hexToByteArray()),
-                0.0001, nFlags = BloomFilter.BLOOM_UPDATE_ALL)
+                0.0001, nFlags = BloomFilter3.BloomUpdate.UPDATE_ALL)
 
         node.onHeaders { _, headers ->
             println(headers.size)

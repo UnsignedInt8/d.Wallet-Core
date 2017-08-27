@@ -28,12 +28,12 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         knownBlockHashes.forEach { knownBlocks.add(it) }
         knownTxHashes.forEach { knownTxs.add(it) }
 
-        val keys = mutableListOf<ByteArray>()
-        wallet.allPrivKeys.forEach {
-            keys.add(it.public!!)
-            keys.add(it.publicKeyHash!!)
-        }
-        node.initBloomFilter(keys, 0.001, 0, BloomFilter.BLOOM_UPDATE_ALL)
+//        val keys = mutableListOf<ByteArray>()
+//        wallet.allPrivKeys.forEach {
+//            keys.add(it.public!!)
+//            keys.add(it.publicKeyHash!!)
+//        }
+        node.initBloomFilter(wallet.allPrivKeys.map { it.publicKeyHash!! } + wallet.allPrivKeys.map { it.public!! }, 0.001, 0)
 
         node.onVerack { sender, _ ->
             sender.sendGetBlocks(listOf(latestBlockHash))
