@@ -15,7 +15,7 @@ import dWallet.core.infrastructure.EventCallback
  *
  */
 
-open class SPVNode(network: Network, wallet: Wallet, latestHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
+open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
 
     private val node = Node(network.magic, latestHeight)
     private val knownBlocks = mutableSetOf<String>()
@@ -44,7 +44,7 @@ open class SPVNode(network: Network, wallet: Wallet, latestHeight: Int = 0, late
         }
 
         node.onTx { _, tx ->
-            if (wallet.insertTx(tx) || wallet.isUserTx(tx)) this.trigger(Transaction.message, this, tx)
+            if (wallet.insertTx(tx)) this.trigger(Transaction.message, this, tx)
             knownTxs.add(tx.id)
         }
 
@@ -59,4 +59,13 @@ open class SPVNode(network: Network, wallet: Wallet, latestHeight: Int = 0, late
     fun onTx(callback: (sender: SPVNode, tx: Transaction) -> Unit) = super.register(Transaction.message, callback as EventCallback)
 
     fun onMerkleblock(callback: (sender: SPVNode, merkleblock: MerkleBlock) -> Unit) = super.register(MerkleBlock.message, callback as EventCallback)
+
+    val progress: Int
+        get() = (latestHeight + knownBlocks.size) / node.peerBlockchainHeight
+
+    val peerHeight: Int
+        get() = node.peerBlockchainHeight
+
+    val peerAddress: String
+        get() = node.peerAddress
 }

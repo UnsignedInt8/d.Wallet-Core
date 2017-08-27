@@ -127,7 +127,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun insertTx(tx: Transaction): Boolean {
         if (utxos.contains(tx.id)) return false
-        if (!isIncomeTx(tx)) return false
+        if (!isUserTx(tx)) return false
 
         val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
         usedUtxos.forEach { utxos.remove(it.id) }
@@ -142,7 +142,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             }.sum { txOut -> txOut.value }
         }
 
-        super.trigger(Events.utxoAdded, this, tx)
+        if (isIncomeTx(tx)) super.trigger(Events.utxoAdded, this, tx)
         if (usedUtxos.isNotEmpty()) super.trigger(Events.utxoRemvoed, this, usedUtxos)
 
         return true
