@@ -44,9 +44,8 @@ open class SPVNode(network: Network, wallet: Wallet, latestHeight: Int = 0, late
         }
 
         node.onTx { _, tx ->
-            wallet.insertTx(tx)
+            if (wallet.insertTx(tx) || wallet.isUserTx(tx)) this.trigger(Transaction.message, this, tx)
             knownTxs.add(tx.id)
-            if (wallet.isUserTx(tx)) this.trigger(Transaction.message, this, tx)
         }
 
         node.onMerkleblock { _, merkleblock ->

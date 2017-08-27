@@ -28,7 +28,7 @@ class Address(val pubkey: ByteArray, val netId: ByteArray) {
         }
 
         fun fromString(address: String) {
-            
+
         }
     }
 
