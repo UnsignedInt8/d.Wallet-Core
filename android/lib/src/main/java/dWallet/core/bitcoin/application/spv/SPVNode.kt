@@ -7,6 +7,7 @@ import dWallet.core.bitcoin.protocol.structures.*
 import dWallet.core.extensions.*
 import dWallet.core.infrastructure.Event
 import dWallet.core.infrastructure.EventCallback
+import dWallet.core.utils.BloomFilter
 import kotlinx.coroutines.experimental.Deferred
 
 /**
@@ -27,7 +28,12 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         knownBlockHashes.forEach { knownBlocks.add(it) }
         knownTxHashes.forEach { knownTxs.add(it) }
 
-        node.initBloomFilter(wallet.allPrivKeys.map { it.publicKeyHash!! } + wallet.allPrivKeys.map { it.public!! }, 0.0001)
+        val keys = mutableListOf<ByteArray>()
+        wallet.allPrivKeys.forEach {
+            keys.add(it.public!!)
+            keys.add(it.publicKeyHash!!)
+        }
+        node.initBloomFilter(keys, 0.001, 0, BloomFilter.BLOOM_UPDATE_ALL)
 
         node.onVerack { sender, _ ->
             sender.sendGetBlocks(listOf(latestBlockHash))
@@ -47,6 +53,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         }
 
         node.onTx { _, tx ->
+            println(tx.id)
             if (wallet.insertTx(tx)) this.trigger(Transaction.message, this, tx)
             knownTxs.add(tx.id)
         }

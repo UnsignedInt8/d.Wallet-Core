@@ -1,6 +1,7 @@
 package dWallet.u8
 
 import dWallet.core.bitcoin.application.Address
+import dWallet.core.bitcoin.application.spv.Network
 import dWallet.core.bitcoin.application.wallet.Coins
 import dWallet.core.bitcoin.application.wallet.Wallet
 import dWallet.core.bitcoin.p2p.Node
@@ -80,26 +81,28 @@ class WalletTests {
     fun testBalance() = runBlocking {
 
         val w = Wallet.fromMnemonic("parade skill social future veteran cigar chef bleak federal benefit steel such car air embark music solid adult setup walk leader engage filter spider") // Wallet.create().first
-//        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") // listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4")
-//        keys.forEach { w.insertWIF(it) }
+        val keys = listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y", "cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4") //listOf("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") //
+        keys.forEach { w.insertWIF(it) }
         val filterItems = w.allPrivKeys.map { it.publicKeyHash!! } + w.allPrivKeys.map { it.public!! }
 
-        val peer = Node(Message.Magic.Bitcoin.testnet.toInt32LEBytes(), 0)
-        peer.initBloomFilter(filterItems, 0.001)
+        val peer = Node(Network.BitcoinTestnet.magic, 0)
+        peer.initBloomFilter(filterItems, 0.0001)
 
         peer.onInv { sender, items ->
             val blocks = items.filter { it.type == InvTypes.MSG_BLOCK || it.type == InvTypes.MSG_FILTERED_BLOCK }.map { InventoryVector(InvTypes.MSG_FILTERED_BLOCK, it.hash) }
             val txs = items.filter { it.type == InvTypes.MSG_TX }
-
+            println("blocks: " + blocks.size)
             if (blocks.isNotEmpty()) sender.sendGetData(blocks)
             if (txs.isNotEmpty()) sender.sendGetData(txs)
 
             if (blocks.size > 1) sender.sendGetBlocks(listOf(items.last().hash))
         }
 
+        var txCount = 0
         peer.onTx { _, tx ->
             w.insertTx(tx)
-            println("balance: " + w.balance)
+
+            println("balance: " + w.balance + " " + txCount++)
         }
 
         peer.onVerack { sender, _ -> sender.sendGetBlocks() }
