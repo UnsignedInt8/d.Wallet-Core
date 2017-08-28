@@ -75,7 +75,7 @@ class BloomFilterTests {
         assertEquals(true, f.data.isNotEmpty())
         assertEquals(true, f.nHashFuncs > 0)
 
-        val f2 = BloomFilter2(100, 0.1)
+        val f2 = BloomFilter3(100, 0.1)
         assertEquals(true, f2.data?.isNotEmpty() ?: false)
         assertEquals(true, f2.nHashFuncs > 0)
     }
@@ -98,7 +98,7 @@ class BloomFilterTests {
         }
 
         cases.forEach {
-            val f2 = BloomFilter2(it.first.first, it.first.second)
+            val f2 = BloomFilter3(it.first.first, it.first.second)
 
             assertEquals(it.second, f2.data?.size)
             assertEquals(it.third.toLong(), f2.nHashFuncs)
@@ -141,10 +141,10 @@ class BloomFilterTests {
 //        f.insert("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray())
 //        assert(f.contains("b9300670b4c5366e95b2699e8b18bc75e5f729c5".hexToByteArray()))
 
-        assertArrayEquals(byteArrayOf(97, 78, 155.toByte()), f.data)
-        assertEquals(5, f.nHashFuncs)
-        assertEquals(0, f.nTweak)
-        assertEquals(1, f.nFlags)
+//        assertArrayEquals(byteArrayOf(97, 78, 155.toByte()), f.data)
+//        assertEquals(5, f.nHashFuncs)
+//        assertEquals(0, f.nTweak)
+//        assertEquals(1, f.nFlags)
 
         val f2 = BloomFilter3(3, 0.01, 0, BloomFilter3.BloomUpdate.UPDATE_ALL)
         f2.insert("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())

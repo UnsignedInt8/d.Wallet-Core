@@ -25,7 +25,7 @@ An API Platform for building Bitcoin wallet
 |   Infrastructure                                |        |
 |                                                 | Low    |
 |   +--------+----------+------------+-------+    | Level  |
-|   | Crypto | SocketEx | Extensions | Utils |    | Apis   |
+|   | Crypto | SocketEx | Extensions | Utils |    | APIs   |
 |   +--------+----------+------------+-------+    |        |
 |                                                 |        |
 +-------------------------------------------------+--------+

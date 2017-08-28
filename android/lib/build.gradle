@@ -4,11 +4,14 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
     defaultConfig {
-        applicationId "bitcoin.dWallet.core"
+        applicationId "dWallet.core"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
