@@ -42,7 +42,7 @@ class SPVNodeTests {
 
         w.onBalanceChanged { _, balance -> println("balance: ${balance}") }
 
-        val spv = SPVNode(Network.BitcoinTestnet, w.allPrivKeys)
+        val spv = SPVNode(Network.BitcoinTestnet, w.dumpFilterItems())
         spv.onTx { _, tx ->
             println(println(tx.id))
             w.insertUtxo(tx)

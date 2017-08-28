@@ -121,6 +121,8 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun dumpImportedWIFKeys() = importedPrivKeys.map { it.wif }
 
+    fun dumpFilterItems() = allPrivKeys.map { it.publicKeyHash!! } + allPrivKeys.map { it.public!! }
+
     /**
      * Handling Txs
      */

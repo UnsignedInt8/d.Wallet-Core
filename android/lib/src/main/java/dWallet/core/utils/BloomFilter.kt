@@ -10,6 +10,7 @@ import kotlin.experimental.*
  * source from https://github.com/bitpay/bloom-filter/blob/master/lib/filter.js
  */
 
+@Deprecated("Just a stub")
 class BloomFilter private constructor(var data: ByteArray, val nHashFuncs: Int, val nTweak: Int, val nFlags: Int) {
 
     companion object {

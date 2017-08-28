@@ -1,7 +1,5 @@
 package dWallet.core.bitcoin.application.spv
 
-import dWallet.core.bitcoin.application.bip32.ECKey
-import dWallet.core.bitcoin.application.wallet.*
 import dWallet.core.bitcoin.p2p.Node
 import dWallet.core.bitcoin.protocol.messages.Addr
 import dWallet.core.bitcoin.protocol.structures.*
@@ -17,7 +15,7 @@ import dWallet.core.infrastructure.EventCallback
  *
  */
 
-open class SPVNode(network: Network, keysFilter: List<ECKey>, private val latestBlockHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
+open class SPVNode(network: Network, filterItems: Iterable<ByteArray>, private val latestBlockHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
 
     private val node = Node(network.magic, latestBlockHeight)
     private val knownBlocks = mutableSetOf<String>()
@@ -27,7 +25,7 @@ open class SPVNode(network: Network, keysFilter: List<ECKey>, private val latest
         knownBlockHashes.forEach { knownBlocks.add(it) }
         knownTxHashes.forEach { knownTxs.add(it) }
 
-        node.initBloomFilter(keysFilter.map { it.publicKeyHash!! } + keysFilter.map { it.public!! }, 0.001, 0)
+        node.initBloomFilter(filterItems, 0.001, 0)
 
         node.onVerack { sender, _ ->
             sender.sendGetBlocks(listOf(latestBlockHash))

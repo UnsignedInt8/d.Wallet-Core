@@ -5,7 +5,6 @@ import dWallet.core.crypto.sha1
 import dWallet.core.crypto.sha256
 import dWallet.core.extensions.*
 import dWallet.core.utils.BloomFilter
-import dWallet.core.utils.BloomFilter2
 import dWallet.core.utils.BloomFilter3
 import org.junit.Test
 import org.junit.Assert.*
