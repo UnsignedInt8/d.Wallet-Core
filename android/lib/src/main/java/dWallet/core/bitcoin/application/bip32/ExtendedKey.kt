@@ -1,6 +1,6 @@
 package dWallet.core.bitcoin.application.bip32
 
-import dWallet.core.bitcoin.application.Address
+import dWallet.core.bitcoin.application.wallet.Address
 import dWallet.core.extensions.toHexString
 import org.spongycastle.util.Arrays
 

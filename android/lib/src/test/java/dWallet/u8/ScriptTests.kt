@@ -1,6 +1,7 @@
 package dWallet.u8
 
 import dWallet.core.bitcoin.application.*
+import dWallet.core.bitcoin.application.wallet.Address
 import dWallet.core.bitcoin.application.wallet.Coins
 import dWallet.core.bitcoin.script.*
 import dWallet.core.extensions.*

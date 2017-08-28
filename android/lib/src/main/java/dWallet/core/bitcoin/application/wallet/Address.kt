@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.application
+package dWallet.core.bitcoin.application.wallet
 
 import dWallet.core.crypto.*
 import dWallet.core.utils.BaseX
@@ -7,7 +7,7 @@ import dWallet.core.utils.BaseX
  * Created by unsignedint8 on 8/22/17.
  */
 
-class Address(val pubkey: ByteArray, val netId: ByteArray) {
+class Address(val pubkey: ByteArray, val netId: ByteArray = Coins.Bitcoin.pubkeyHashId) {
 
     companion object {
 

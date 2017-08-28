@@ -1,5 +1,6 @@
 package dWallet.core.bitcoin.application
 
+import dWallet.core.bitcoin.application.wallet.Address
 import dWallet.core.extensions.toHexString
 import org.spongycastle.asn1.*
 import org.spongycastle.asn1.sec.SECNamedCurves
