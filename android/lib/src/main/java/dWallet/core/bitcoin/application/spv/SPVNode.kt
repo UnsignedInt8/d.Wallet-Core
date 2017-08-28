@@ -53,7 +53,6 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         }
 
         node.onTx { _, tx ->
-            println(tx.id)
             if (wallet.insertTx(tx)) this.trigger(Transaction.message, this, tx)
             knownTxs.add(tx.id)
         }
