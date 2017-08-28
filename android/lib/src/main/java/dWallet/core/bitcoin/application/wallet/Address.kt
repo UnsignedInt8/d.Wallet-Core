@@ -1,6 +1,7 @@
 package dWallet.core.bitcoin.application.wallet
 
 import dWallet.core.crypto.*
+import dWallet.core.extensions.sliceArray
 import dWallet.core.utils.BaseX
 
 /**
@@ -27,8 +28,9 @@ class Address(val pubkey: ByteArray, val netId: ByteArray = Coins.Bitcoin.pubkey
             return hash.sliceArray(0..3).contentEquals(decoded.sliceArray(21..24))
         }
 
-        fun fromString(address: String) {
-
+        fun stringToPubkeyHash(address: String): ByteArray {
+            val decoded = BaseX.base58.decode(address)
+            return decoded.sliceArray(4, 24)
         }
     }
 
