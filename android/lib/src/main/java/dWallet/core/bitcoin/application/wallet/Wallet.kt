@@ -125,9 +125,9 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
      * Handling Txs
      */
 
-    fun insertTx(tx: Transaction): Boolean {
+    fun insertUtxo(tx: Transaction): Boolean {
         if (utxos.contains(tx.id)) return false
-        if (!isUserTx(tx)) return false
+        if (!isIncomeTx(tx)) return false
 
         val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
         usedUtxos.forEach { utxos.remove(it.id) }
@@ -148,9 +148,9 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
         return true
     }
 
-    fun insertTxs(txs: Iterable<Transaction>) = txs.forEach { insertTx(it) }
+    fun insertUtxos(txs: Iterable<Transaction>) = txs.forEach { insertUtxo(it) }
 
-    fun isUtxo(tx: Transaction) = insertTx(tx)
+    fun isUtxo(tx: Transaction) = insertUtxo(tx)
 
     fun isIncomeTx(tx: Transaction) = tx.txOuts.any { out ->
         val ops = Interpreter.scriptToOps(out.pubkeyScript)
@@ -179,7 +179,6 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
      */
 
     fun createTx(toAddress: String, amount: Long, fee: Long) {
-        // TODO: implement it
-
+        throw NotImplementedError()
     }
 }

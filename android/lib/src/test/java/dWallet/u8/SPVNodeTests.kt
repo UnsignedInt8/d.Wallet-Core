@@ -42,9 +42,10 @@ class SPVNodeTests {
 
         w.onBalanceChanged { _, balance -> println("balance: ${balance}") }
 
-        val spv = SPVNode(Network.BitcoinTestnet, w)
+        val spv = SPVNode(Network.BitcoinTestnet, w.allPrivKeys)
         spv.onTx { _, tx ->
             println(println(tx.id))
+            w.insertUtxo(tx)
             println(tx.txOuts.map { Address.pubkeyHashToBase58Checking(Interpreter.scriptToOps(it.pubkeyScript)[2].second!!, Coins.BitcoinTestnet.pubkeyHashId) })
         }
         spv.onMerkleblock { _, merkleblock -> println("progress: ${spv.progress.format(2)}") }

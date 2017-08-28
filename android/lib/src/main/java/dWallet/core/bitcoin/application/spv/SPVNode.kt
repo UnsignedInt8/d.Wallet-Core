@@ -1,5 +1,6 @@
 package dWallet.core.bitcoin.application.spv
 
+import dWallet.core.bitcoin.application.bip32.ECKey
 import dWallet.core.bitcoin.application.wallet.*
 import dWallet.core.bitcoin.p2p.Node
 import dWallet.core.bitcoin.protocol.messages.Addr
@@ -7,8 +8,6 @@ import dWallet.core.bitcoin.protocol.structures.*
 import dWallet.core.extensions.*
 import dWallet.core.infrastructure.Event
 import dWallet.core.infrastructure.EventCallback
-import dWallet.core.utils.BloomFilter
-import kotlinx.coroutines.experimental.Deferred
 
 /**
  * Created by unsignedint8 on 8/26/17.
@@ -18,9 +17,9 @@ import kotlinx.coroutines.experimental.Deferred
  *
  */
 
-open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
+open class SPVNode(network: Network, keysFilter: List<ECKey>, private val latestBlockHeight: Int = 0, latestBlockHash: String = String.ZEROHASH, knownBlockHashes: List<String> = listOf(), knownTxHashes: List<String> = listOf()) : Event() {
 
-    private val node = Node(network.magic, latestHeight)
+    private val node = Node(network.magic, latestBlockHeight)
     private val knownBlocks = mutableSetOf<String>()
     private val knownTxs = mutableSetOf<String>()
 
@@ -28,12 +27,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         knownBlockHashes.forEach { knownBlocks.add(it) }
         knownTxHashes.forEach { knownTxs.add(it) }
 
-//        val keys = mutableListOf<ByteArray>()
-//        wallet.allPrivKeys.forEach {
-//            keys.add(it.public!!)
-//            keys.add(it.publicKeyHash!!)
-//        }
-        node.initBloomFilter(wallet.allPrivKeys.map { it.publicKeyHash!! } + wallet.allPrivKeys.map { it.public!! }, 0.001, 0)
+        node.initBloomFilter(keysFilter.map { it.publicKeyHash!! } + keysFilter.map { it.public!! }, 0.001, 0)
 
         node.onVerack { sender, _ ->
             sender.sendGetBlocks(listOf(latestBlockHash))
@@ -53,7 +47,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         }
 
         node.onTx { _, tx ->
-            if (wallet.insertTx(tx)) this.trigger(Transaction.message, this, tx)
+            this.trigger(Transaction.message, this, tx)
             knownTxs.add(tx.id)
         }
 
@@ -67,9 +61,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
         node.onAddr { _, addrs -> super.trigger(Addr.text, this, addrs) }
     }
 
-    suspend fun connectAsync(host: String, port: Int): Boolean {
-        return node.connectAsync(host, port).await()
-    }
+    suspend fun connectAsync(host: String, port: Int) = node.connectAsync(host, port).await()
 
     fun onTx(callback: (sender: SPVNode, tx: Transaction) -> Unit) = super.register(Transaction.message, callback as EventCallback)
 
@@ -80,7 +72,7 @@ open class SPVNode(network: Network, wallet: Wallet, private val latestHeight: I
     fun onConnectionLost(callback: (sender: SPVNode, placeholder: Any) -> Unit) = super.register("ConnectionLost", callback as EventCallback)
 
     val progress: Double
-        get() = Math.min((latestHeight + knownBlocks.size).toDouble() / peerHeight.toDouble() * 100.0, 100.0)
+        get() = Math.min((latestBlockHeight + knownBlocks.size).toDouble() / peerHeight.toDouble() * 100.0, 100.0)
 
     val peerHeight: Int
         get() = node.peerBlockchainHeight

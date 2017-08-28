@@ -7,12 +7,10 @@ import dWallet.core.bitcoin.application.wallet.Wallet
 import dWallet.core.bitcoin.p2p.Node
 import dWallet.core.bitcoin.protocol.structures.InvTypes
 import dWallet.core.bitcoin.protocol.structures.InventoryVector
-import dWallet.core.bitcoin.protocol.structures.Message
 import dWallet.core.bitcoin.protocol.structures.Transaction
 import dWallet.core.bitcoin.script.Interpreter
 import dWallet.core.crypto.Crypto
 import dWallet.core.extensions.hexToByteArray
-import dWallet.core.extensions.toInt32LEBytes
 import dWallet.core.utils.BloomFilter
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
@@ -100,7 +98,7 @@ class WalletTests {
 
         var txCount = 0
         peer.onTx { _, tx ->
-            w.insertTx(tx)
+            w.insertUtxo(tx)
 
             println("balance: " + w.balance + " " + txCount++)
         }
