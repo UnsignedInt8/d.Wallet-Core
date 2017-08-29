@@ -20,14 +20,18 @@ internal fun sha256(data: ByteArray, start: Int, len: Int, recursion: Int): Byte
     return sha256(md.digest(), 0, 32, recursion - 1)
 }
 
+fun hash256(data: ByteArray) = sha256(sha256(data))
+
+fun sha512(data: ByteArray) = MessageDigest.getInstance("sha-512").digest(data)
+
+fun hash512(data: ByteArray) = sha512((sha512(data)))
+
 fun hmacSHA512(keyStr: String, data: ByteArray): ByteArray {
     val key = SecretKeySpec(keyStr.toByteArray(), "HmacSHA512")
     val mac = Mac.getInstance("HmacSHA512", "SC")
     mac.init(key)
     return mac.doFinal(data)
 }
-
-fun hash256(data: ByteArray) = sha256(sha256(data))
 
 fun ripemd160(data: ByteArray) = RIPEMD160Digest().digest(data)
 

@@ -16,6 +16,8 @@ package dwallet.core.bitcoin.application.bip39
  * limitations under the License.
  */
 
+import dwallet.core.crypto.hash256
+import dwallet.core.crypto.hash512
 import java.text.Normalizer
 import java.io.UnsupportedEncodingException
 import java.security.InvalidKeyException
@@ -161,10 +163,11 @@ object BIP39 {
     /**
      * TODO: Evaluate security issue for it
      */
-    fun mnemonicToSeed(mnemonic: String, passphrase: String = ""): ByteArray {
-        val nfkdMnemonic = Normalizer.normalize(mnemonic, Normalizer.Form.NFKD)
-        val nfkdSalt = Normalizer.normalize("mnemonic" + passphrase, Normalizer.Form.NFKD)
-        return pbkdf2(nfkdMnemonic.toCharArray(), nfkdSalt.toByteArray(), 2048, 64)
+    fun mnemonicToSeed(mnemonic: String, passphrase: String = "d.Wallet-dev-team"): ByteArray {
+//        val nfkdMnemonic = Normalizer.normalize(mnemonic, Normalizer.Form.NFKD)
+//        val nfkdSalt = Normalizer.normalize("mnemonic" + passphrase, Normalizer.Form.NFKD)
+//        return pbkdf2(nfkdMnemonic.toCharArray(), nfkdSalt.toByteArray(), 2048, 64)
+        return hash512(sha256(passphrase.toByteArray())+ hash256(mnemonic.toByteArray()))
     }
 
     @Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)

@@ -72,8 +72,8 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
             return Pair(fromMnemonic(mnemonic, passphrase, coin), mnemonic)
         }
 
-        var externalKeysAmount = 50
-        var changeKeysAmount = 50
+        var externalKeysAmount = 10
+        var changeKeysAmount = 5
 
         private object Events {
             const val balanceChanged = "BalanceChanged"
