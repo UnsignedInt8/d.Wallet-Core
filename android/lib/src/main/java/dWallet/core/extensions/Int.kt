@@ -1,4 +1,4 @@
-package dWallet.core.extensions
+package dwallet.core.extensions
 
 /**
  * Created by unsignedint8 on 8/15/17.

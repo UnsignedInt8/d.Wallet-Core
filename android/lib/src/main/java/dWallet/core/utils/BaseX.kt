@@ -1,7 +1,7 @@
-package dWallet.core.utils
+package dwallet.core.utils
 
-import dWallet.core.extensions.ZERO
-import dWallet.core.extensions.toBigInteger
+import dwallet.core.extensions.ZERO
+import dwallet.core.extensions.toBigInteger
 
 /**
  * Created by unsignedint8 on 8/22/17.

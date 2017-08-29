@@ -1,4 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="dWallet.dWallet">
+    package="dwallet.dWallet">
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

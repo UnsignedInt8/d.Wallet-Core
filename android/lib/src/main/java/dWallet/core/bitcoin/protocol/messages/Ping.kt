@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.protocol.messages
+package dwallet.core.bitcoin.protocol.messages
 
-import dWallet.core.extensions.readInt64LE
-import dWallet.core.extensions.toInt64LEBytes
+import dwallet.core.extensions.readInt64LE
+import dwallet.core.extensions.toInt64LEBytes
 
 /**
  * Created by unsignedint8 on 8/16/17.

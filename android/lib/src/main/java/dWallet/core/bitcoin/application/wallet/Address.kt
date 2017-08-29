@@ -1,8 +1,8 @@
-package dWallet.core.bitcoin.application.wallet
+package dwallet.core.bitcoin.application.wallet
 
-import dWallet.core.crypto.*
-import dWallet.core.extensions.sliceArray
-import dWallet.core.utils.BaseX
+import dwallet.core.crypto.*
+import dwallet.core.extensions.sliceArray
+import dwallet.core.utils.BaseX
 
 /**
  * Created by unsignedint8 on 8/22/17.

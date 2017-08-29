@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.application.wallet
+package dwallet.core.bitcoin.application.wallet
 
 /**
  * Created by unsignedint8 on 8/25/17.

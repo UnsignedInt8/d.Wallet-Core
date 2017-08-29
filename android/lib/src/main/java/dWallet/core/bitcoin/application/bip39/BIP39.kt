@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.application.bip39
+package dwallet.core.bitcoin.application.bip39
 
 /*
  * Copyright 2013 bits of proof zrt.
@@ -31,7 +31,7 @@ import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.SecretKeySpec
 
-import dWallet.core.crypto.sha256
+import dwallet.core.crypto.sha256
 import java.security.spec.InvalidKeySpecException
 
 object BIP39 {

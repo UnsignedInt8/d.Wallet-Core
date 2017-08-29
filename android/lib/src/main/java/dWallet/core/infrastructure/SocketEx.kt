@@ -1,4 +1,4 @@
-package dWallet.core.infrastructure
+package dwallet.core.infrastructure
 
 import kotlinx.coroutines.experimental.*
 import java.net.InetSocketAddress

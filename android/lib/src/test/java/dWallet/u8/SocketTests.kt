@@ -1,11 +1,11 @@
-package dWallet.u8
+package dwallet.u8
 
 /**
  * Created by unsignedint8 on 8/14/17.
  */
 
 
-import dWallet.core.infrastructure.SocketEx
+import dwallet.core.infrastructure.SocketEx
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay

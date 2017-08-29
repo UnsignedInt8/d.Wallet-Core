@@ -1,11 +1,11 @@
-package dWallet.core.bitcoin.application.bip32
+package dwallet.core.bitcoin.application.bip32
 
 /**
  * Created by unsignedint8 on 8/24/17.
  */
 
 
-import dWallet.core.extensions.*
+import dwallet.core.extensions.*
 
 import org.spongycastle.asn1.ASN1InputStream
 import org.spongycastle.asn1.ASN1Integer

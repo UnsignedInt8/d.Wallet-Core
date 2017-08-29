@@ -1,13 +1,13 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.bitcoin.application.spv.Network
-import dWallet.core.bitcoin.application.spv.SPVNode
-import dWallet.core.bitcoin.application.wallet.Coins
-import dWallet.core.bitcoin.application.wallet.Wallet
-import dWallet.core.bitcoin.script.Interpreter
-import dWallet.core.crypto.Crypto
-import dWallet.core.extensions.format
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.bitcoin.application.spv.Network
+import dwallet.core.bitcoin.application.spv.SPVNode
+import dwallet.core.bitcoin.application.wallet.Coins
+import dwallet.core.bitcoin.application.wallet.Wallet
+import dwallet.core.bitcoin.script.Interpreter
+import dwallet.core.crypto.Crypto
+import dwallet.core.extensions.format
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test

@@ -1,12 +1,12 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.application.bip32.ExtendedKey
-import dWallet.core.bitcoin.application.bip32.Hash
-import dWallet.core.bitcoin.application.bip32.Seed
-import dWallet.core.bitcoin.application.bip39.BIP39
-import dWallet.core.crypto.Crypto
-import dWallet.core.extensions.hexToByteArray
-import dWallet.core.extensions.toHexString
+import dwallet.core.bitcoin.application.bip32.ExtendedKey
+import dwallet.core.bitcoin.application.bip32.Hash
+import dwallet.core.bitcoin.application.bip32.Seed
+import dwallet.core.bitcoin.application.bip39.BIP39
+import dwallet.core.crypto.Crypto
+import dwallet.core.extensions.hexToByteArray
+import dwallet.core.extensions.toHexString
 import org.junit.Test
 import org.junit.Assert.*
 

@@ -1,10 +1,9 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.application.*
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.bitcoin.application.wallet.Coins
-import dWallet.core.bitcoin.script.*
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.bitcoin.application.wallet.Coins
+import dwallet.core.bitcoin.script.*
+import dwallet.core.extensions.*
 import org.junit.Test
 import java.util.*
 import org.junit.Assert.*

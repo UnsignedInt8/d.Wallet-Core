@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.script
+package dwallet.core.bitcoin.script
 
 /**
  * Created by unsignedint8 on 8/22/17.

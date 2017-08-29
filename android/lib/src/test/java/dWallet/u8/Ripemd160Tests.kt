@@ -1,12 +1,12 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.bitcoin.application.wallet.Coins
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.bitcoin.application.wallet.Coins
 import org.junit.Test
 import org.spongycastle.crypto.digests.RIPEMD160Digest
-import dWallet.core.crypto.*
-import dWallet.core.extensions.*
-import dWallet.core.utils.BaseX
+import dwallet.core.crypto.*
+import dwallet.core.extensions.*
+import dwallet.core.utils.BaseX
 import java.nio.charset.Charset
 import org.junit.Assert.*
 

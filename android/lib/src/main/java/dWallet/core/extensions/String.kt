@@ -1,4 +1,4 @@
-package dWallet.core.extensions
+package dwallet.core.extensions
 
 import java.nio.charset.Charset
 

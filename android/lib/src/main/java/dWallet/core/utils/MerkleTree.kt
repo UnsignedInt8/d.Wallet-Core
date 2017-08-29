@@ -1,8 +1,8 @@
-package dWallet.core.utils
+package dwallet.core.utils
 
-import dWallet.core.crypto.hash256
-import dWallet.core.extensions.hashToBytes
-import dWallet.core.extensions.toHashString
+import dwallet.core.crypto.hash256
+import dwallet.core.extensions.hashToBytes
+import dwallet.core.extensions.toHashString
 
 /**
  * Created by unsignedint8 on 8/27/17.

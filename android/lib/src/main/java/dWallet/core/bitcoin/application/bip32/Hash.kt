@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.application.bip32
+package dwallet.core.bitcoin.application.bip32
 
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import java.security.MessageDigest

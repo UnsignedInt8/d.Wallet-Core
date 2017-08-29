@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.protocol.structures
+package dwallet.core.bitcoin.protocol.structures
 
 /**
  * Created by unsignedint8 on 8/16/17.

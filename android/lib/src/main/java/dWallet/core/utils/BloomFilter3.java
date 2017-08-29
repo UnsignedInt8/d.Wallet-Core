@@ -1,4 +1,4 @@
-package dWallet.core.utils;
+package dwallet.core.utils;
 
 /**
  * Created by unsignedint8 on 8/27/17.

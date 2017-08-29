@@ -1,10 +1,10 @@
-package dWallet.core.bitcoin.p2p
+package dwallet.core.bitcoin.p2p
 
-import dWallet.core.bitcoin.protocol.messages.*
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.extensions.*
-import dWallet.core.infrastructure.*
-import dWallet.core.utils.*
+import dwallet.core.bitcoin.protocol.messages.*
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.extensions.*
+import dwallet.core.infrastructure.*
+import dwallet.core.utils.*
 import kotlinx.coroutines.experimental.*
 import java.security.*
 import kotlin.experimental.and

@@ -1,8 +1,8 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.protocol.structures.MerkleBlock
-import dWallet.core.bitcoin.protocol.structures.Transaction
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.protocol.structures.MerkleBlock
+import dwallet.core.bitcoin.protocol.structures.Transaction
+import dwallet.core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
 

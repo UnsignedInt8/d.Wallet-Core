@@ -1,4 +1,4 @@
-package dWallet.core.crypto
+package dwallet.core.crypto
 
 import org.spongycastle.crypto.digests.RIPEMD160Digest
 import java.security.MessageDigest

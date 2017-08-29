@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.application
+package dwallet.core.bitcoin.application
 
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.extensions.toHexString
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.extensions.toHexString
 import org.spongycastle.asn1.*
 import org.spongycastle.asn1.sec.SECNamedCurves
 import org.spongycastle.crypto.generators.ECKeyPairGenerator

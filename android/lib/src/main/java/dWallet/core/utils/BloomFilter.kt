@@ -1,6 +1,6 @@
-package dWallet.core.utils
+package dwallet.core.utils
 
-import dWallet.core.crypto.*
+import dwallet.core.crypto.*
 import java.math.BigInteger
 import kotlin.experimental.*
 

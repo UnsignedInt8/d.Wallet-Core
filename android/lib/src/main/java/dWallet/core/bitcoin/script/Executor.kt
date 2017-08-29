@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.script
+package dwallet.core.bitcoin.script
 
-import dWallet.core.crypto.*
-import dWallet.core.extensions.*
+import dwallet.core.crypto.*
+import dwallet.core.extensions.*
 import java.math.BigInteger
 import java.util.*
 

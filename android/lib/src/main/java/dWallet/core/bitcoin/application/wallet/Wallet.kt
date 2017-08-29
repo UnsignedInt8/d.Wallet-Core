@@ -1,12 +1,11 @@
-package dWallet.core.bitcoin.application.wallet
+package dwallet.core.bitcoin.application.wallet
 
-import dWallet.core.bitcoin.application.*
-import dWallet.core.bitcoin.application.bip32.*
-import dWallet.core.bitcoin.application.bip39.*
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.bitcoin.script.*
-import dWallet.core.infrastructure.*
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.application.bip32.*
+import dwallet.core.bitcoin.application.bip39.*
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.bitcoin.script.*
+import dwallet.core.infrastructure.*
+import dwallet.core.extensions.*
 import java.security.SecureRandom
 
 

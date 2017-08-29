@@ -1,4 +1,4 @@
-package dWallet.core.crypto
+package dwallet.core.crypto
 
 /**
  * Created by unsignedint8 on 8/22/17.

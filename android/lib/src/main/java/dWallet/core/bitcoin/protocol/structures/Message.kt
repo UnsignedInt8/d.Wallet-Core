@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.protocol.structures
+package dwallet.core.bitcoin.protocol.structures
 
-import dWallet.core.crypto.*
-import dWallet.core.extensions.*
+import dwallet.core.crypto.*
+import dwallet.core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/15/17.

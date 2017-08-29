@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.protocol.messages
+package dwallet.core.bitcoin.protocol.messages
 
-import dWallet.core.bitcoin.protocol.structures.InventoryVector
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.protocol.structures.InventoryVector
+import dwallet.core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/19/17.

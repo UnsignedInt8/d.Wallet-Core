@@ -1,11 +1,11 @@
-package dWallet.core.bitcoin.application.spv
+package dwallet.core.bitcoin.application.spv
 
-import dWallet.core.bitcoin.p2p.Node
-import dWallet.core.bitcoin.protocol.messages.Addr
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.extensions.*
-import dWallet.core.infrastructure.Event
-import dWallet.core.infrastructure.EventCallback
+import dwallet.core.bitcoin.p2p.Node
+import dwallet.core.bitcoin.protocol.messages.Addr
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.extensions.*
+import dwallet.core.infrastructure.Event
+import dwallet.core.infrastructure.EventCallback
 
 /**
  * Created by unsignedint8 on 8/26/17.

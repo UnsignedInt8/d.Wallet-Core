@@ -1,14 +1,14 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.bitcoin.application.PrivateKey
-import dWallet.core.bitcoin.application.bip32.*
-import dWallet.core.bitcoin.application.wallet.Coins
-import dWallet.core.bitcoin.script.Interpreter
-import dWallet.core.crypto.Crypto
-import dWallet.core.crypto.hash256
-import dWallet.core.extensions.*
-import dWallet.core.utils.BaseX
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.bitcoin.application.PrivateKey
+import dwallet.core.bitcoin.application.bip32.*
+import dwallet.core.bitcoin.application.wallet.Coins
+import dwallet.core.bitcoin.script.Interpreter
+import dwallet.core.crypto.Crypto
+import dwallet.core.crypto.hash256
+import dwallet.core.extensions.*
+import dwallet.core.utils.BaseX
 import org.junit.Test
 import java.math.BigInteger
 import org.junit.Assert.*

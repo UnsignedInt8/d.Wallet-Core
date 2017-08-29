@@ -1,11 +1,11 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.crypto.murmurHash3
-import dWallet.core.crypto.sha1
-import dWallet.core.crypto.sha256
-import dWallet.core.extensions.*
-import dWallet.core.utils.BloomFilter
-import dWallet.core.utils.BloomFilter3
+import dwallet.core.crypto.murmurHash3
+import dwallet.core.crypto.sha1
+import dwallet.core.crypto.sha256
+import dwallet.core.extensions.*
+import dwallet.core.utils.BloomFilter
+import dwallet.core.utils.BloomFilter3
 import org.junit.Test
 import org.junit.Assert.*
 

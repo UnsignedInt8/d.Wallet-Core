@@ -1,7 +1,6 @@
-package dWallet.core.bitcoin.protocol.structures
+package dwallet.core.bitcoin.protocol.structures
 
-import dWallet.core.extensions.*
-import dWallet.core.utils.MerkleTree
+import dwallet.core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/20/17.

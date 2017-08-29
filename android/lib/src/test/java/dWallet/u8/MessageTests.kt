@@ -1,8 +1,8 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.protocol.messages.*
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.protocol.messages.*
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.extensions.*
 import org.junit.Test
 import org.junit.Assert.*
 

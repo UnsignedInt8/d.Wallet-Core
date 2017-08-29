@@ -1,6 +1,6 @@
-package dWallet.core.bitcoin.script
+package dwallet.core.bitcoin.script
 
-import dWallet.core.extensions.*
+import dwallet.core.extensions.*
 
 /**
  * Created by unsignedint8 on 8/23/17.

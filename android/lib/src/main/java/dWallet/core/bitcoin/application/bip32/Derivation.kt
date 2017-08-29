@@ -1,4 +1,4 @@
-package dWallet.core.bitcoin.application.bip32
+package dwallet.core.bitcoin.application.bip32
 
 
 /**

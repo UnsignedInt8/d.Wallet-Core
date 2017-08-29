@@ -1,14 +1,13 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.p2p.Node
-import dWallet.core.bitcoin.protocol.messages.Version
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.extensions.hexToByteArray
-import dWallet.core.extensions.toInt32LEBytes
-import dWallet.core.infrastructure.SocketEx
-import dWallet.core.utils.BloomFilter
-import dWallet.core.utils.BloomFilter3
-import dWallet.core.utils.MerkleTree
+import dwallet.core.bitcoin.p2p.Node
+import dwallet.core.bitcoin.protocol.messages.Version
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.extensions.hexToByteArray
+import dwallet.core.extensions.toInt32LEBytes
+import dwallet.core.infrastructure.SocketEx
+import dwallet.core.utils.BloomFilter3
+import dwallet.core.utils.MerkleTree
 import kotlinx.coroutines.experimental.*
 import org.junit.Test
 

@@ -1,10 +1,10 @@
-package dWallet.core.bitcoin.protocol.structures
+package dwallet.core.bitcoin.protocol.structures
 
 /**
  * Created by unsignedint8 on 8/15/17.
  */
 
-import dWallet.core.extensions.*
+import dwallet.core.extensions.*
 import java.net.InetAddress
 import kotlin.*
 

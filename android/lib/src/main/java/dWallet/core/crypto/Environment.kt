@@ -1,4 +1,4 @@
-package dWallet.core.crypto
+package dwallet.core.crypto
 
 import java.security.*
 

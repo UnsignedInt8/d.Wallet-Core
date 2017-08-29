@@ -1,7 +1,7 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.bitcoin.protocol.structures.*
-import dWallet.core.extensions.*
+import dwallet.core.bitcoin.protocol.structures.*
+import dwallet.core.extensions.*
 import org.junit.Assert.*
 import org.junit.Test
 

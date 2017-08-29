@@ -1,7 +1,7 @@
-package dWallet.core.bitcoin.application.bip32
+package dwallet.core.bitcoin.application.bip32
 
-import dWallet.core.bitcoin.application.wallet.Address
-import dWallet.core.extensions.toHexString
+import dwallet.core.bitcoin.application.wallet.Address
+import dwallet.core.extensions.toHexString
 import org.spongycastle.util.Arrays
 
 import javax.crypto.Mac

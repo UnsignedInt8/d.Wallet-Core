@@ -1,6 +1,6 @@
-package dWallet.u8
+package dwallet.u8
 
-import dWallet.core.utils.MerkleTree
+import dwallet.core.utils.MerkleTree
 import org.junit.Test
 import org.junit.Assert.*
 
