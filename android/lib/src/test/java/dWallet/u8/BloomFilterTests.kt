@@ -163,7 +163,7 @@ class BloomFilterTests {
 
     @Test
     fun testBloomFilterTweak() {
-        val f = BloomFilter.create(3, 0.01, 2147483649.toInt(), BloomFilter.BLOOM_UPDATE_ALL)
+        val f = BloomFilter3(3, 0.01, 2147483649L, BloomFilter3.BloomUpdate.UPDATE_ALL)
         f.insert("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray())
         assert(f.contains("99108ad8ed9bb6274d3980bab5a85c048f0950c8".hexToByteArray()))
 
@@ -177,13 +177,13 @@ class BloomFilterTests {
 
         assertArrayEquals(byteArrayOf(206.toByte(), 66, 153.toByte()), f.data)
         assertEquals(5, f.nHashFuncs)
-        assertEquals(2147483649.toInt(), f.nTweak)
-        assertEquals(1, f.nFlags)
+        assertEquals(2147483649L, f.nTweak)
+        assertEquals(1.toByte(), f.nFlags)
     }
 
     @Test
     fun testBloomFilterPubkey() {
-        val f = BloomFilter.create(2, 0.001, 0, BloomFilter.BLOOM_UPDATE_ALL)
+        val f = BloomFilter3(2, 0.001, 0, BloomFilter3.BloomUpdate.UPDATE_ALL)
         f.insert("045b81f0017e2091e2edcd5eecf10d5bdd120a5514cb3ee65b8447ec18bfc4575c6d5bf415e54e03b1067934a0f0ba76b01c6b9ab227142ee1d543764b69d901e0".hexToByteArray())
         f.insert("477abbacd4113f2e6b100526222eedd953c26a64".hexToByteArray())
 

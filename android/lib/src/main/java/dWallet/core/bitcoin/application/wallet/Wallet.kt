@@ -121,7 +121,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun dumpImportedWIFKeys() = importedPrivKeys.map { it.wif }
 
-    fun dumpFilterItems() = allPrivKeys.map { it.publicKeyHash!! } + allPrivKeys.map { it.public!! }
+    fun dumpKeysToFilterItems() = allPrivKeys.map { it.publicKeyHash!! } + allPrivKeys.map { it.public!! }
 
     /**
      * Handling Txs
@@ -129,23 +129,30 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun insertUtxo(tx: Transaction): Boolean {
         if (utxos.contains(tx.id)) return false
-        if (!isIncomeTx(tx)) return false
 
-        val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
-        usedUtxos.forEach { utxos.remove(it.id) }
+        val isOutgoTx = isOutgoTx(tx)
+        val isIncomeTx = isIncomeTx(tx)
+        if (!isOutgoTx && !isIncomeTx) return false
 
-        utxos[tx.id] = tx
-
-        balance = utxos.values.sum { tx ->
-            tx.txOuts.filter { txOut ->
-                val ops = Interpreter.scriptToOps(txOut.pubkeyScript)
-                if (!Interpreter.isP2PKHOutScript(ops.map { it.first })) return@filter false
-                return@filter allPrivKeys.any { key -> key.publicKeyHash!!.contentEquals(ops[2].second!!) }
-            }.sum { txOut -> txOut.value }
+        if (isOutgoTx) {
+            val usedUtxos = utxos.values.filter { utxo -> tx.txIns.any { it.txId == utxo.id } }
+            usedUtxos.forEach { utxos.remove(it.id) }
+            if (usedUtxos.isNotEmpty()) super.trigger(Events.utxoRemvoed, this, usedUtxos)
         }
 
-        if (isIncomeTx(tx)) super.trigger(Events.utxoAdded, this, tx)
-        if (usedUtxos.isNotEmpty()) super.trigger(Events.utxoRemvoed, this, usedUtxos)
+        if (isIncomeTx) {
+            utxos[tx.id] = tx
+
+            balance = utxos.values.sum { tx ->
+                tx.txOuts.filter { txOut ->
+                    val ops = Interpreter.scriptToOps(txOut.pubkeyScript)
+                    if (!Interpreter.isP2PKHOutScript(ops.map { it.first })) return@filter false
+                    return@filter allPrivKeys.any { key -> key.publicKeyHash!!.contentEquals(ops[2].second!!) }
+                }.sum { txOut -> txOut.value }
+            }
+
+            super.trigger(Events.utxoAdded, this, tx)
+        }
 
         return true
     }
@@ -174,7 +181,7 @@ open class Wallet private constructor(val masterXprvKey: ExtendedKey, externalKe
 
     fun onUtxosRemoved(callback: (sender: Wallet, utxos: List<Transaction>) -> Unit) = super.register(Events.utxoRemvoed, callback as EventCallback)
 
-    fun onUtxoAdded(callback: (sender: Wallet, utxos: Transaction) -> Unit) = super.register(Events.utxoAdded, callback as EventCallback)
+    fun onUtxoAdded(callback: (sender: Wallet, utxo: Transaction) -> Unit) = super.register(Events.utxoAdded, callback as EventCallback)
 
     /**
      * Sending Tx

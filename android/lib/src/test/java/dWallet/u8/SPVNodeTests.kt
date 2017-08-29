@@ -5,13 +5,9 @@ import dWallet.core.bitcoin.application.spv.Network
 import dWallet.core.bitcoin.application.spv.SPVNode
 import dWallet.core.bitcoin.application.wallet.Coins
 import dWallet.core.bitcoin.application.wallet.Wallet
-import dWallet.core.bitcoin.p2p.Node
-import dWallet.core.bitcoin.protocol.structures.Transaction
 import dWallet.core.bitcoin.script.Interpreter
 import dWallet.core.crypto.Crypto
 import dWallet.core.extensions.format
-import dWallet.core.extensions.hexToByteArray
-import dWallet.core.infrastructure.SocketEx
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
@@ -28,7 +24,7 @@ class SPVNodeTests {
 
     @Test
     fun testSync() = runBlocking {
-//        w.insertWIF("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") //mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
+        //        w.insertWIF("cQqABdMtNTk894GxuAJWJfF2S7Ln31LnzkUsvLiCznLaSEvkwR9y") //mwT5FhANpkurDKBVXVyAH1b6T3rz9T1owr
 //        w.insertWIF("cTCjVfRp8oAXX7RGyszhghBhSatTD1mEgtiyeBsrkB6qcuw4PrE4") //miwTG5Wt5t188CXh8oT3bTjGvbzS6kcgqT
 //        w.insertWIF("cTf3uEpv9UuKLLmvvR3Zr2riiJ53FjjsUJZ35CWfT5ehiyc78uoW") // test wallet no.3 mnpbqSLQ3r293VHSjN82Ht63zf3PD8gBmm
 
@@ -41,10 +37,12 @@ class SPVNodeTests {
         println(Address(w.importedPrivKeys[0].public!!, Coins.BitcoinTestnet.pubkeyHashId))
 
         w.onBalanceChanged { _, balance -> println("balance: ${balance}") }
+        w.onUtxoAdded { _, utxo -> println("new utxo: ${utxo.id}") }
+        w.onUtxosRemoved { _, utxos -> println("utxos removed: ${utxos.map { it.id }}") }
 
-        val spv = SPVNode(Network.BitcoinTestnet, w.dumpFilterItems())
+        val spv = SPVNode(Network.BitcoinTestnet, w.dumpKeysToFilterItems())
         spv.onTx { _, tx ->
-            println(println(tx.id))
+            println(tx.id)
             w.insertUtxo(tx)
             println(tx.txOuts.map { Address.pubkeyHashToBase58Checking(Interpreter.scriptToOps(it.pubkeyScript)[2].second!!, Coins.BitcoinTestnet.pubkeyHashId) })
         }
@@ -56,7 +54,7 @@ class SPVNodeTests {
             return@runBlocking
         }
 
-        delay(20 * 1000)
+        delay(30 * 1000)
     }
 
 }

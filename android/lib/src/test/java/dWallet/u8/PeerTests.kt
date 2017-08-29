@@ -95,7 +95,7 @@ class PeerTests {
             println("socket port: ${node.localPort}")
         }
 
-        runBlocking { delay(40 * 1000) }
+        runBlocking { delay(5 * 1000) }
 
     }
 }
