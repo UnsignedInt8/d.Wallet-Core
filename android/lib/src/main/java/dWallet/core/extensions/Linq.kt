@@ -1,5 +1,10 @@
 package dwallet.core.extensions
 
+import java.util.*
+import java.util.Arrays.asList
+
+
+
 /**
  * Created by unsignedint8 on 8/19/17.
  */
@@ -54,4 +59,10 @@ inline fun <T> Iterable<T>.sum(selector: (T) -> Long): Long {
         sum += selector(element)
     }
     return sum
+}
+
+inline fun <T> Iterable<T>.toRandomList(): List<T> {
+    val list = this.toList()
+    Collections.shuffle(list)
+    return list
 }
