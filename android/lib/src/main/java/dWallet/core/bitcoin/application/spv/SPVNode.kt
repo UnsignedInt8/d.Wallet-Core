@@ -59,7 +59,7 @@ open class SPVNode(network: Network, filterItems: Iterable<ByteArray>, private v
         node.onAddr { _, addrs -> super.trigger(Addr.text, this, addrs) }
     }
 
-    suspend fun connectAsync(host: String, port: Int) = node.connectAsync(host, port).await()
+    fun connectAsync(host: String, port: Int) = node.connectAsync(host, port)
 
     fun onTx(callback: (sender: SPVNode, tx: Transaction) -> Unit) = super.register(Transaction.message, callback as EventCallback)
 

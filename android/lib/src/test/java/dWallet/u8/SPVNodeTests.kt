@@ -49,7 +49,7 @@ class SPVNodeTests {
         spv.onMerkleblock { _, merkleblock -> println("progress: ${spv.progress.format(2)}") }
         spv.onAddr { _, addr -> println(addr) }
 
-        if (!spv.connectAsync("localhost", 19000)) {
+        if (!spv.connectAsync("localhost", 19000).await()) {
             println("not connected")
             return@runBlocking
         }
