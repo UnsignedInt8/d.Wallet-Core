@@ -61,8 +61,8 @@ inline fun <T> Iterable<T>.sum(selector: (T) -> Long): Long {
     return sum
 }
 
-inline fun <T> Iterable<T>.toRandomList(): List<T> {
-    val list = this.toList()
+inline fun <T> Iterable<T>.toRandomList(): MutableList<T> {
+    val list = this.toMutableList()
     Collections.shuffle(list)
     return list
 }
