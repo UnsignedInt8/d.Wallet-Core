@@ -13,7 +13,7 @@ import kotlin.experimental.and
  * Created by unsignedint8 on 8/18/17.
  */
 
-class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
+open class Node(var magic: ByteArray, var startHeight: Int = 0) : Event() {
 
     private val msgHandlers: Map<String, (payload: ByteArray) -> Unit>
     private val socket = SocketEx()

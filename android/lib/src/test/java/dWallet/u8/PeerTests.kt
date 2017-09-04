@@ -85,6 +85,11 @@ class PeerTests {
         }
 
         node.onMerkleblock { _, block ->
+            if (block.hash == "64fe9831db78b5c3454ebcf24000d82ddfad7d010a62c2a425fa4797f18504fc") {
+                println("here !!!")
+                node.sendGetMerkleblocks(listOf(block.preBlockHash))
+            }
+            if (block.hash == "0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206") println("merkleblock: ${block.hash}")
             if (block.flags.isNotEmpty()) println("flags: " + block.flags)
             println(block.preBlockHash + " ")
         }
